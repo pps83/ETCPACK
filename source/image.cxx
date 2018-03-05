@@ -118,7 +118,7 @@ bool fReadPPM(char *filename, int &width, int &height, unsigned char *&pixels, i
 
 		if(strcmp(line, "P6")!=0)
 		{
-			printf("Error: %s is not binary\n");
+			printf("Error: %s is not binary\n", line);
 			printf("(Binary .ppm files start with P6).\n");
 			fclose(f1);
 			return false;

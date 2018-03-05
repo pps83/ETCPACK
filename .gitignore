@@ -1,0 +1,8 @@
+/vc9/Debug
+/vc9/Release
+/testing/testvectors
+/testing/alpha.pgm
+/testing/alphaout.pgm
+.vs/
+*.VC.db
+*.VC.VC.opendb
