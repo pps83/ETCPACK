@@ -67,20 +67,20 @@ void unstuff58bits(unsigned int thumbH_word1, unsigned int thumbH_word2, unsigne
 void decompressColor(int R_B, int G_B, int B_B, uint8 (colors_RGB444)[2][3], uint8 (colors)[2][3]);
 void calculatePaintColors59T(uint8 d, uint8 p, uint8 (colors)[2][3], uint8 (possible_colors)[4][3]);
 void calculatePaintColors58H(uint8 d, uint8 p, uint8 (colors)[2][3], uint8 (possible_colors)[4][3]);
-void decompressBlockTHUMB59T(unsigned int block_part1, unsigned int block_part2, uint8 *img,int width,int height,int startx,int starty);
-void decompressBlockTHUMB58H(unsigned int block_part1, unsigned int block_part2, uint8 *img,int width,int height,int startx,int starty);
-void decompressBlockPlanar57(unsigned int compressed57_1, unsigned int compressed57_2, uint8 *img,int width,int height,int startx,int starty);
-void decompressBlockDiffFlip(unsigned int block_part1, unsigned int block_part2, uint8 *img,int width,int height,int startx,int starty);
-void decompressBlockETC2(unsigned int block_part1, unsigned int block_part2, uint8 *img,int width,int height,int startx,int starty);
-void decompressBlockDifferentialWithAlpha(unsigned int block_part1,unsigned int block_part2, uint8* img, uint8* alpha, int width, int height, int startx, int starty);
-void decompressBlockETC21BitAlpha(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alphaimg, int width,int height,int startx,int starty);
-void decompressBlockTHUMB58HAlpha(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alpha,int width,int height,int startx,int starty);
-void decompressBlockTHUMB59TAlpha(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alpha,int width,int height,int startx,int starty);
+void decompressBlockTHUMB59T(unsigned int block_part1, unsigned int block_part2, uint8 *img,int width,int startx,int starty);
+void decompressBlockTHUMB58H(unsigned int block_part1, unsigned int block_part2, uint8 *img,int width,int startx,int starty);
+void decompressBlockPlanar57(unsigned int compressed57_1, unsigned int compressed57_2, uint8 *img,int width,int startx,int starty);
+void decompressBlockDiffFlip(unsigned int block_part1, unsigned int block_part2, uint8 *img,int width,int startx,int starty);
+void decompressBlockETC2(unsigned int block_part1, unsigned int block_part2, uint8 *img,int width,int startx,int starty);
+void decompressBlockDifferentialWithAlpha(unsigned int block_part1,unsigned int block_part2, uint8* img, uint8* alpha, int width, int startx, int starty);
+void decompressBlockETC21BitAlpha(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alphaimg, int width,int startx,int starty);
+void decompressBlockTHUMB58HAlpha(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alpha,int width,int startx,int starty);
+void decompressBlockTHUMB59TAlpha(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alpha,int width,int startx,int starty);
 uint8 getbit(uint8 input, int frompos, int topos);
 int clamp(int val);
-void decompressBlockAlpha(uint8* data,uint8* img,int width,int height,int ix,int iy);
+void decompressBlockAlpha(uint8* data,uint8* img,int width,int ix,int iy);
 uint16 get16bits11bits(int base, int table, int mul, int index);
-void decompressBlockAlpha16bit(uint8* data,uint8* img,int width,int height,int ix,int iy); 
+void decompressBlockAlpha16bit(uint8* data,uint8* img,int width,int ix,int iy); 
 int16 get16bits11signed(int base, int table, int mul, int index);
 void setupAlphaTable();
 
@@ -127,13 +127,13 @@ void setupAlphaTable();
 #define BLUE(img,width,x,y)  img[3*(y*width+x)+2]
 
 #define SHIFT(size,startpos) ((startpos)-(size)+1)
-#define MASK(size, startpos) (((2<<(size-1))-1) << SHIFT(size,startpos))
+#define MASK(size, startpos) (((2u<<(size-1))-1) << SHIFT(size,startpos))
 #define PUTBITS( dest, data, size, startpos) dest = ((dest & ~MASK(size, startpos)) | ((data << SHIFT(size, startpos)) & MASK(size,startpos)))
 #define SHIFTHIGH(size, startpos) (((startpos)-32)-(size)+1)
-#define MASKHIGH(size, startpos) (((1<<(size))-1) << SHIFTHIGH(size,startpos))
+#define MASKHIGH(size, startpos) (((1u<<(size))-1) << SHIFTHIGH(size,startpos))
 #define PUTBITSHIGH(dest, data, size, startpos) dest = ((dest & ~MASKHIGH(size, startpos)) | ((data << SHIFTHIGH(size, startpos)) & MASKHIGH(size,startpos)))
-#define GETBITS(source, size, startpos)  (( (source) >> ((startpos)-(size)+1) ) & ((1<<(size)) -1))
-#define GETBITSHIGH(source, size, startpos)  (( (source) >> (((startpos)-32)-(size)+1) ) & ((1<<(size)) -1))
+#define GETBITS(source, size, startpos)  (( (source) >> ((startpos)-(size)+1) ) & ((1u<<(size)) -1))
+#define GETBITSHIGH(source, size, startpos)  (( (source) >> (((startpos)-32)-(size)+1) ) & ((1u<<(size)) -1))
 
 // Thumb macros and definitions
 #define	R_BITS59T 4
@@ -298,7 +298,7 @@ int indexConversion(int pixelIndices)
 
 // Tests if a file exists.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-bool fileExist(char *filename)
+bool fileExist(const char *filename)
 {
 	FILE *f=NULL;
 	if((f=fopen(filename,"rb"))!=NULL)
@@ -491,60 +491,55 @@ bool readSrcFile(char *filename,uint8 *&img,int &width,int &height, int &expande
 	int bitrate=8;
 	if(format==ETC2PACKAGE_RG_NO_MIPMAPS)
 		bitrate=16;
-	if(fReadPPM("tmp.ppm",w1,h1,img,bitrate))
+	if(!fReadPPM("tmp.ppm",w1,h1,img,bitrate))
+    {
+        printf("Could not read tmp.ppm file\n");
+        exit(1);
+    }
+	width=w1;
+	height=h1;
+	system("del tmp.ppm");
+
+	// Width must be divisible by 4 and height must be
+	// divisible by 4. Otherwise, we will expand the image
+
+	wdiv4 = width / 4;
+	hdiv4 = height / 4;
+
+	expandedwidth = width;
+	expandedheight = height;
+
+	if( !(wdiv4 * 4 == width) )
 	{
-		width=w1;
-		height=h1;
-		system("del tmp.ppm");
-
-		// Width must be divisible by 4 and height must be
-		// divisible by 4. Otherwise, we will expand the image
-
-		wdiv4 = width / 4;
-		hdiv4 = height / 4;
-
-		expandedwidth = width;
-		expandedheight = height;
-
-		if( !(wdiv4 * 4 == width) )
+		printf(" Width = %d is not divisible by four... ", width);
+		printf(" expanding image in x-dir... ");
+		if(expandToWidthDivByFour(img, width, height, expandedwidth, expandedheight,bitrate))
 		{
-			printf(" Width = %d is not divisible by four... ", width);
-			printf(" expanding image in x-dir... ");
-			if(expandToWidthDivByFour(img, width, height, expandedwidth, expandedheight,bitrate))
-			{
-				printf("OK.\n");
-			}
-			else
-			{
-				printf("\n Error: could not expand image\n");
-				return false;
-			}
+			printf("OK.\n");
 		}
-		if( !(hdiv4 * 4 == height))
+		else
 		{
-			printf(" Height = %d is not divisible by four... ", height);
-			printf(" expanding image in y-dir...");
-			if(expandToHeightDivByFour(img, expandedwidth, height, expandedwidth, expandedheight,bitrate))
-			{
-				printf("OK.\n");
-			}
-			else
-			{
-				printf("\n Error: could not expand image\n");
-				return false;
-			}
+			printf("\n Error: could not expand image\n");
+			return false;
 		}
-		if(!(expandedwidth == width && expandedheight == height))
-		   printf("Active pixels: %dx%d. Expanded image: %dx%d\n",width,height,expandedwidth,expandedheight);
-		return true;
 	}
-	else
+	if( !(hdiv4 * 4 == height))
 	{
-		printf("Could not read tmp.ppm file\n");
-		exit(1);	
+		printf(" Height = %d is not divisible by four... ", height);
+		printf(" expanding image in y-dir...");
+		if(expandToHeightDivByFour(img, expandedwidth, height, expandedwidth, expandedheight,bitrate))
+		{
+			printf("OK.\n");
+		}
+		else
+		{
+			printf("\n Error: could not expand image\n");
+			return false;
+		}
 	}
-	return false;
-
+	if(!(expandedwidth == width && expandedheight == height))
+	   printf("Active pixels: %dx%d. Expanded image: %dx%d\n",width,height,expandedwidth,expandedheight);
+	return true;
 }
 
 // Reads a file without expanding it to be divisible by 4.
@@ -843,7 +838,7 @@ bool readCompressParams(void)
 
 // Computes the average color in a 2x4 area and returns the average color as a float.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void computeAverageColor2x4noQuantFloat(uint8 *img,int width,int height,int startx,int starty,float *avg_color)
+void computeAverageColor2x4noQuantFloat(uint8 *img,int width,int startx,int starty,float *avg_color)
 {
 	int r=0,g=0,b=0;
 	for(int y=starty; y<starty+4; y++)
@@ -864,7 +859,7 @@ void computeAverageColor2x4noQuantFloat(uint8 *img,int width,int height,int star
 
 // Computes the average color in a 4x2 area and returns the average color as a float.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void computeAverageColor4x2noQuantFloat(uint8 *img,int width,int height,int startx,int starty,float *avg_color)
+void computeAverageColor4x2noQuantFloat(uint8 *img,int width,int startx,int starty,float *avg_color)
 {
 	int r=0,g=0,b=0;
 	for(int y=starty; y<starty+2; y++)
@@ -884,7 +879,7 @@ void computeAverageColor4x2noQuantFloat(uint8 *img,int width,int height,int star
 
 // Finds all pixel indices for a 2x4 block.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int compressBlockWithTable2x4(uint8 *img,int width,int height,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
+int compressBlockWithTable2x4(uint8 *img,int width,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
 {
 	uint8 orig[3],approx[3];
 	unsigned int pixel_indices_MSB=0, pixel_indices_LSB=0, pixel_indices = 0;
@@ -944,7 +939,7 @@ int compressBlockWithTable2x4(uint8 *img,int width,int height,int startx,int sta
 // Finds all pixel indices for a 2x4 block using perceptual weighting of error.
 // Done using fixed poinit arithmetics where weights are multiplied by 1000.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockWithTable2x4percep1000(uint8 *img,int width,int height,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
+unsigned int compressBlockWithTable2x4percep1000(uint8 *img,int width,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
 {
 	uint8 orig[3],approx[3];
 	unsigned int pixel_indices_MSB=0, pixel_indices_LSB=0, pixel_indices = 0;
@@ -1007,7 +1002,7 @@ unsigned int compressBlockWithTable2x4percep1000(uint8 *img,int width,int height
 
 // Finds all pixel indices for a 2x4 block using perceptual weighting of error.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-float compressBlockWithTable2x4percep(uint8 *img,int width,int height,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
+float compressBlockWithTable2x4percep(uint8 *img,int width,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
 {
 	uint8 orig[3],approx[3];
 	unsigned int pixel_indices_MSB=0, pixel_indices_LSB=0, pixel_indices = 0;
@@ -1069,7 +1064,7 @@ float compressBlockWithTable2x4percep(uint8 *img,int width,int height,int startx
 
 // Finds all pixel indices for a 4x2 block.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int compressBlockWithTable4x2(uint8 *img,int width,int height,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
+int compressBlockWithTable4x2(uint8 *img,int width,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
 {
 	uint8 orig[3],approx[3];
 	unsigned int pixel_indices_MSB=0, pixel_indices_LSB=0, pixel_indices = 0;
@@ -1128,7 +1123,7 @@ int compressBlockWithTable4x2(uint8 *img,int width,int height,int startx,int sta
 // Finds all pixel indices for a 4x2 block using perceptual weighting of error.
 // Done using fixed point arithmetics where 1000 corresponds to 1.0.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockWithTable4x2percep1000(uint8 *img,int width,int height,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
+unsigned int compressBlockWithTable4x2percep1000(uint8 *img,int width,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
 {
 	uint8 orig[3],approx[3];
 	unsigned int pixel_indices_MSB=0, pixel_indices_LSB=0, pixel_indices = 0;
@@ -1189,7 +1184,7 @@ unsigned int compressBlockWithTable4x2percep1000(uint8 *img,int width,int height
 
 // Finds all pixel indices for a 4x2 block using perceptual weighting of error.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-float compressBlockWithTable4x2percep(uint8 *img,int width,int height,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
+float compressBlockWithTable4x2percep(uint8 *img,int width,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
 {
 	uint8 orig[3],approx[3];
 	unsigned int pixel_indices_MSB=0, pixel_indices_LSB=0, pixel_indices = 0;
@@ -1406,7 +1401,7 @@ const unsigned int square_table_percep_blue[511] = {
 
 // Find the best table to use for a 2x4 area by testing all.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int tryalltables_3bittable2x4(uint8 *img,int width,int height,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
+int tryalltables_3bittable2x4(uint8 *img,int width,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
 {
 	int min_error = 3*255*255*16;
 	int q;
@@ -1415,7 +1410,7 @@ int tryalltables_3bittable2x4(uint8 *img,int width,int height,int startx,int sta
 
 	for(q=0;q<16;q+=2)		// try all the 8 tables. 
 	{
-		err=compressBlockWithTable2x4(img,width,height,startx,starty,avg_color,q,&pixel_indices_MSB, &pixel_indices_LSB);
+		err=compressBlockWithTable2x4(img,width,startx,starty,avg_color,q,&pixel_indices_MSB, &pixel_indices_LSB);
 
 		if(err<min_error)
 		{
@@ -1432,7 +1427,7 @@ int tryalltables_3bittable2x4(uint8 *img,int width,int height,int startx,int sta
 // Uses perceptual weighting. 
 // Uses fixed point implementation where 1000 equals 1.0
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int tryalltables_3bittable2x4percep1000(uint8 *img,int width,int height,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
+unsigned int tryalltables_3bittable2x4percep1000(uint8 *img,int width,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
 {
 	unsigned int min_error = MAXERR1000;
 	int q;
@@ -1442,7 +1437,7 @@ unsigned int tryalltables_3bittable2x4percep1000(uint8 *img,int width,int height
 	for(q=0;q<16;q+=2)		// try all the 8 tables. 
 	{
 
-		err=compressBlockWithTable2x4percep1000(img,width,height,startx,starty,avg_color,q,&pixel_indices_MSB, &pixel_indices_LSB);
+		err=compressBlockWithTable2x4percep1000(img,width,startx,starty,avg_color,q,&pixel_indices_MSB, &pixel_indices_LSB);
 
 		if(err<min_error)
 		{
@@ -1460,7 +1455,7 @@ unsigned int tryalltables_3bittable2x4percep1000(uint8 *img,int width,int height
 // Find the best table to use for a 2x4 area by testing all.
 // Uses perceptual weighting. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int tryalltables_3bittable2x4percep(uint8 *img,int width,int height,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
+int tryalltables_3bittable2x4percep(uint8 *img,int width,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
 {
 	float min_error = 3*255*255*16;
 	int q;
@@ -1469,7 +1464,7 @@ int tryalltables_3bittable2x4percep(uint8 *img,int width,int height,int startx,i
 
 	for(q=0;q<16;q+=2)		// try all the 8 tables. 
 	{
-		err=compressBlockWithTable2x4percep(img,width,height,startx,starty,avg_color,q,&pixel_indices_MSB, &pixel_indices_LSB);
+		err=compressBlockWithTable2x4percep(img,width,startx,starty,avg_color,q,&pixel_indices_MSB, &pixel_indices_LSB);
 
 		if(err<min_error)
 		{
@@ -1485,7 +1480,7 @@ int tryalltables_3bittable2x4percep(uint8 *img,int width,int height,int startx,i
 
 // Find the best table to use for a 4x2 area by testing all.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int tryalltables_3bittable4x2(uint8 *img,int width,int height,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
+int tryalltables_3bittable4x2(uint8 *img,int width,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
 {
 	int min_error = 3*255*255*16;
 	int q;
@@ -1494,7 +1489,7 @@ int tryalltables_3bittable4x2(uint8 *img,int width,int height,int startx,int sta
 
 	for(q=0;q<16;q+=2)		// try all the 8 tables. 
 	{
-		err=compressBlockWithTable4x2(img,width,height,startx,starty,avg_color,q,&pixel_indices_MSB, &pixel_indices_LSB);
+		err=compressBlockWithTable4x2(img,width,startx,starty,avg_color,q,&pixel_indices_MSB, &pixel_indices_LSB);
 
 		if(err<min_error)
 		{
@@ -1512,7 +1507,7 @@ int tryalltables_3bittable4x2(uint8 *img,int width,int height,int startx,int sta
 // Uses perceptual weighting. 
 // Uses fixed point implementation where 1000 equals 1.0
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int tryalltables_3bittable4x2percep1000(uint8 *img,int width,int height,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
+unsigned int tryalltables_3bittable4x2percep1000(uint8 *img,int width,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
 {
 	unsigned int min_error = MAXERR1000;
 	int q;
@@ -1521,7 +1516,7 @@ unsigned int tryalltables_3bittable4x2percep1000(uint8 *img,int width,int height
 
 	for(q=0;q<16;q+=2)		// try all the 8 tables. 
 	{
-		err=compressBlockWithTable4x2percep1000(img,width,height,startx,starty,avg_color,q,&pixel_indices_MSB, &pixel_indices_LSB);
+		err=compressBlockWithTable4x2percep1000(img,width,startx,starty,avg_color,q,&pixel_indices_MSB, &pixel_indices_LSB);
 
 		if(err<min_error)
 		{
@@ -1537,7 +1532,7 @@ unsigned int tryalltables_3bittable4x2percep1000(uint8 *img,int width,int height
 // Find the best table to use for a 4x2 area by testing all.
 // Uses perceptual weighting. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int tryalltables_3bittable4x2percep(uint8 *img,int width,int height,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
+int tryalltables_3bittable4x2percep(uint8 *img,int width,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
 {
 	float min_error = 3*255*255*16;
 	int q;
@@ -1546,7 +1541,7 @@ int tryalltables_3bittable4x2percep(uint8 *img,int width,int height,int startx,i
 
 	for(q=0;q<16;q+=2)		// try all the 8 tables. 
 	{
-		err=compressBlockWithTable4x2percep(img,width,height,startx,starty,avg_color,q,&pixel_indices_MSB, &pixel_indices_LSB);
+		err=compressBlockWithTable4x2percep(img,width,startx,starty,avg_color,q,&pixel_indices_MSB, &pixel_indices_LSB);
 
 		if(err<min_error)
 		{
@@ -1568,17 +1563,14 @@ int tryalltables_3bittable4x2percep(uint8 *img,int width,int height,int startx,i
 // (See the presentation http://www.jacobstrom.com/publications/PACKMAN.ppt for more info.) 
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void quantize444ColorCombined(float *avg_col_in, int *enc_color, uint8 *avg_color)
+void quantize444ColorCombined(float *avg_col_in, int *enc_color)
 {
 	float dr, dg, db;
 	float kr, kg, kb;
 	float wR2, wG2, wB2;
 	uint8 low_color[3];
 	uint8 high_color[3];
-	float min_error=255*255*8*3;
 	float lowhightable[8];
-	unsigned int best_table=0;
-	unsigned int best_index=0;
 	int q;
 	float kval = (float) (255.0/15.0);
 
@@ -1650,10 +1642,6 @@ void quantize444ColorCombined(float *avg_col_in, int *enc_color, uint8 *avg_colo
 			min_index = q;
 		}
 	}
-
-  float drh = red_high-red_average;
-	float dgh = green_high-green_average;
-	float dbh = blue_high-blue_average;
 
 	low_color[0] = red_4bit_low;
 	low_color[1] = green_4bit_low;
@@ -1728,10 +1716,6 @@ void quantize444ColorCombined(float *avg_col_in, int *enc_color, uint8 *avg_colo
 		}
 		break;
 	}
-	// Expand 5-bit encoded color to 8-bit color
-	avg_color[0] = (enc_color[0] << 3) | (enc_color[0] >> 2);
-	avg_color[1] = (enc_color[1] << 3) | (enc_color[1] >> 2);
-	avg_color[2] = (enc_color[2] << 3) | (enc_color[2] >> 2);	
 }
 
 // The below code quantizes a float RGB value to RGB555. 
@@ -1750,10 +1734,7 @@ void quantize555ColorCombined(float *avg_col_in, int *enc_color, uint8 *avg_colo
 	float wR2, wG2, wB2;
 	uint8 low_color[3];
 	uint8 high_color[3];
-	float min_error=255*255*8*3;
 	float lowhightable[8];
-	unsigned int best_table=0;
-	unsigned int best_index=0;
 	int q;
 	float kval = (float) (255.0/31.0);
 
@@ -1825,10 +1806,6 @@ void quantize555ColorCombined(float *avg_col_in, int *enc_color, uint8 *avg_colo
 			min_index = q;
 		}
 	}
-
-  float drh = red_high-red_average;
-	float dgh = green_high-green_average;
-	float dbh = blue_high-blue_average;
 
 	low_color[0] = red_5bit_low;
 	low_color[1] = green_5bit_low;
@@ -1905,10 +1882,7 @@ void quantize444ColorCombinedPerceptual(float *avg_col_in, int *enc_color, uint8
 	float wR2, wG2, wB2;
 	uint8 low_color[3];
 	uint8 high_color[3];
-	float min_error=255*255*8*3;
 	float lowhightable[8];
-	unsigned int best_table=0;
-	unsigned int best_index=0;
 	int q;
 	float kval = (float) (255.0/15.0);
 
@@ -1989,10 +1963,6 @@ void quantize444ColorCombinedPerceptual(float *avg_col_in, int *enc_color, uint8
 		}
 	}
 
-  float drh = red_high-red_average;
-	float dgh = green_high-green_average;
-	float dbh = blue_high-blue_average;
-
 	switch(min_index)
 	{
 	case 0:
@@ -2059,10 +2029,7 @@ void quantize555ColorCombinedPerceptual(float *avg_col_in, int *enc_color, uint8
 	float wR2, wG2, wB2;
 	uint8 low_color[3];
 	uint8 high_color[3];
-	float min_error=255*255*8*3;
 	float lowhightable[8];
-	unsigned int best_table=0;
-	unsigned int best_index=0;
 	int q;
 	float kval = (float) (255.0/31.0);
 
@@ -2143,10 +2110,6 @@ void quantize555ColorCombinedPerceptual(float *avg_col_in, int *enc_color, uint8
 		}
 	}
 
-  float drh = red_high-red_average;
-	float dgh = green_high-green_average;
-	float dbh = blue_high-blue_average;
-
 	switch(min_index)
 	{
 	case 0:
@@ -2201,7 +2164,7 @@ void quantize555ColorCombinedPerceptual(float *avg_col_in, int *enc_color, uint8
 // Uses a perceptual error metric.
 // Uses fixed point arithmetics where 1000 equals 1.0
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockOnlyIndividualAveragePerceptual1000(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, int *best_enc_color1, int*best_enc_color2, int &best_flip, unsigned int &best_err_upper, unsigned int &best_err_lower, unsigned int &best_err_left, unsigned int &best_err_right, int *best_color_upper, int *best_color_lower, int *best_color_left, int *best_color_right)
+unsigned int compressBlockOnlyIndividualAveragePerceptual1000(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, int *best_enc_color1, int*best_enc_color2, int &best_flip, unsigned int &best_err_upper, unsigned int &best_err_lower, unsigned int &best_err_left, unsigned int &best_err_right, int *best_color_upper, int *best_color_lower, int *best_color_left, int *best_color_right)
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
@@ -2209,7 +2172,6 @@ unsigned int compressBlockOnlyIndividualAveragePerceptual1000(uint8 *img,int wid
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3];
-	unsigned int best_table_indices1=0, best_table_indices2=0;
 	unsigned int best_table1=0, best_table2=0;
 	int diffbit;
 
@@ -2219,8 +2181,8 @@ unsigned int compressBlockOnlyIndividualAveragePerceptual1000(uint8 *img,int wid
 
 	// First try normal blocks 2x4:
 
-	computeAverageColor2x4noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor2x4noQuantFloat(img,width,height,startx+2,starty,avg_color_float2);
+	computeAverageColor2x4noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor2x4noQuantFloat(img,width,startx+2,starty,avg_color_float2);
 
 	enc_color1[0] = int( JAS_ROUND(15.0*avg_color_float1[0]/255.0) );
 	enc_color1[1] = int( JAS_ROUND(15.0*avg_color_float1[1]/255.0) );
@@ -2297,11 +2259,11 @@ unsigned int compressBlockOnlyIndividualAveragePerceptual1000(uint8 *img,int wid
 	norm_err = 0;
 
 	// left part of block
-	best_err_left = tryalltables_3bittable2x4percep1000(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+	best_err_left = tryalltables_3bittable2x4percep1000(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 	norm_err = best_err_left;
 
 	// right part of block
-	best_err_right = tryalltables_3bittable2x4percep1000(img,width,height,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+	best_err_right = tryalltables_3bittable2x4percep1000(img,width,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 	norm_err += best_err_right;
 
  	PUTBITSHIGH( compressed1_norm, best_table1,   3, 39);
@@ -2316,8 +2278,8 @@ unsigned int compressBlockOnlyIndividualAveragePerceptual1000(uint8 *img,int wid
 
 	// Now try flipped blocks 4x2:
 
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty+2,avg_color_float2);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty+2,avg_color_float2);
 
 	// First test if avg_color1 is similar enough to avg_color2 so that
 	// we can use differential coding of colors. 
@@ -2357,10 +2319,10 @@ unsigned int compressBlockOnlyIndividualAveragePerceptual1000(uint8 *img,int wid
  	PUTBITSHIGH( compressed1_flip, enc_color2[2], 4, 43);
 
 	// upper part of block
-	best_err_upper = tryalltables_3bittable4x2percep1000(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+	best_err_upper = tryalltables_3bittable4x2percep1000(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 	flip_err = best_err_upper;
 	// lower part of block
-	best_err_lower = tryalltables_3bittable4x2percep1000(img,width,height,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+	best_err_lower = tryalltables_3bittable4x2percep1000(img,width,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 	flip_err += best_err_lower;
 
  	PUTBITSHIGH( compressed1_flip, best_table1,   3, 39);
@@ -2399,7 +2361,7 @@ unsigned int compressBlockOnlyIndividualAveragePerceptual1000(uint8 *img,int wid
 
 // Compresses the block using only the individual mode in ETC1/ETC2 using the average color as the base color.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int compressBlockOnlyIndividualAverage(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, int *best_enc_color1, int*best_enc_color2, int &best_flip, unsigned int &best_err_upper, unsigned int &best_err_lower, unsigned int &best_err_left, unsigned int &best_err_right, int *best_color_upper, int *best_color_lower, int *best_color_left, int *best_color_right)
+int compressBlockOnlyIndividualAverage(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, int *best_enc_color1, int*best_enc_color2, int &best_flip, unsigned int &best_err_upper, unsigned int &best_err_lower, unsigned int &best_err_left, unsigned int &best_err_right, int *best_color_upper, int *best_color_lower, int *best_color_left, int *best_color_right)
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
@@ -2407,8 +2369,6 @@ int compressBlockOnlyIndividualAverage(uint8 *img,int width,int height,int start
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3];
-	int min_error=255*255*8*3;
-	unsigned int best_table_indices1=0, best_table_indices2=0;
 	unsigned int best_table1=0, best_table2=0;
 	int diffbit;
 
@@ -2418,8 +2378,8 @@ int compressBlockOnlyIndividualAverage(uint8 *img,int width,int height,int start
 
 	// First try normal blocks 2x4:
 
-	computeAverageColor2x4noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor2x4noQuantFloat(img,width,height,startx+2,starty,avg_color_float2);
+	computeAverageColor2x4noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor2x4noQuantFloat(img,width,startx+2,starty,avg_color_float2);
 
 	enc_color1[0] = int( JAS_ROUND(15.0*avg_color_float1[0]/255.0) );
 	enc_color1[1] = int( JAS_ROUND(15.0*avg_color_float1[1]/255.0) );
@@ -2495,11 +2455,11 @@ int compressBlockOnlyIndividualAverage(uint8 *img,int width,int height,int start
 	norm_err = 0;
 
 	// left part of block
-	best_err_left = tryalltables_3bittable2x4(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+	best_err_left = tryalltables_3bittable2x4(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 	norm_err = best_err_left;
 
 	// right part of block
-	best_err_right = tryalltables_3bittable2x4(img,width,height,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+	best_err_right = tryalltables_3bittable2x4(img,width,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 	norm_err += best_err_right;
 
  	PUTBITSHIGH( compressed1_norm, best_table1,   3, 39);
@@ -2515,8 +2475,8 @@ int compressBlockOnlyIndividualAverage(uint8 *img,int width,int height,int start
 
 	// Now try flipped blocks 4x2:
 
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty+2,avg_color_float2);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty+2,avg_color_float2);
 
 	// First test if avg_color1 is similar enough to avg_color2 so that
 	// we can use differential coding of colors. 
@@ -2556,10 +2516,10 @@ int compressBlockOnlyIndividualAverage(uint8 *img,int width,int height,int start
  	PUTBITSHIGH( compressed1_flip, enc_color2[2], 4, 43);
 
 	// upper part of block
-	best_err_upper = tryalltables_3bittable4x2(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+	best_err_upper = tryalltables_3bittable4x2(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 	flip_err = best_err_upper;
 	// lower part of block
-	best_err_lower = tryalltables_3bittable4x2(img,width,height,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+	best_err_lower = tryalltables_3bittable4x2(img,width,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 	flip_err += best_err_lower;
 
  	PUTBITSHIGH( compressed1_flip, best_table1,   3, 39);
@@ -2600,7 +2560,7 @@ int compressBlockOnlyIndividualAverage(uint8 *img,int width,int height,int start
 // Uses the average color as the base color in each half-block.
 // Tries both flipped and unflipped.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockDiffFlipAverage(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockDiffFlipAverage(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
@@ -2608,8 +2568,6 @@ void compressBlockDiffFlipAverage(uint8 *img,int width,int height,int startx,int
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3], diff[3];
-	int min_error=255*255*8*3;
-	unsigned int best_table_indices1=0, best_table_indices2=0;
 	unsigned int best_table1=0, best_table2=0;
 	int diffbit;
 
@@ -2617,8 +2575,8 @@ void compressBlockDiffFlipAverage(uint8 *img,int width,int height,int startx,int
 	int flip_err=0;
 
 	// First try normal blocks 2x4:
-	computeAverageColor2x4noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor2x4noQuantFloat(img,width,height,startx+2,starty,avg_color_float2);
+	computeAverageColor2x4noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor2x4noQuantFloat(img,width,startx+2,starty,avg_color_float2);
 
 	// First test if avg_color1 is similar enough to avg_color2 so that
 	// we can use differential coding of colors. 
@@ -2698,10 +2656,10 @@ void compressBlockDiffFlipAverage(uint8 *img,int width,int height,int startx,int
 		norm_err = 0;
 
 		// left part of block
-		norm_err = tryalltables_3bittable2x4(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		norm_err = tryalltables_3bittable2x4(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 
 		// right part of block
-		norm_err += tryalltables_3bittable2x4(img,width,height,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		norm_err += tryalltables_3bittable2x4(img,width,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_norm, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_norm, best_table2,   3, 36);
@@ -2757,10 +2715,10 @@ void compressBlockDiffFlipAverage(uint8 *img,int width,int height,int startx,int
 		unsigned int best_pixel_indices2_LSB;
 		
 		// left part of block
-		norm_err = tryalltables_3bittable2x4(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		norm_err = tryalltables_3bittable2x4(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 
 		// right part of block
-		norm_err += tryalltables_3bittable2x4(img,width,height,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		norm_err += tryalltables_3bittable2x4(img,width,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_norm, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_norm, best_table2,   3, 36);
@@ -2775,8 +2733,8 @@ void compressBlockDiffFlipAverage(uint8 *img,int width,int height,int startx,int
 
 	// Now try flipped blocks 4x2:
 
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty+2,avg_color_float2);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty+2,avg_color_float2);
 
 	// First test if avg_color1 is similar enough to avg_color2 so that
 	// we can use differential coding of colors. 
@@ -2826,9 +2784,9 @@ void compressBlockDiffFlipAverage(uint8 *img,int width,int height,int startx,int
 		unsigned int best_pixel_indices2_LSB;
 
 		// upper part of block
-		flip_err = tryalltables_3bittable4x2(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		flip_err = tryalltables_3bittable4x2(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 		// lower part of block
-		flip_err += tryalltables_3bittable4x2(img,width,height,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		flip_err += tryalltables_3bittable4x2(img,width,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_flip, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_flip, best_table2,   3, 36);
@@ -2884,9 +2842,9 @@ void compressBlockDiffFlipAverage(uint8 *img,int width,int height,int startx,int
 		unsigned int best_pixel_indices2_LSB;
 
 		// upper part of block
-		flip_err = tryalltables_3bittable4x2(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		flip_err = tryalltables_3bittable4x2(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 		// lower part of block
-		flip_err += tryalltables_3bittable4x2(img,width,height,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		flip_err += tryalltables_3bittable4x2(img,width,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_flip, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_flip, best_table2,   3, 36);
@@ -2917,7 +2875,7 @@ void compressBlockDiffFlipAverage(uint8 *img,int width,int height,int startx,int
 // If average colors are too different, use the average color of the entire block in both half-blocks.
 // Tries both flipped and unflipped.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int compressBlockOnlyDiffFlipAverage(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, int *best_enc_color1, int*best_enc_color2, int &best_flip)
+int compressBlockOnlyDiffFlipAverage(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, int *best_enc_color1, int*best_enc_color2, int &best_flip)
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
@@ -2925,8 +2883,6 @@ int compressBlockOnlyDiffFlipAverage(uint8 *img,int width,int height,int startx,
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3], diff[3];
-	int min_error=255*255*8*3;
-	unsigned int best_table_indices1=0, best_table_indices2=0;
 	unsigned int best_table1=0, best_table2=0;
 	int diffbit;
 
@@ -2936,8 +2892,8 @@ int compressBlockOnlyDiffFlipAverage(uint8 *img,int width,int height,int startx,
 
 	// First try normal blocks 2x4:
 
-	computeAverageColor2x4noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor2x4noQuantFloat(img,width,height,startx+2,starty,avg_color_float2);
+	computeAverageColor2x4noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor2x4noQuantFloat(img,width,startx+2,starty,avg_color_float2);
 
 	// First test if avg_color1 is similar enough to avg_color2 so that
 	// we can use differential coding of colors. 
@@ -3034,10 +2990,10 @@ int compressBlockOnlyDiffFlipAverage(uint8 *img,int width,int height,int startx,
 	norm_err = 0;
 
 	// left part of block
-	norm_err = tryalltables_3bittable2x4(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+	norm_err = tryalltables_3bittable2x4(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 
 	// right part of block
-	norm_err += tryalltables_3bittable2x4(img,width,height,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+	norm_err += tryalltables_3bittable2x4(img,width,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  	PUTBITSHIGH( compressed1_norm, best_table1,   3, 39);
  	PUTBITSHIGH( compressed1_norm, best_table2,   3, 36);
@@ -3051,8 +3007,8 @@ int compressBlockOnlyDiffFlipAverage(uint8 *img,int width,int height,int startx,
 
 	// Now try flipped blocks 4x2:
 
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty+2,avg_color_float2);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty+2,avg_color_float2);
 
 	// First test if avg_color1 is similar enough to avg_color2 so that
 	// we can use differential coding of colors. 
@@ -3108,9 +3064,9 @@ int compressBlockOnlyDiffFlipAverage(uint8 *img,int width,int height,int startx,
  	PUTBITSHIGH( compressed1_flip, diff[2],       3, 42);
 
 	// upper part of block
-	flip_err = tryalltables_3bittable4x2(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+	flip_err = tryalltables_3bittable4x2(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 	// lower part of block
-	flip_err += tryalltables_3bittable4x2(img,width,height,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+	flip_err += tryalltables_3bittable4x2(img,width,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  	PUTBITSHIGH( compressed1_flip, best_table1,   3, 39);
  	PUTBITSHIGH( compressed1_flip, best_table2,   3, 36);
@@ -3152,7 +3108,7 @@ int compressBlockOnlyDiffFlipAverage(uint8 *img,int width,int height,int startx,
 // Tries both flipped and unflipped.
 // Uses fixed point arithmetics where 1000 represents 1.0.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockOnlyDiffFlipAveragePerceptual1000(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+unsigned int compressBlockOnlyDiffFlipAveragePerceptual1000(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
@@ -3160,8 +3116,6 @@ unsigned int compressBlockOnlyDiffFlipAveragePerceptual1000(uint8 *img,int width
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3], diff[3];
-	unsigned int min_error=MAXERR1000;
-	unsigned int best_table_indices1=0, best_table_indices2=0;
 	unsigned int best_table1=0, best_table2=0;
 	int diffbit;
 
@@ -3170,8 +3124,8 @@ unsigned int compressBlockOnlyDiffFlipAveragePerceptual1000(uint8 *img,int width
 
 	// First try normal blocks 2x4:
 
-	computeAverageColor2x4noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor2x4noQuantFloat(img,width,height,startx+2,starty,avg_color_float2);
+	computeAverageColor2x4noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor2x4noQuantFloat(img,width,startx+2,starty,avg_color_float2);
 
 	// First test if avg_color1 is similar enough to avg_color2 so that
 	// we can use differential coding of colors. 
@@ -3260,10 +3214,10 @@ unsigned int compressBlockOnlyDiffFlipAveragePerceptual1000(uint8 *img,int width
 		norm_err = 0;
 
 		// left part of block 
-		norm_err = tryalltables_3bittable2x4percep1000(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		norm_err = tryalltables_3bittable2x4percep1000(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 
 		// right part of block
-		norm_err += tryalltables_3bittable2x4percep1000(img,width,height,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		norm_err += tryalltables_3bittable2x4percep1000(img,width,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_norm, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_norm, best_table2,   3, 36);
@@ -3278,8 +3232,8 @@ unsigned int compressBlockOnlyDiffFlipAveragePerceptual1000(uint8 *img,int width
 	}
 	// Now try flipped blocks 4x2:
 
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty+2,avg_color_float2);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty+2,avg_color_float2);
 
 	// First test if avg_color1 is similar enough to avg_color2 so that
 	// we can use differential coding of colors. 
@@ -3339,9 +3293,9 @@ unsigned int compressBlockOnlyDiffFlipAveragePerceptual1000(uint8 *img,int width
 		unsigned int best_pixel_indices2_LSB;
 
 		// upper part of block
-		flip_err = tryalltables_3bittable4x2percep1000(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		flip_err = tryalltables_3bittable4x2percep1000(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 		// lower part of block
-		flip_err += tryalltables_3bittable4x2percep1000(img,width,height,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		flip_err += tryalltables_3bittable4x2percep1000(img,width,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_flip, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_flip, best_table2,   3, 36);
@@ -3374,7 +3328,7 @@ unsigned int compressBlockOnlyDiffFlipAveragePerceptual1000(uint8 *img,int width
 // Uses a perceptual error metric.
 // Tries both flipped and unflipped.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockDiffFlipAveragePerceptual(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+double compressBlockDiffFlipAveragePerceptual(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
@@ -3382,8 +3336,6 @@ double compressBlockDiffFlipAveragePerceptual(uint8 *img,int width,int height,in
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3], diff[3];
-	int min_error=255*255*8*3;
-	unsigned int best_table_indices1=0, best_table_indices2=0;
 	unsigned int best_table1=0, best_table2=0;
 	int diffbit;
 
@@ -3392,8 +3344,8 @@ double compressBlockDiffFlipAveragePerceptual(uint8 *img,int width,int height,in
 
 	// First try normal blocks 2x4:
 
-	computeAverageColor2x4noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor2x4noQuantFloat(img,width,height,startx+2,starty,avg_color_float2);
+	computeAverageColor2x4noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor2x4noQuantFloat(img,width,startx+2,starty,avg_color_float2);
 
 	// First test if avg_color1 is similar enough to avg_color2 so that
 	// we can use differential coding of colors. 
@@ -3472,10 +3424,10 @@ double compressBlockDiffFlipAveragePerceptual(uint8 *img,int width,int height,in
 		norm_err = 0;
 
 		// left part of block 
-		norm_err = tryalltables_3bittable2x4percep(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		norm_err = tryalltables_3bittable2x4percep(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 
 		// right part of block
-		norm_err += tryalltables_3bittable2x4percep(img,width,height,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		norm_err += tryalltables_3bittable2x4percep(img,width,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_norm, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_norm, best_table2,   3, 36);
@@ -3531,10 +3483,10 @@ double compressBlockDiffFlipAveragePerceptual(uint8 *img,int width,int height,in
 		unsigned int best_pixel_indices2_LSB;
 		
 		// left part of block
-		norm_err = tryalltables_3bittable2x4percep(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		norm_err = tryalltables_3bittable2x4percep(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 
 		// right part of block
-		norm_err += tryalltables_3bittable2x4percep(img,width,height,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		norm_err += tryalltables_3bittable2x4percep(img,width,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_norm, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_norm, best_table2,   3, 36);
@@ -3549,8 +3501,8 @@ double compressBlockDiffFlipAveragePerceptual(uint8 *img,int width,int height,in
 
 	// Now try flipped blocks 4x2:
 
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty+2,avg_color_float2);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty+2,avg_color_float2);
 
 	// First test if avg_color1 is similar enough to avg_color2 so that
 	// we can use differential coding of colors. 
@@ -3600,9 +3552,9 @@ double compressBlockDiffFlipAveragePerceptual(uint8 *img,int width,int height,in
 		unsigned int best_pixel_indices2_LSB;
 
 		// upper part of block
-		flip_err = tryalltables_3bittable4x2percep(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		flip_err = tryalltables_3bittable4x2percep(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 		// lower part of block
-		flip_err += tryalltables_3bittable4x2percep(img,width,height,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		flip_err += tryalltables_3bittable4x2percep(img,width,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_flip, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_flip, best_table2,   3, 36);
@@ -3657,9 +3609,9 @@ double compressBlockDiffFlipAveragePerceptual(uint8 *img,int width,int height,in
 		unsigned int best_pixel_indices2_LSB;
 
 		// upper part of block
-		flip_err = tryalltables_3bittable4x2percep(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		flip_err = tryalltables_3bittable4x2percep(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 		// lower part of block
-		flip_err += tryalltables_3bittable4x2percep(img,width,height,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		flip_err += tryalltables_3bittable4x2percep(img,width,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_flip, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_flip, best_table2,   3, 36);
@@ -4292,7 +4244,7 @@ unsigned int calcErrorPlanarOnlyBlue(uint8 *block, int colorO, int colorH, int c
 // This is close to optimal, but not quite, due to nonlinearities in the expantion from 6 and 7 bits to 8, and
 // in the clamping to a number between 0 and the maximum. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockPlanar57(uint8 *img, int width,int height,int startx,int starty, unsigned int &compressed57_1, unsigned int &compressed57_2)
+void compressBlockPlanar57(uint8 *img, int width,int startx,int starty, unsigned int &compressed57_1, unsigned int &compressed57_2)
 {
 	// Use least squares to find the solution with the smallest error.
 	// That is, find the vector x so that |Ax-b|^2 is minimized, where
@@ -4709,7 +4661,7 @@ void stuff59bits(unsigned int thumbT59_word1, unsigned int thumbT59_word2, unsig
 
 // Decompress the planar mode and calculate the error per component compared to original image.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void decompressBlockPlanar57errorPerComponent(unsigned int compressed57_1, unsigned int compressed57_2, uint8 *img,int width,int height,int startx,int starty, uint8 *srcimg, unsigned int &error_red, unsigned int &error_green, unsigned int &error_blue)
+void decompressBlockPlanar57errorPerComponent(unsigned int compressed57_1, unsigned int compressed57_2, uint8 *img,int width,int startx,int starty, uint8 *srcimg, unsigned int &error_red, unsigned int &error_green, unsigned int &error_blue)
 {
 	uint8 colorO[3], colorH[3], colorV[3];
 
@@ -4765,7 +4717,7 @@ void decompressBlockPlanar57errorPerComponent(unsigned int compressed57_1, unsig
 // Compress using both individual and differential mode in ETC1/ETC2 using combined color 
 // quantization. Both flip modes are tried. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockDiffFlipCombined(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockDiffFlipCombined(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
@@ -4773,8 +4725,6 @@ void compressBlockDiffFlipCombined(uint8 *img,int width,int height,int startx,in
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3], diff[3];
-	int min_error=255*255*8*3;
-	unsigned int best_table_indices1=0, best_table_indices2=0;
 	unsigned int best_table1=0, best_table2=0;
 	int diffbit;
 
@@ -4783,8 +4733,8 @@ void compressBlockDiffFlipCombined(uint8 *img,int width,int height,int startx,in
 
 	// First try normal blocks 2x4:
 
-	computeAverageColor2x4noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor2x4noQuantFloat(img,width,height,startx+2,starty,avg_color_float2);
+	computeAverageColor2x4noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor2x4noQuantFloat(img,width,startx+2,starty,avg_color_float2);
 
 	// First test if avg_color1 is similar enough to avg_color2 so that
 	// we can use differential coding of colors. 
@@ -4862,10 +4812,10 @@ void compressBlockDiffFlipCombined(uint8 *img,int width,int height,int startx,in
 		norm_err = 0;
 
 		// left part of block
-		norm_err = tryalltables_3bittable2x4(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		norm_err = tryalltables_3bittable2x4(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 
 		// right part of block
-		norm_err += tryalltables_3bittable2x4(img,width,height,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		norm_err += tryalltables_3bittable2x4(img,width,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_norm, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_norm, best_table2,   3, 36);
@@ -4886,9 +4836,8 @@ void compressBlockDiffFlipCombined(uint8 *img,int width,int height,int startx,in
 
 		eps = (float) 0.0001;
 
-		uint8 dummy[3];
-		quantize444ColorCombined(avg_color_float1, enc_color1, dummy);
-		quantize444ColorCombined(avg_color_float2, enc_color2, dummy);
+		quantize444ColorCombined(avg_color_float1, enc_color1);
+		quantize444ColorCombined(avg_color_float2, enc_color2);
 
 		avg_color_quant1[0] = enc_color1[0] << 4 | enc_color1[0]; 
 		avg_color_quant1[1] = enc_color1[1] << 4 | enc_color1[1]; 
@@ -4921,10 +4870,10 @@ void compressBlockDiffFlipCombined(uint8 *img,int width,int height,int startx,in
 		unsigned int best_pixel_indices2_LSB;
 
 		// left part of block
-		norm_err = tryalltables_3bittable2x4(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		norm_err = tryalltables_3bittable2x4(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 
 		// right part of block
-		norm_err += tryalltables_3bittable2x4(img,width,height,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		norm_err += tryalltables_3bittable2x4(img,width,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_norm, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_norm, best_table2,   3, 36);
@@ -4939,8 +4888,8 @@ void compressBlockDiffFlipCombined(uint8 *img,int width,int height,int startx,in
 
 	// Now try flipped blocks 4x2:
 
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty+2,avg_color_float2);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty+2,avg_color_float2);
 
 	// First test if avg_color1 is similar enough to avg_color2 so that
 	// we can use differential coding of colors. 
@@ -4986,9 +4935,9 @@ void compressBlockDiffFlipCombined(uint8 *img,int width,int height,int startx,in
 		unsigned int best_pixel_indices2_LSB;
 
 		// upper part of block
-		flip_err = tryalltables_3bittable4x2(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		flip_err = tryalltables_3bittable4x2(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 		// lower part of block
-		flip_err += tryalltables_3bittable4x2(img,width,height,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		flip_err += tryalltables_3bittable4x2(img,width,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_flip, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_flip, best_table2,   3, 36);
@@ -5006,9 +4955,8 @@ void compressBlockDiffFlipCombined(uint8 *img,int width,int height,int startx,in
 		// to deal with 444 444.
 		eps = (float) 0.0001;
 
-		uint8 dummy[3];
-		quantize444ColorCombined(avg_color_float1, enc_color1, dummy);
-		quantize444ColorCombined(avg_color_float2, enc_color2, dummy);
+		quantize444ColorCombined(avg_color_float1, enc_color1);
+		quantize444ColorCombined(avg_color_float2, enc_color2);
 
 		avg_color_quant1[0] = enc_color1[0] << 4 | enc_color1[0]; 
 		avg_color_quant1[1] = enc_color1[1] << 4 | enc_color1[1]; 
@@ -5040,9 +4988,9 @@ void compressBlockDiffFlipCombined(uint8 *img,int width,int height,int startx,in
 		unsigned int best_pixel_indices2_LSB;
 
 		// upper part of block
-		flip_err = tryalltables_3bittable4x2(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		flip_err = tryalltables_3bittable4x2(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 		// lower part of block
-		flip_err += tryalltables_3bittable4x2(img,width,height,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		flip_err += tryalltables_3bittable4x2(img,width,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_flip, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_flip, best_table2,   3, 36);
@@ -5078,7 +5026,7 @@ void computeColorLBGHalfIntensityFast(uint8 *img,int width,int startx,int starty
 	// reset rand so that we get predictable output per block
 	srand(10000);
 	//LBG-algorithm
-	double D = 0, oldD, bestD = MAXIMUM_ERROR, eps = 0.0000000001;
+	double D = 0, oldD, bestD = MAXIMUM_ERROR;
 	double error_a, error_b;
 	int number_of_iterations = 10;
 	double t_color[2][3];
@@ -5272,7 +5220,7 @@ void computeColorLBGNotIntensityFast(uint8 *img,int width,int startx,int starty,
 	// reset rand so that we get predictable output per block
 	srand(10000);
 	//LBG-algorithm
-	double D = 0, oldD, bestD = MAXIMUM_ERROR, eps = 0.0000000001;
+	double D = 0, oldD, bestD = MAXIMUM_ERROR;
 	double error_a, error_b;
 	int number_of_iterations = 10;
 	double t_color[2][3];
@@ -5464,7 +5412,7 @@ void computeColorLBGNotIntensity(uint8 *img,int width,int startx,int starty, uin
 	// reset rand so that we get predictable output per block
 	srand(10000);
 	//LBG-algorithm
-	double D = 0, oldD, bestD = MAXIMUM_ERROR, eps = 0.0000000001;
+	double D = 0, oldD, bestD = MAXIMUM_ERROR;
 	double error_a, error_b;
 	int number_of_iterations = 10;
 	double t_color[2][3];
@@ -5656,7 +5604,7 @@ void computeColorLBG(uint8 *img,int width,int startx,int starty, uint8 (LBG_colo
 	// reset rand so that we get predictable output per block
 	srand(10000);
 	//LBG-algorithm
-	double D = 0, oldD, bestD = MAXIMUM_ERROR, eps = 0.0000000001;
+	double D = 0, oldD, bestD = MAXIMUM_ERROR;
 	double error_a, error_b;
 	int number_of_iterations = 10;
 	double t_color[2][3];
@@ -5836,7 +5784,7 @@ void computeColorLBGfast(uint8 *img,int width,int startx,int starty, uint8 (LBG_
 	// reset rand so that we get predictable output per block
 	srand(10000);
 	//LBG-algorithm
-	double D = 0, oldD, bestD = MAXIMUM_ERROR, eps = 0.0000000001;
+	double D = 0, oldD, bestD = MAXIMUM_ERROR;
 	double error_a, error_b;
 	int number_of_iterations = 10;
 	double t_color[2][3];
@@ -6412,7 +6360,7 @@ void copyColors(uint8 (source)[2][3], uint8 (dest)[2][3])
 //|----------------------------------------index bits---------------------------------------------|
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockTHUMB59TFastestOnlyColorPerceptual1000(uint8 *img,int width,int height,int startx,int starty, int (best_colorsRGB444_packed)[2])
+unsigned int compressBlockTHUMB59TFastestOnlyColorPerceptual1000(uint8 *img,int width,int startx,int starty, int (best_colorsRGB444_packed)[2])
 {
 	unsigned int best_error = MAXERR1000;
 	unsigned int best_pixel_indices;
@@ -6453,7 +6401,7 @@ unsigned int compressBlockTHUMB59TFastestOnlyColorPerceptual1000(uint8 *img,int 
 //|----------------------------------------index bits---------------------------------------------|
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB59TFastestOnlyColor(uint8 *img,int width,int height,int startx,int starty, int (best_colorsRGB444_packed)[2])
+double compressBlockTHUMB59TFastestOnlyColor(uint8 *img,int width,int startx,int starty, int (best_colorsRGB444_packed)[2])
 {
 	double best_error = MAXIMUM_ERROR;
 	unsigned int best_pixel_indices;
@@ -6493,7 +6441,7 @@ double compressBlockTHUMB59TFastestOnlyColor(uint8 *img,int width,int height,int
 //|----------------------------------------index bits---------------------------------------------|
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB59TFastestPerceptual1000(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+double compressBlockTHUMB59TFastestPerceptual1000(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	double best_error = MAXIMUM_ERROR;
 	uint8 best_colorsRGB444[2][3];
@@ -6535,7 +6483,7 @@ double compressBlockTHUMB59TFastestPerceptual1000(uint8 *img,int width,int heigh
 //|----------------------------------------index bits---------------------------------------------|
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB59TFastest(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+double compressBlockTHUMB59TFastest(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	double best_error = MAXIMUM_ERROR;
 	uint8 best_colorsRGB444[2][3];
@@ -6576,7 +6524,7 @@ double compressBlockTHUMB59TFastest(uint8 *img,int width,int height,int startx,i
 //|31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00|
 //|----------------------------------------index bits---------------------------------------------|
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB59TFast(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+double compressBlockTHUMB59TFast(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	double best_error = MAXIMUM_ERROR;
 	uint8 best_colorsRGB444[2][3];
@@ -6924,7 +6872,7 @@ void sortColorsRGB444(uint8 (colorsRGB444)[2][3])
 // Else, it is assumed to be 1.
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockTHUMB58HFastestPerceptual1000(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+unsigned int compressBlockTHUMB58HFastestPerceptual1000(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	unsigned int best_error = MAXERR1000;
 	uint8 best_colorsRGB444[2][3];
@@ -7002,7 +6950,7 @@ unsigned int compressBlockTHUMB58HFastestPerceptual1000(uint8 *img,int width,int
 // Else, it is assumed to be 1.
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB58HFastest(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+double compressBlockTHUMB58HFastest(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	double best_error = MAXIMUM_ERROR;
 	uint8 best_colorsRGB444[2][3];
@@ -7066,7 +7014,7 @@ double compressBlockTHUMB58HFastest(uint8 *img,int width,int height,int startx,i
 
 //same as above, but with 1-bit alpha
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB58HAlpha(uint8 *img, uint8* alphaimg, int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+double compressBlockTHUMB58HAlpha(uint8 *img, uint8* alphaimg, int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	double best_error = MAXIMUM_ERROR;
 	uint8 best_colorsRGB444[2][3];
@@ -7143,7 +7091,7 @@ double compressBlockTHUMB58HAlpha(uint8 *img, uint8* alphaimg, int width,int hei
 // Else, it is assumed to be 1.
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB58HFast(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+double compressBlockTHUMB58HFast(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	double best_error = MAXIMUM_ERROR;
 	uint8 best_colorsRGB444[2][3];
@@ -7247,17 +7195,14 @@ double compressBlockTHUMB58HFast(uint8 *img,int width,int height,int startx,int 
 // Combined quantization for colors.
 // Both flipped and unflipped tested.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockDiffFlipCombinedPerceptual(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockDiffFlipCombinedPerceptual(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
-
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
 	uint8 avg_color_quant1[3], avg_color_quant2[3];
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3], diff[3];
-	int min_error=255*255*8*3;
-	unsigned int best_table_indices1=0, best_table_indices2=0;
 	unsigned int best_table1=0, best_table2=0;
 	int diffbit;
 
@@ -7266,8 +7211,8 @@ void compressBlockDiffFlipCombinedPerceptual(uint8 *img,int width,int height,int
 
 	// First try normal blocks 2x4:
 
-	computeAverageColor2x4noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor2x4noQuantFloat(img,width,height,startx+2,starty,avg_color_float2);
+	computeAverageColor2x4noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor2x4noQuantFloat(img,width,startx+2,starty,avg_color_float2);
 
 	// First test if avg_color1 is similar enough to avg_color2 so that
 	// we can use differential coding of colors. 
@@ -7345,10 +7290,10 @@ void compressBlockDiffFlipCombinedPerceptual(uint8 *img,int width,int height,int
 		norm_err = 0;
 
 		// left part of block
-		norm_err = tryalltables_3bittable2x4percep(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		norm_err = tryalltables_3bittable2x4percep(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 
 		// right part of block
-		norm_err += tryalltables_3bittable2x4percep(img,width,height,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		norm_err += tryalltables_3bittable2x4percep(img,width,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_norm, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_norm, best_table2,   3, 36);
@@ -7401,10 +7346,10 @@ void compressBlockDiffFlipCombinedPerceptual(uint8 *img,int width,int height,int
 		unsigned int best_pixel_indices2_LSB;
 		
 		// left part of block
-		norm_err = tryalltables_3bittable2x4percep(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		norm_err = tryalltables_3bittable2x4percep(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 
 		// right part of block
-		norm_err += tryalltables_3bittable2x4percep(img,width,height,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		norm_err += tryalltables_3bittable2x4percep(img,width,startx+2,starty,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_norm, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_norm, best_table2,   3, 36);
@@ -7418,8 +7363,8 @@ void compressBlockDiffFlipCombinedPerceptual(uint8 *img,int width,int height,int
 	}
 
 	// Now try flipped blocks 4x2:
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty,avg_color_float1);
-	computeAverageColor4x2noQuantFloat(img,width,height,startx,starty+2,avg_color_float2);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty,avg_color_float1);
+	computeAverageColor4x2noQuantFloat(img,width,startx,starty+2,avg_color_float2);
 
 	// First test if avg_color1 is similar enough to avg_color2 so that
 	// we can use differential coding of colors. 
@@ -7462,9 +7407,9 @@ void compressBlockDiffFlipCombinedPerceptual(uint8 *img,int width,int height,int
 		unsigned int best_pixel_indices2_LSB;
 
 		// upper part of block
-		flip_err = tryalltables_3bittable4x2percep(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		flip_err = tryalltables_3bittable4x2percep(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 		// lower part of block
-		flip_err += tryalltables_3bittable4x2percep(img,width,height,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		flip_err += tryalltables_3bittable4x2percep(img,width,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_flip, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_flip, best_table2,   3, 36);
@@ -7514,9 +7459,9 @@ void compressBlockDiffFlipCombinedPerceptual(uint8 *img,int width,int height,int
 		unsigned int best_pixel_indices2_LSB;
 
 		// upper part of block
-		flip_err = tryalltables_3bittable4x2percep(img,width,height,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		flip_err = tryalltables_3bittable4x2percep(img,width,startx,starty,avg_color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 		// lower part of block
-		flip_err += tryalltables_3bittable4x2percep(img,width,height,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		flip_err += tryalltables_3bittable4x2percep(img,width,startx,starty+2,avg_color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
  		PUTBITSHIGH( compressed1_flip, best_table1,   3, 39);
  		PUTBITSHIGH( compressed1_flip, best_table2,   3, 36);
@@ -7543,7 +7488,7 @@ void compressBlockDiffFlipCombinedPerceptual(uint8 *img,int width,int height,int
 
 // Calculate the error of a block
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calcBlockErrorRGB(uint8 *img, uint8 *imgdec, int width, int height, int startx, int starty)
+double calcBlockErrorRGB(uint8 *img, uint8 *imgdec, int width, int startx, int starty)
 {
 	int xx,yy;
 	double err;
@@ -7565,7 +7510,7 @@ double calcBlockErrorRGB(uint8 *img, uint8 *imgdec, int width, int height, int s
 
 // Calculate the perceptually weighted error of a block
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calcBlockPerceptualErrorRGB(uint8 *img, uint8 *imgdec, int width, int height, int startx, int starty)
+double calcBlockPerceptualErrorRGB(uint8 *img, uint8 *imgdec, int width, int startx, int starty)
 {
 	int xx,yy;
 	double err;
@@ -7587,7 +7532,7 @@ double calcBlockPerceptualErrorRGB(uint8 *img, uint8 *imgdec, int width, int hei
 
 // Compress an ETC1 block (or the individual and differential modes of an ETC2 block)
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockDiffFlipFast(uint8 *img, uint8 *imgdec,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+double compressBlockDiffFlipFast(uint8 *img, uint8 *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int average_block1;
 	unsigned int average_block2;
@@ -7600,14 +7545,14 @@ double compressBlockDiffFlipFast(uint8 *img, uint8 *imgdec,int width,int height,
 	double best_error;
 
 	// First quantize the average color to the nearest neighbor.
-	compressBlockDiffFlipAverage(img, width, height, startx, starty, average_block1, average_block2);
-	decompressBlockDiffFlip(average_block1, average_block2, imgdec, width, height, startx, starty);
-	error_average = calcBlockErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockDiffFlipAverage(img, width, startx, starty, average_block1, average_block2);
+	decompressBlockDiffFlip(average_block1, average_block2, imgdec, width, startx, starty);
+	error_average = calcBlockErrorRGB(img, imgdec, width, startx, starty);
 
 	// Then quantize the average color taking into consideration that intensity can change
-	compressBlockDiffFlipCombined(img, width, height, startx, starty, combined_block1, combined_block2);
-	decompressBlockDiffFlip(combined_block1, combined_block2, imgdec, width, height, startx, starty);
-	error_combined = calcBlockErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockDiffFlipCombined(img, width, startx, starty, combined_block1, combined_block2);
+	decompressBlockDiffFlip(combined_block1, combined_block2, imgdec, width, startx, starty);
+	error_combined = calcBlockErrorRGB(img, imgdec, width, startx, starty);
 
 	if(error_combined < error_average)
 	{
@@ -7627,7 +7572,7 @@ double compressBlockDiffFlipFast(uint8 *img, uint8 *imgdec,int width,int height,
 // Compress an ETC1 block (or the individual and differential modes of an ETC2 block)
 // Uses perceptual error metric.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockDiffFlipFastPerceptual(uint8 *img, uint8 *imgdec,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockDiffFlipFastPerceptual(uint8 *img, uint8 *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int average_block1;
 	unsigned int average_block2;
@@ -7638,14 +7583,14 @@ void compressBlockDiffFlipFastPerceptual(uint8 *img, uint8 *imgdec,int width,int
 	double error_combined;
 
 	// First quantize the average color to the nearest neighbor.
-	compressBlockDiffFlipAveragePerceptual(img, width, height, startx, starty, average_block1, average_block2);
-	decompressBlockDiffFlip(average_block1, average_block2, imgdec, width, height, startx, starty);
-	error_average = calcBlockPerceptualErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockDiffFlipAveragePerceptual(img, width, startx, starty, average_block1, average_block2);
+	decompressBlockDiffFlip(average_block1, average_block2, imgdec, width, startx, starty);
+	error_average = calcBlockPerceptualErrorRGB(img, imgdec, width, startx, starty);
 
 	// Then quantize the average color taking into consideration that intensity can change 
-	compressBlockDiffFlipCombinedPerceptual(img, width, height, startx, starty, combined_block1, combined_block2);
-	decompressBlockDiffFlip(combined_block1, combined_block2, imgdec, width, height, startx, starty);
-	error_combined = calcBlockPerceptualErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockDiffFlipCombinedPerceptual(img, width, startx, starty, combined_block1, combined_block2);
+	decompressBlockDiffFlip(combined_block1, combined_block2, imgdec, width, startx, starty);
+	error_combined = calcBlockPerceptualErrorRGB(img, imgdec, width, startx, starty);
 
 	if(error_combined < error_average)
 	{
@@ -7661,7 +7606,7 @@ void compressBlockDiffFlipFastPerceptual(uint8 *img, uint8 *imgdec,int width,int
 
 // Compresses the differential mode of an ETC2 block with punchthrough alpha
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int compressBlockDifferentialWithAlpha(bool isTransparent, uint8* img, uint8* alphaimg, uint8* imgdec, int width, int height, int startx, int starty, unsigned int &etc1_word1, unsigned int &etc1_word2) 
+int compressBlockDifferentialWithAlpha(bool isTransparent, uint8* img, uint8* alphaimg, int width, int startx, int starty, unsigned int &etc1_word1, unsigned int &etc1_word2) 
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
@@ -7670,7 +7615,6 @@ int compressBlockDifferentialWithAlpha(bool isTransparent, uint8* img, uint8* al
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3], diff[3];
-	int min_error=255*255*8*3;
 	
 	int norm_err=0;
 	int flip_err=0;
@@ -7893,7 +7837,7 @@ int compressBlockDifferentialWithAlpha(bool isTransparent, uint8* img, uint8* al
 
 // Calculate RGBA error --- only count non-transparent pixels (alpha > 128)
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calcBlockErrorRGBA(uint8 *img, uint8 *imgdec, uint8* alpha, int width, int height, int startx, int starty)
+double calcBlockErrorRGBA(uint8 *img, uint8 *imgdec, uint8* alpha, int width, int startx, int starty)
 {
 	int xx,yy;
 	double err;
@@ -8011,7 +7955,7 @@ double calculateError59TAlpha(uint8* srcimg, uint8* alpha,int width, int startx,
 // same as fastest t-mode compressor above, but here one of the colors (the central one in the T) is used to also signal that the pixel is transparent.
 // the only difference is that calculateError has been swapped out to one that considers alpha.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB59TAlpha(uint8 *img, uint8* alpha, int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+double compressBlockTHUMB59TAlpha(uint8 *img, uint8* alpha, int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	double best_error = MAXIMUM_ERROR;
 	uint8 best_colorsRGB444[2][3];
@@ -8171,28 +8115,28 @@ void compressBlockETC2Fast(uint8 *img, uint8* alphaimg, uint8 *imgdec,int width,
 		double temperror;
 		//try regular differential transparent mode
 
-		int testerr= compressBlockDifferentialWithAlpha(true,img,alphaimg, imgdec,width,height,startx,starty,etc1_word1,etc1_word2);
+		int testerr= compressBlockDifferentialWithAlpha(true,img,alphaimg, width,startx,starty,etc1_word1,etc1_word2);
 
 		uint8* alphadec = new uint8[width*height];
-		decompressBlockDifferentialWithAlpha(etc1_word1, etc1_word2, imgdec, alphadec,width, height, startx, starty);
-		error_etc1 = calcBlockErrorRGBA(img, imgdec, alphaimg,width, height, startx, starty);
+		decompressBlockDifferentialWithAlpha(etc1_word1, etc1_word2, imgdec, alphadec,width, startx, starty);
+		error_etc1 = calcBlockErrorRGBA(img, imgdec, alphaimg,width, startx, starty);
 		if(error_etc1!=testerr) 
 		{
 			printf("testerr: %d, etcerr: %lf\n",testerr,error_etc1);
 		}
 		//try T-mode with transparencies
 		//for now, skip this...
-		compressBlockTHUMB59TAlpha(img,alphaimg,width,height,startx,starty,tempword1,tempword2);
-		decompressBlockTHUMB59TAlpha(tempword1,tempword2,imgdec, alphadec, width,height,startx,starty);
-		temperror=calcBlockErrorRGBA(img, imgdec, alphaimg, width, height, startx, starty);
+		compressBlockTHUMB59TAlpha(img,alphaimg,width,startx,starty,tempword1,tempword2);
+		decompressBlockTHUMB59TAlpha(tempword1,tempword2,imgdec, alphadec, width,startx,starty);
+		temperror=calcBlockErrorRGBA(img, imgdec, alphaimg, width, startx, starty);
 		if(temperror<error_etc1) 
 		{
 			error_etc1=temperror;
 			stuff59bitsDiffFalse(tempword1,tempword2,etc1_word1,etc1_word2);
 		}
-		compressBlockTHUMB58HAlpha(img,alphaimg,width,height,startx,starty,tempword1,tempword2);
-		decompressBlockTHUMB58HAlpha(tempword1,tempword2,imgdec, alphadec, width,height,startx,starty);
-		temperror=calcBlockErrorRGBA(img, imgdec, alphaimg, width, height, startx, starty);
+		compressBlockTHUMB58HAlpha(img,alphaimg,width,startx,starty,tempword1,tempword2);
+		decompressBlockTHUMB58HAlpha(tempword1,tempword2,imgdec, alphadec, width,startx,starty);
+		temperror=calcBlockErrorRGBA(img, imgdec, alphaimg, width, startx, starty);
 		if(temperror<error_etc1) 
 		{
 			error_etc1=temperror;
@@ -8203,47 +8147,47 @@ void compressBlockETC2Fast(uint8 *img, uint8* alphaimg, uint8 *imgdec,int width,
 		{
 			compressed1=etc1_word1;
 			compressed2=etc1_word2;
-			delete alphadec;
+			delete[] alphadec;
 			return;
 		}
 		//error_etc1=255*255*1000;
 		//otherwise, they MIGHT have been the best, although that's unlikely.. anyway, try old differential mode now
 		
-		compressBlockDifferentialWithAlpha(false,img,alphaimg,imgdec,width,height,startx,starty,tempword1,tempword2);
-		decompressBlockDiffFlip(tempword1, tempword2, imgdec, width, height, startx, starty);
-		temperror = calcBlockErrorRGB(img, imgdec, width, height, startx, starty);
-		decompressBlockDifferentialWithAlpha(tempword1,tempword2,imgdec,alphadec,width,height,startx,starty);
+		compressBlockDifferentialWithAlpha(false,img,alphaimg,width,startx,starty,tempword1,tempword2);
+		decompressBlockDiffFlip(tempword1, tempword2, imgdec, width, startx, starty);
+		temperror = calcBlockErrorRGB(img, imgdec, width, startx, starty);
+		decompressBlockDifferentialWithAlpha(tempword1,tempword2,imgdec,alphadec,width,startx,starty);
 		if(temperror<error_etc1) 
 		{
 			error_etc1=temperror;
 			etc1_word1=tempword1;
 			etc1_word2=tempword2;
 		}
-		delete alphadec;
+		delete[] alphadec;
 		//drop out of this if, and test old T, H and planar modes (we have already returned if there are transparent pixels in this block)
 	}
 	else 
 	{
 		//this includes individual mode, and therefore doesn't apply in case of punch-through alpha.
-		compressBlockDiffFlipFast(img, imgdec, width, height, startx, starty, etc1_word1, etc1_word2);
-		decompressBlockDiffFlip(etc1_word1, etc1_word2, imgdec, width, height, startx, starty);
-		error_etc1 = calcBlockErrorRGB(img, imgdec, width, height, startx, starty);
+		compressBlockDiffFlipFast(img, imgdec, width, startx, starty, etc1_word1, etc1_word2);
+		decompressBlockDiffFlip(etc1_word1, etc1_word2, imgdec, width, startx, starty);
+		error_etc1 = calcBlockErrorRGB(img, imgdec, width, startx, starty);
 	}
 	//these modes apply regardless of whether we want punch-through alpha or not.
 	//error etc_1 and etc1_word1/etc1_word2 contain previous best candidate.
-	compressBlockPlanar57(img, width, height, startx, starty, planar57_word1, planar57_word2);
-	decompressBlockPlanar57(planar57_word1, planar57_word2, imgdec, width, height, startx, starty);
-	error_planar = calcBlockErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockPlanar57(img, width, startx, starty, planar57_word1, planar57_word2);
+	decompressBlockPlanar57(planar57_word1, planar57_word2, imgdec, width, startx, starty);
+	error_planar = calcBlockErrorRGB(img, imgdec, width, startx, starty);
 	stuff57bits(planar57_word1, planar57_word2, planar_word1, planar_word2);
 
-	compressBlockTHUMB59TFastest(img,width, height, startx, starty, thumbT59_word1, thumbT59_word2);
-	decompressBlockTHUMB59T(thumbT59_word1, thumbT59_word2, imgdec, width, height, startx, starty);			
-	error_thumbT = calcBlockErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockTHUMB59TFastest(img,width, startx, starty, thumbT59_word1, thumbT59_word2);
+	decompressBlockTHUMB59T(thumbT59_word1, thumbT59_word2, imgdec, width, startx, starty);			
+	error_thumbT = calcBlockErrorRGB(img, imgdec, width, startx, starty);
 	stuff59bits(thumbT59_word1, thumbT59_word2, thumbT_word1, thumbT_word2);
 
-	compressBlockTHUMB58HFastest(img,width,height,startx, starty, thumbH58_word1, thumbH58_word2);
-	decompressBlockTHUMB58H(thumbH58_word1, thumbH58_word2, imgdec, width, height, startx, starty);			
-	error_thumbH = calcBlockErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockTHUMB58HFastest(img,width,startx, starty, thumbH58_word1, thumbH58_word2);
+	decompressBlockTHUMB58H(thumbH58_word1, thumbH58_word2, imgdec, width, startx, starty);			
+	error_thumbH = calcBlockErrorRGB(img, imgdec, width, startx, starty);
 	stuff58bits(thumbH58_word1, thumbH58_word2, thumbH_word1, thumbH_word2);
 
 	error_best = error_etc1;
@@ -8281,9 +8225,9 @@ void compressBlockETC2Fast(uint8 *img, uint8* alphaimg, uint8 *imgdec,int width,
 	{
 		// Now see which mode won and compress that a little bit harder
 	case MODE_THUMB_T:
-		compressBlockTHUMB59TFast(img,width, height, startx, starty, thumbT59_word1, thumbT59_word2);
-		decompressBlockTHUMB59T(thumbT59_word1, thumbT59_word2, imgdec, width, height, startx, starty);			
-		error_thumbT = calcBlockErrorRGB(img, imgdec, width, height, startx, starty);
+		compressBlockTHUMB59TFast(img,width, startx, starty, thumbT59_word1, thumbT59_word2);
+		decompressBlockTHUMB59T(thumbT59_word1, thumbT59_word2, imgdec, width, startx, starty);			
+		error_thumbT = calcBlockErrorRGB(img, imgdec, width, startx, starty);
 		stuff59bits(thumbT59_word1, thumbT59_word2, thumbT_word1, thumbT_word2);
 		if(error_thumbT < error_best)
 		{
@@ -8292,9 +8236,9 @@ void compressBlockETC2Fast(uint8 *img, uint8* alphaimg, uint8 *imgdec,int width,
 		}
 		break;
 	case MODE_THUMB_H:
-		compressBlockTHUMB58HFast(img,width,height,startx, starty, thumbH58_word1, thumbH58_word2);
-		decompressBlockTHUMB58H(thumbH58_word1, thumbH58_word2, imgdec, width, height, startx, starty);			
-		error_thumbH = calcBlockErrorRGB(img, imgdec, width, height, startx, starty);
+		compressBlockTHUMB58HFast(img,width,startx, starty, thumbH58_word1, thumbH58_word2);
+		decompressBlockTHUMB58H(thumbH58_word1, thumbH58_word2, imgdec, width, startx, starty);			
+		error_thumbH = calcBlockErrorRGB(img, imgdec, width, startx, starty);
 		stuff58bits(thumbH58_word1, thumbH58_word2, thumbH_word1, thumbH_word2);
 		if(error_thumbH < error_best)
 		{
@@ -8309,7 +8253,7 @@ void compressBlockETC2Fast(uint8 *img, uint8* alphaimg, uint8 *imgdec,int width,
 
 // Compress an ETC2 RGB block using perceptual error metric
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockETC2FastPerceptual(uint8 *img, uint8 *imgdec,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockETC2FastPerceptual(uint8 *img, uint8 *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int etc1_word1;
 	unsigned int etc1_word2;
@@ -8337,23 +8281,23 @@ void compressBlockETC2FastPerceptual(uint8 *img, uint8 *imgdec,int width,int hei
 	signed char best_char;
 	int best_mode;
 
-	compressBlockDiffFlipFastPerceptual(img, imgdec, width, height, startx, starty, etc1_word1, etc1_word2);
-	decompressBlockDiffFlip(etc1_word1, etc1_word2, imgdec, width, height, startx, starty);
-	error_etc1 = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockDiffFlipFastPerceptual(img, imgdec, width, startx, starty, etc1_word1, etc1_word2);
+	decompressBlockDiffFlip(etc1_word1, etc1_word2, imgdec, width, startx, starty);
+	error_etc1 = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, startx, starty);
 
-	compressBlockPlanar57(img, width, height, startx, starty, planar57_word1, planar57_word2);
-	decompressBlockPlanar57(planar57_word1, planar57_word2, imgdec, width, height, startx, starty);
-	error_planar = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockPlanar57(img, width, startx, starty, planar57_word1, planar57_word2);
+	decompressBlockPlanar57(planar57_word1, planar57_word2, imgdec, width, startx, starty);
+	error_planar = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, startx, starty);
 	stuff57bits(planar57_word1, planar57_word2, planar_word1, planar_word2);
 
-	compressBlockTHUMB59TFastestPerceptual1000(img,width, height, startx, starty, thumbT59_word1, thumbT59_word2);
-	decompressBlockTHUMB59T(thumbT59_word1, thumbT59_word2, imgdec, width, height, startx, starty);			
-	error_thumbT = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockTHUMB59TFastestPerceptual1000(img,width, startx, starty, thumbT59_word1, thumbT59_word2);
+	decompressBlockTHUMB59T(thumbT59_word1, thumbT59_word2, imgdec, width, startx, starty);			
+	error_thumbT = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, startx, starty);
 	stuff59bits(thumbT59_word1, thumbT59_word2, thumbT_word1, thumbT_word2);
 
-	compressBlockTHUMB58HFastestPerceptual1000(img,width,height,startx, starty, thumbH58_word1, thumbH58_word2);
-	decompressBlockTHUMB58H(thumbH58_word1, thumbH58_word2, imgdec, width, height, startx, starty);			
-	error_thumbH = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockTHUMB58HFastestPerceptual1000(img,width,startx, starty, thumbH58_word1, thumbH58_word2);
+	decompressBlockTHUMB58H(thumbH58_word1, thumbH58_word2, imgdec, width, startx, starty);			
+	error_thumbH = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, startx, starty);
 	stuff58bits(thumbH58_word1, thumbH58_word2, thumbH_word1, thumbH_word2);
 
 	error_best = error_etc1;
@@ -8391,9 +8335,9 @@ void compressBlockETC2FastPerceptual(uint8 *img, uint8 *imgdec,int width,int hei
 	{
 		// Now see which mode won and compress that a little bit harder
 	case MODE_THUMB_T:
-		compressBlockTHUMB59TFast(img,width, height, startx, starty, thumbT59_word1, thumbT59_word2);
-		decompressBlockTHUMB59T(thumbT59_word1, thumbT59_word2, imgdec, width, height, startx, starty);			
-		error_thumbT = calcBlockErrorRGB(img, imgdec, width, height, startx, starty);
+		compressBlockTHUMB59TFast(img,width, startx, starty, thumbT59_word1, thumbT59_word2);
+		decompressBlockTHUMB59T(thumbT59_word1, thumbT59_word2, imgdec, width, startx, starty);			
+		error_thumbT = calcBlockErrorRGB(img, imgdec, width, startx, starty);
 		stuff59bits(thumbT59_word1, thumbT59_word2, thumbT_word1, thumbT_word2);
 		if(error_thumbT < error_best)
 		{
@@ -8402,9 +8346,9 @@ void compressBlockETC2FastPerceptual(uint8 *img, uint8 *imgdec,int width,int hei
 		}
 		break;
 	case MODE_THUMB_H:
-		compressBlockTHUMB58HFast(img,width,height,startx, starty, thumbH58_word1, thumbH58_word2);
-		decompressBlockTHUMB58H(thumbH58_word1, thumbH58_word2, imgdec, width, height, startx, starty);			
-		error_thumbH = calcBlockErrorRGB(img, imgdec, width, height, startx, starty);
+		compressBlockTHUMB58HFast(img,width,startx, starty, thumbH58_word1, thumbH58_word2);
+		decompressBlockTHUMB58H(thumbH58_word1, thumbH58_word2, imgdec, width, startx, starty);			
+		error_thumbH = calcBlockErrorRGB(img, imgdec, width, startx, starty);
 		stuff58bits(thumbH58_word1, thumbH58_word2, thumbH_word1, thumbH_word2);
 		if(error_thumbH < error_best)
 		{
@@ -8569,7 +8513,7 @@ void readAlpha(uint8* &data, int &width, int &height, int &extendedwidth, int &e
 
 // Compresses the alpha part of a GL_COMPRESSED_RGBA8_ETC2_EAC block.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockAlphaFast(uint8 * data, int ix, int iy, int width, int height, uint8* returnData) 
+void compressBlockAlphaFast(uint8 * data, int ix, int iy, int width, uint8* returnData) 
 {
 	int alphasum=0;
 	int maxdist=-2;
@@ -8748,7 +8692,7 @@ int getPremulIndex(int base, int tab, int mul, int index)
 
 // Calculates the error used in compressBlockAlpha16()
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calcError(uint8* data, int ix, int iy, int width, int height, int base, int tab, int mul, double prevbest) 
+double calcError(uint8* data, int ix, int iy, int width, int base, int tab, int mul, double prevbest) 
 {
 	int offset = getPremulIndex(base,tab,mul,0);
 	double error=0;
@@ -8799,9 +8743,9 @@ double calcError(uint8* data, int ix, int iy, int width, int height, int base, i
 // COMPRESSED_RG11_EAC is compressed by calling the function twice, dito for COMPRESSED_SIGNED_RG11_EAC.
 // 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockAlpha16(uint8* data, int ix, int iy, int width, int height, uint8* returnData) 
+void compressBlockAlpha16(uint8* data, int ix, int iy, int width, uint8* returnData) 
 {
-	unsigned int bestbase, besttable, bestmul;
+	unsigned int bestbase=0, besttable=0, bestmul=0;
 	double besterror;
 	besterror=1<<20;
 	besterror*=besterror;
@@ -8811,7 +8755,7 @@ void compressBlockAlpha16(uint8* data, int ix, int iy, int width, int height, ui
 		{
 			for(int mul=0; mul<16; mul++) 
 			{
-				double e = calcError(data, ix, iy, width, height,base,table,mul,besterror);
+				double e = calcError(data, ix, iy, width, base,table,mul,besterror);
 				if(e<besterror) 
 				{
 					bestbase=base;
@@ -8886,11 +8830,10 @@ void compressBlockAlpha16(uint8* data, int ix, int iy, int width, int height, ui
 
 // Exhaustive compression of alpha compression in a GL_COMPRESSED_RGB8_ETC2 block
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockAlphaSlow(uint8* data, int ix, int iy, int width, int height, uint8* returnData) 
+void compressBlockAlphaSlow(uint8* data, int ix, int iy, int width, uint8* returnData) 
 {
 	//determine the best table and base alpha value for this block using MSE
 	int alphasum=0;
-	int maxdist=-2;
 	for(int x=0; x<4; x++) 
 	{
 		for(int y=0; y<4; y++) 
@@ -9111,339 +9054,337 @@ void uncompressFile(char *srcfile, uint8* &img, uint8 *&alphaimg, int& active_wi
 	unsigned char magic[4];
 	unsigned char version[2];
 	unsigned short texture_type;
-	if(f=fopen(srcfile,"rb"))
+    f = fopen(srcfile, "rb");
+	if(!f)
+    {
+        printf("Error: could not open <%s>.\n", srcfile);
+        exit(1);
+    }
+	// Load table
+	readCompressParams();
+	if(ktxFile) 
 	{
-		// Load table
-		readCompressParams();
-		if(ktxFile) 
-		{
-			//read ktx header..
-			KTX_header header;
-			fread(&header,sizeof(KTX_header),1,f);
-			//read size parameter, which we don't actually need..
-			unsigned int bitsize;
-			fread(&bitsize,sizeof(unsigned int),1,f);
-	
-			active_width=header.pixelWidth;
-			active_height = header.pixelHeight;
-			w = ((active_width+3)/4)*4;
-			h = ((active_height+3)/4)*4;
-			width=w;
-			height=h;
+		//read ktx header..
+		KTX_header header;
+		fread(&header,sizeof(KTX_header),1,f);
+		//read size parameter, which we don't actually need..
+		unsigned int bitsize;
+		fread(&bitsize,sizeof(unsigned int),1,f);
 
-			if(header.glInternalFormat==GL_COMPRESSED_SIGNED_R11_EAC) 
-			{
-				format=ETC2PACKAGE_R_NO_MIPMAPS;
-				formatSigned=1;
-			}
-			else if(header.glInternalFormat==GL_COMPRESSED_R11_EAC) 
-			{
-				format=ETC2PACKAGE_R_NO_MIPMAPS;
-			}
-			else if(header.glInternalFormat==GL_COMPRESSED_SIGNED_RG11_EAC) 
-			{
-				format=ETC2PACKAGE_RG_NO_MIPMAPS;
-				formatSigned=1;
-			}
-			else if(header.glInternalFormat==GL_COMPRESSED_RG11_EAC) 
-			{
-				format=ETC2PACKAGE_RG_NO_MIPMAPS;
-			}
-			else if(header.glInternalFormat==GL_COMPRESSED_RGB8_ETC2) 
-			{
-				format=ETC2PACKAGE_RGB_NO_MIPMAPS;
-			}
-			else if(header.glInternalFormat==GL_COMPRESSED_SRGB8_ETC2) 
-			{
-				format=ETC2PACKAGE_sRGB_NO_MIPMAPS;
-			}
-			else if(header.glInternalFormat==GL_COMPRESSED_RGBA8_ETC2_EAC) 
-			{
-				format=ETC2PACKAGE_RGBA_NO_MIPMAPS;
-			}
-			else if(header.glInternalFormat==GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC) 
-			{
-				format=ETC2PACKAGE_sRGBA_NO_MIPMAPS;
-			}
-			else if(header.glInternalFormat==GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2) 
-			{
-				format=ETC2PACKAGE_RGBA1_NO_MIPMAPS;
-			}
-			else if(header.glInternalFormat==GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2) 
-			{
-				format=ETC2PACKAGE_sRGBA1_NO_MIPMAPS;
-			}
-			else if(header.glInternalFormat==GL_ETC1_RGB8_OES) 
-			{
-				format=ETC1_RGB_NO_MIPMAPS;
-				codec=CODEC_ETC;
-			}
-			else 
-			{
-				printf("ktx file has unknown glInternalFormat (not etc compressed)!\n");
-				exit(1);
-			}
+		active_width=header.pixelWidth;
+		active_height = header.pixelHeight;
+		w = ((active_width+3)/4)*4;
+		h = ((active_height+3)/4)*4;
+		width=w;
+		height=h;
+
+		if(header.glInternalFormat==GL_COMPRESSED_SIGNED_R11_EAC) 
+		{
+			format=ETC2PACKAGE_R_NO_MIPMAPS;
+			formatSigned=1;
+		}
+		else if(header.glInternalFormat==GL_COMPRESSED_R11_EAC) 
+		{
+			format=ETC2PACKAGE_R_NO_MIPMAPS;
+		}
+		else if(header.glInternalFormat==GL_COMPRESSED_SIGNED_RG11_EAC) 
+		{
+			format=ETC2PACKAGE_RG_NO_MIPMAPS;
+			formatSigned=1;
+		}
+		else if(header.glInternalFormat==GL_COMPRESSED_RG11_EAC) 
+		{
+			format=ETC2PACKAGE_RG_NO_MIPMAPS;
+		}
+		else if(header.glInternalFormat==GL_COMPRESSED_RGB8_ETC2) 
+		{
+			format=ETC2PACKAGE_RGB_NO_MIPMAPS;
+		}
+		else if(header.glInternalFormat==GL_COMPRESSED_SRGB8_ETC2) 
+		{
+			format=ETC2PACKAGE_sRGB_NO_MIPMAPS;
+		}
+		else if(header.glInternalFormat==GL_COMPRESSED_RGBA8_ETC2_EAC) 
+		{
+			format=ETC2PACKAGE_RGBA_NO_MIPMAPS;
+		}
+		else if(header.glInternalFormat==GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC) 
+		{
+			format=ETC2PACKAGE_sRGBA_NO_MIPMAPS;
+		}
+		else if(header.glInternalFormat==GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2) 
+		{
+			format=ETC2PACKAGE_RGBA1_NO_MIPMAPS;
+		}
+		else if(header.glInternalFormat==GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2) 
+		{
+			format=ETC2PACKAGE_sRGBA1_NO_MIPMAPS;
+		}
+		else if(header.glInternalFormat==GL_ETC1_RGB8_OES) 
+		{
+			format=ETC1_RGB_NO_MIPMAPS;
+			codec=CODEC_ETC;
 		}
 		else 
 		{
-			// Read magic nunmber
-			fread(&magic[0], sizeof(unsigned char), 1, f);
-			fread(&magic[1], sizeof(unsigned char), 1, f);
-			fread(&magic[2], sizeof(unsigned char), 1, f);
-			fread(&magic[3], sizeof(unsigned char), 1, f);
-			if(!(magic[0] == 'P' && magic[1] == 'K' && magic[2] == 'M' && magic[3] == ' '))
-			{
-				printf("\n\n The file %s is not a .pkm file.\n",srcfile);
-				exit(1);
-			}
-		
-			// Read version
-			fread(&version[0], sizeof(unsigned char), 1, f);
-			fread(&version[1], sizeof(unsigned char), 1, f);
-			if( version[0] == '1' && version[1] == '0' )
-			{
-
-				// Read texture type
-				read_big_endian_2byte_word(&texture_type, f);
-				if(!(texture_type == ETC1_RGB_NO_MIPMAPS))
-				{
-					printf("\n\n The file %s (of version %c.%c) does not contain a texture of known format.\n", srcfile, version[0],version[1]);
-					printf("Known formats: ETC1_RGB_NO_MIPMAPS.\n");
-					exit(1);
-				}
-			}
-			else if( version[0] == '2' && version[1] == '0' )
-			{
-				// Read texture type
-				read_big_endian_2byte_word(&texture_type, f);
-				if(texture_type==ETC2PACKAGE_RG_SIGNED_NO_MIPMAPS) 
-				{
-					texture_type=ETC2PACKAGE_RG_NO_MIPMAPS;
-					formatSigned=1;
-					//printf("Decompressing 2-channel signed data\n");
-				}
-				if(texture_type==ETC2PACKAGE_R_SIGNED_NO_MIPMAPS) 
-				{
-					texture_type=ETC2PACKAGE_R_NO_MIPMAPS;
-					formatSigned=1;
-					//printf("Decompressing 1-channel signed data\n");
-				}
-        if(texture_type==ETC2PACKAGE_sRGB_NO_MIPMAPS)
-        {
-          // The SRGB formats are decoded just as RGB formats -- use RGB format for decompression.
-          texture_type=ETC2PACKAGE_RGB_NO_MIPMAPS;
-        }
-        if(texture_type==ETC2PACKAGE_sRGBA_NO_MIPMAPS)
-        {
-          // The SRGB formats are decoded just as RGB formats -- use RGB format for decompression.
-          texture_type=ETC2PACKAGE_RGBA_NO_MIPMAPS;
-        }
-        if(texture_type==ETC2PACKAGE_sRGBA1_NO_MIPMAPS)
-        {
-          // The SRGB formats are decoded just as RGB formats -- use RGB format for decompression.
-          texture_type=ETC2PACKAGE_sRGBA1_NO_MIPMAPS;
-        }
-				if(texture_type==ETC2PACKAGE_RGBA_NO_MIPMAPS_OLD) 
-				{
-					printf("\n\nThe file %s contains a compressed texture created using an old version of ETCPACK.\n",srcfile);
-					printf("decompression is not supported in this version.\n");
-					exit(1);
-				}
-				if(!(texture_type==ETC2PACKAGE_RGB_NO_MIPMAPS||texture_type==ETC2PACKAGE_sRGB_NO_MIPMAPS||texture_type==ETC2PACKAGE_RGBA_NO_MIPMAPS||texture_type==ETC2PACKAGE_sRGBA_NO_MIPMAPS||texture_type==ETC2PACKAGE_R_NO_MIPMAPS||texture_type==ETC2PACKAGE_RG_NO_MIPMAPS||texture_type==ETC2PACKAGE_RGBA1_NO_MIPMAPS||texture_type==ETC2PACKAGE_sRGBA1_NO_MIPMAPS))
-				{
-					printf("\n\n The file %s does not contain a texture of known format.\n", srcfile);
-					printf("Known formats: ETC2PACKAGE_RGB_NO_MIPMAPS.\n");
-					exit(1);
-				}
-			}
-			else
-			{
-				printf("\n\n The file %s is not of version 1.0 or 2.0 but of version %c.%c.\n",srcfile, version[0], version[1]);
-				printf("Aborting.\n");
-				exit(1);
-			}
-			format=texture_type;
-			printf("textype: %d\n",texture_type);
-			// ETC2 is backwards compatible, which means that an ETC2-capable decompressor can also handle
-			// old ETC1 textures without any problems. Thus a version 1.0 file with ETC1_RGB_NO_MIPMAPS and a 
-			// version 2.0 file with ETC2PACKAGE_RGB_NO_MIPMAPS can be handled by the same ETC2-capable decompressor
-
-			// Read how many pixels the blocks make up
-
-			read_big_endian_2byte_word(&w, f);
-			read_big_endian_2byte_word(&h, f);
-			width = w;
-			height = h;
-
-			// Read how many pixels contain active data (the rest are just
-			// for making sure we have a 4*a x 4*b size).
-
-			read_big_endian_2byte_word(&w, f);
-			read_big_endian_2byte_word(&h, f);
-			active_width = w;
-			active_height = h;
+			printf("ktx file has unknown glInternalFormat (not etc compressed)!\n");
+			exit(1);
 		}
-		printf("Width = %d, Height = %d\n",width, height);
-		printf("active pixel area: top left %d x %d area.\n",active_width, active_height);
+	}
+	else 
+	{
+		// Read magic nunmber
+		fread(&magic[0], sizeof(unsigned char), 1, f);
+		fread(&magic[1], sizeof(unsigned char), 1, f);
+		fread(&magic[2], sizeof(unsigned char), 1, f);
+		fread(&magic[3], sizeof(unsigned char), 1, f);
+		if(!(magic[0] == 'P' && magic[1] == 'K' && magic[2] == 'M' && magic[3] == ' '))
+		{
+			printf("\n\n The file %s is not a .pkm file.\n",srcfile);
+			exit(1);
+		}
+	
+		// Read version
+		fread(&version[0], sizeof(unsigned char), 1, f);
+		fread(&version[1], sizeof(unsigned char), 1, f);
+		if( version[0] == '1' && version[1] == '0' )
+		{
 
-		if(format==ETC2PACKAGE_RG_NO_MIPMAPS)
-			img=(uint8*)malloc(3*width*height*2);
+			// Read texture type
+			read_big_endian_2byte_word(&texture_type, f);
+			if(!(texture_type == ETC1_RGB_NO_MIPMAPS))
+			{
+				printf("\n\n The file %s (of version %c.%c) does not contain a texture of known format.\n", srcfile, version[0],version[1]);
+				printf("Known formats: ETC1_RGB_NO_MIPMAPS.\n");
+				exit(1);
+			}
+		}
+		else if( version[0] == '2' && version[1] == '0' )
+		{
+			// Read texture type
+			read_big_endian_2byte_word(&texture_type, f);
+			if(texture_type==ETC2PACKAGE_RG_SIGNED_NO_MIPMAPS) 
+			{
+				texture_type=ETC2PACKAGE_RG_NO_MIPMAPS;
+				formatSigned=1;
+				//printf("Decompressing 2-channel signed data\n");
+			}
+			if(texture_type==ETC2PACKAGE_R_SIGNED_NO_MIPMAPS) 
+			{
+				texture_type=ETC2PACKAGE_R_NO_MIPMAPS;
+				formatSigned=1;
+				//printf("Decompressing 1-channel signed data\n");
+			}
+    if(texture_type==ETC2PACKAGE_sRGB_NO_MIPMAPS)
+    {
+      // The SRGB formats are decoded just as RGB formats -- use RGB format for decompression.
+      texture_type=ETC2PACKAGE_RGB_NO_MIPMAPS;
+    }
+    if(texture_type==ETC2PACKAGE_sRGBA_NO_MIPMAPS)
+    {
+      // The SRGB formats are decoded just as RGB formats -- use RGB format for decompression.
+      texture_type=ETC2PACKAGE_RGBA_NO_MIPMAPS;
+    }
+    if(texture_type==ETC2PACKAGE_sRGBA1_NO_MIPMAPS)
+    {
+      // The SRGB formats are decoded just as RGB formats -- use RGB format for decompression.
+      texture_type=ETC2PACKAGE_sRGBA1_NO_MIPMAPS;
+    }
+			if(texture_type==ETC2PACKAGE_RGBA_NO_MIPMAPS_OLD) 
+			{
+				printf("\n\nThe file %s contains a compressed texture created using an old version of ETCPACK.\n",srcfile);
+				printf("decompression is not supported in this version.\n");
+				exit(1);
+			}
+			if(!(texture_type==ETC2PACKAGE_RGB_NO_MIPMAPS||texture_type==ETC2PACKAGE_sRGB_NO_MIPMAPS||texture_type==ETC2PACKAGE_RGBA_NO_MIPMAPS||texture_type==ETC2PACKAGE_sRGBA_NO_MIPMAPS||texture_type==ETC2PACKAGE_R_NO_MIPMAPS||texture_type==ETC2PACKAGE_RG_NO_MIPMAPS||texture_type==ETC2PACKAGE_RGBA1_NO_MIPMAPS||texture_type==ETC2PACKAGE_sRGBA1_NO_MIPMAPS))
+			{
+				printf("\n\n The file %s does not contain a texture of known format.\n", srcfile);
+				printf("Known formats: ETC2PACKAGE_RGB_NO_MIPMAPS.\n");
+				exit(1);
+			}
+		}
 		else
-			img=(uint8*)malloc(3*width*height);
-		if(!img)
+		{
+			printf("\n\n The file %s is not of version 1.0 or 2.0 but of version %c.%c.\n",srcfile, version[0], version[1]);
+			printf("Aborting.\n");
+			exit(1);
+		}
+		format=texture_type;
+		printf("textype: %d\n",texture_type);
+		// ETC2 is backwards compatible, which means that an ETC2-capable decompressor can also handle
+		// old ETC1 textures without any problems. Thus a version 1.0 file with ETC1_RGB_NO_MIPMAPS and a 
+		// version 2.0 file with ETC2PACKAGE_RGB_NO_MIPMAPS can be handled by the same ETC2-capable decompressor
+
+		// Read how many pixels the blocks make up
+
+		read_big_endian_2byte_word(&w, f);
+		read_big_endian_2byte_word(&h, f);
+		width = w;
+		height = h;
+
+		// Read how many pixels contain active data (the rest are just
+		// for making sure we have a 4*a x 4*b size).
+
+		read_big_endian_2byte_word(&w, f);
+		read_big_endian_2byte_word(&h, f);
+		active_width = w;
+		active_height = h;
+	}
+	printf("Width = %d, Height = %d\n",width, height);
+	printf("active pixel area: top left %d x %d area.\n",active_width, active_height);
+
+	if(format==ETC2PACKAGE_RG_NO_MIPMAPS)
+		img=(uint8*)malloc(3*width*height*2);
+	else
+		img=(uint8*)malloc(3*width*height);
+	if(!img)
+	{
+		printf("Error: could not allocate memory\n");
+		exit(0);
+	}
+	if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_R_NO_MIPMAPS||format==ETC2PACKAGE_RG_NO_MIPMAPS||format==ETC2PACKAGE_RGBA1_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA1_NO_MIPMAPS)
+	{
+		//printf("alpha channel decompression\n");
+		alphaimg=(uint8*)malloc(width*height*2);
+		setupAlphaTableAndValtab();
+		if(!alphaimg)
+		{
+			printf("Error: could not allocate memory for alpha\n");
+			exit(0);
+		}
+	}
+	if(format==ETC2PACKAGE_RG_NO_MIPMAPS) 
+	{
+		alphaimg2=(uint8*)malloc(width*height*2);
+		if(!alphaimg2)
 		{
 			printf("Error: could not allocate memory\n");
 			exit(0);
 		}
-		if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_R_NO_MIPMAPS||format==ETC2PACKAGE_RG_NO_MIPMAPS||format==ETC2PACKAGE_RGBA1_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA1_NO_MIPMAPS)
+	}
+
+	for(int y=0;y<height/4;y++)
+	{
+		for(int x=0;x<width/4;x++)
 		{
-			//printf("alpha channel decompression\n");
-			alphaimg=(uint8*)malloc(width*height*2);
-			setupAlphaTableAndValtab();
-			if(!alphaimg)
+			//decode alpha channel for RGBA
+			if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS) 
 			{
-				printf("Error: could not allocate memory for alpha\n");
-				exit(0);
+				uint8 alphablock[8];
+				fread(alphablock,1,8,f);
+				decompressBlockAlpha(alphablock,alphaimg,width,4*x,4*y);
 			}
-		}
-		if(format==ETC2PACKAGE_RG_NO_MIPMAPS) 
-		{
-			alphaimg2=(uint8*)malloc(width*height*2);
-			if(!alphaimg2)
+			//color channels for most normal modes
+			if(format!=ETC2PACKAGE_R_NO_MIPMAPS&&format!=ETC2PACKAGE_RG_NO_MIPMAPS) 
 			{
-				printf("Error: could not allocate memory\n");
-				exit(0);
+				//we have normal ETC2 color channels, decompress these
+				read_big_endian_4byte_word(&block_part1,f);
+				read_big_endian_4byte_word(&block_part2,f);
+				if(format==ETC2PACKAGE_RGBA1_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA1_NO_MIPMAPS)
+					decompressBlockETC21BitAlpha(block_part1, block_part2,img,alphaimg,width,4*x,4*y);
+				else
+					decompressBlockETC2(block_part1, block_part2,img,width,4*x,4*y);		
 			}
-		}
-
-		for(int y=0;y<height/4;y++)
-		{
-			for(int x=0;x<width/4;x++)
+			//one or two 11-bit alpha channels for R or RG.
+			if(format==ETC2PACKAGE_R_NO_MIPMAPS||format==ETC2PACKAGE_RG_NO_MIPMAPS) 
 			{
-				//decode alpha channel for RGBA
-				if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS) 
-				{
-					uint8 alphablock[8];
-					fread(alphablock,1,8,f);
-					decompressBlockAlpha(alphablock,alphaimg,width,height,4*x,4*y);
-				}
-				//color channels for most normal modes
-				if(format!=ETC2PACKAGE_R_NO_MIPMAPS&&format!=ETC2PACKAGE_RG_NO_MIPMAPS) 
-				{
-					//we have normal ETC2 color channels, decompress these
-					read_big_endian_4byte_word(&block_part1,f);
-					read_big_endian_4byte_word(&block_part2,f);
-					if(format==ETC2PACKAGE_RGBA1_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA1_NO_MIPMAPS)
-						decompressBlockETC21BitAlpha(block_part1, block_part2,img,alphaimg,width,height,4*x,4*y);
-					else
-						decompressBlockETC2(block_part1, block_part2,img,width,height,4*x,4*y);		
-				}
-				//one or two 11-bit alpha channels for R or RG.
-				if(format==ETC2PACKAGE_R_NO_MIPMAPS||format==ETC2PACKAGE_RG_NO_MIPMAPS) 
-				{
-					uint8 alphablock[8];
-					fread(alphablock,1,8,f);
-					decompressBlockAlpha16bit(alphablock,alphaimg,width,height,4*x,4*y);
-				}
-				if(format==ETC2PACKAGE_RG_NO_MIPMAPS) 
-				{
-					uint8 alphablock[8];
-					fread(alphablock,1,8,f);
-					decompressBlockAlpha16bit(alphablock,alphaimg2,width,height,4*x,4*y);
-				}
-			}
-		}
-		if(format==ETC2PACKAGE_RG_NO_MIPMAPS) 
-		{
-			for(int y=0;y<height;y++)
-			{
-				for(int x=0;x<width;x++)
-				{
-					img[6*(y*width+x)]=alphaimg[2*(y*width+x)];
-					img[6*(y*width+x)+1]=alphaimg[2*(y*width+x)+1];
-					img[6*(y*width+x)+2]=alphaimg2[2*(y*width+x)];
-					img[6*(y*width+x)+3]=alphaimg2[2*(y*width+x)+1];
-					img[6*(y*width+x)+4]=0;
-					img[6*(y*width+x)+5]=0;
-				}
-			}
-		}
-
-		// Ok, and now only write out the active pixels to the .ppm file.
-		// (But only if the active pixels differ from the total pixels)
-
-		if( !(height == active_height && width == active_width) )
-		{
-			if(format==ETC2PACKAGE_RG_NO_MIPMAPS)
-				newimg=(uint8*)malloc(3*active_width*active_height*2);
-			else
-				newimg=(uint8*)malloc(3*active_width*active_height);
-			
-			if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_RGBA1_NO_MIPMAPS||format==ETC2PACKAGE_R_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA1_NO_MIPMAPS)
-			{
-				newalphaimg = (uint8*)malloc(active_width*active_height*2);
-			}
-
-			if(!newimg)
-			{
-				printf("Error: could not allocate memory\n");
-				exit(0);
-			}
-			
-			// Convert from total area to active area:
-
-			for(yy = 0; yy<active_height; yy++)
-			{
-				for(xx = 0; xx< active_width; xx++)
-				{
-					if(format!=ETC2PACKAGE_R_NO_MIPMAPS&&format!=ETC2PACKAGE_RG_NO_MIPMAPS) 
-					{
-						newimg[ (yy*active_width)*3 + xx*3 + 0 ] = img[ (yy*width)*3 + xx*3 + 0];
-						newimg[ (yy*active_width)*3 + xx*3 + 1 ] = img[ (yy*width)*3 + xx*3 + 1];
-						newimg[ (yy*active_width)*3 + xx*3 + 2 ] = img[ (yy*width)*3 + xx*3 + 2];
-					}
-					else if(format==ETC2PACKAGE_RG_NO_MIPMAPS) 
-					{
-						newimg[ (yy*active_width)*6 + xx*6 + 0 ] = img[ (yy*width)*6 + xx*6 + 0];
-						newimg[ (yy*active_width)*6 + xx*6 + 1 ] = img[ (yy*width)*6 + xx*6 + 1];
-						newimg[ (yy*active_width)*6 + xx*6 + 2 ] = img[ (yy*width)*6 + xx*6 + 2];
-						newimg[ (yy*active_width)*6 + xx*6 + 3 ] = img[ (yy*width)*6 + xx*6 + 3];
-						newimg[ (yy*active_width)*6 + xx*6 + 4 ] = img[ (yy*width)*6 + xx*6 + 4];
-						newimg[ (yy*active_width)*6 + xx*6 + 5 ] = img[ (yy*width)*6 + xx*6 + 5];
-					}
-					if(format==ETC2PACKAGE_R_NO_MIPMAPS) 
-					{
-						newalphaimg[ ((yy*active_width) + xx)*2]   = alphaimg[2*((yy*width) + xx)];
-						newalphaimg[ ((yy*active_width) + xx)*2+1] = alphaimg[2*((yy*width) + xx)+1];
-					}
-					if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_RGBA1_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA1_NO_MIPMAPS) 
-					{
-						newalphaimg[ ((yy*active_width) + xx)]   = alphaimg[((yy*width) + xx)];
-					}
-				}
-			}
-
-			free(img);
-			img = newimg;
-			if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_RGBA1_NO_MIPMAPS||format==ETC2PACKAGE_R_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA1_NO_MIPMAPS)
-			{
-				free(alphaimg);
-				alphaimg=newalphaimg;
+				uint8 alphablock[8];
+				fread(alphablock,1,8,f);
+				decompressBlockAlpha16bit(alphablock,alphaimg,width,4*x,4*y);
 			}
 			if(format==ETC2PACKAGE_RG_NO_MIPMAPS) 
 			{
-				free(alphaimg);
-				free(alphaimg2);
-        alphaimg = NULL;
-        alphaimg2 = NULL;
+				uint8 alphablock[8];
+				fread(alphablock,1,8,f);
+				decompressBlockAlpha16bit(alphablock,alphaimg2,width,4*x,4*y);
 			}
 		}
 	}
-	else
-  {
-		printf("Error: could not open <%s>.\n",srcfile);
-    exit(1);
-  }
+	if(format==ETC2PACKAGE_RG_NO_MIPMAPS) 
+	{
+		for(int y=0;y<height;y++)
+		{
+			for(int x=0;x<width;x++)
+			{
+				img[6*(y*width+x)]=alphaimg[2*(y*width+x)];
+				img[6*(y*width+x)+1]=alphaimg[2*(y*width+x)+1];
+				img[6*(y*width+x)+2]=alphaimg2[2*(y*width+x)];
+				img[6*(y*width+x)+3]=alphaimg2[2*(y*width+x)+1];
+				img[6*(y*width+x)+4]=0;
+				img[6*(y*width+x)+5]=0;
+			}
+		}
+	}
+
+	// Ok, and now only write out the active pixels to the .ppm file.
+	// (But only if the active pixels differ from the total pixels)
+
+	if( !(height == active_height && width == active_width) )
+	{
+		if(format==ETC2PACKAGE_RG_NO_MIPMAPS)
+			newimg=(uint8*)malloc(3*active_width*active_height*2);
+		else
+			newimg=(uint8*)malloc(3*active_width*active_height);
+		
+		if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_RGBA1_NO_MIPMAPS||format==ETC2PACKAGE_R_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA1_NO_MIPMAPS)
+		{
+			newalphaimg = (uint8*)malloc(active_width*active_height*2);
+		}
+
+		if(!newimg)
+		{
+			printf("Error: could not allocate memory\n");
+			exit(0);
+		}
+		
+		// Convert from total area to active area:
+
+		for(yy = 0; yy<active_height; yy++)
+		{
+			for(xx = 0; xx< active_width; xx++)
+			{
+				if(format!=ETC2PACKAGE_R_NO_MIPMAPS&&format!=ETC2PACKAGE_RG_NO_MIPMAPS) 
+				{
+					newimg[ (yy*active_width)*3 + xx*3 + 0 ] = img[ (yy*width)*3 + xx*3 + 0];
+					newimg[ (yy*active_width)*3 + xx*3 + 1 ] = img[ (yy*width)*3 + xx*3 + 1];
+					newimg[ (yy*active_width)*3 + xx*3 + 2 ] = img[ (yy*width)*3 + xx*3 + 2];
+				}
+				else if(format==ETC2PACKAGE_RG_NO_MIPMAPS) 
+				{
+					newimg[ (yy*active_width)*6 + xx*6 + 0 ] = img[ (yy*width)*6 + xx*6 + 0];
+					newimg[ (yy*active_width)*6 + xx*6 + 1 ] = img[ (yy*width)*6 + xx*6 + 1];
+					newimg[ (yy*active_width)*6 + xx*6 + 2 ] = img[ (yy*width)*6 + xx*6 + 2];
+					newimg[ (yy*active_width)*6 + xx*6 + 3 ] = img[ (yy*width)*6 + xx*6 + 3];
+					newimg[ (yy*active_width)*6 + xx*6 + 4 ] = img[ (yy*width)*6 + xx*6 + 4];
+					newimg[ (yy*active_width)*6 + xx*6 + 5 ] = img[ (yy*width)*6 + xx*6 + 5];
+				}
+				if(format==ETC2PACKAGE_R_NO_MIPMAPS) 
+				{
+					newalphaimg[ ((yy*active_width) + xx)*2]   = alphaimg[2*((yy*width) + xx)];
+					newalphaimg[ ((yy*active_width) + xx)*2+1] = alphaimg[2*((yy*width) + xx)+1];
+				}
+				if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_RGBA1_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA1_NO_MIPMAPS) 
+				{
+					newalphaimg[ ((yy*active_width) + xx)]   = alphaimg[((yy*width) + xx)];
+				}
+			}
+		}
+
+		free(img);
+		img = newimg;
+		if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_RGBA1_NO_MIPMAPS||format==ETC2PACKAGE_R_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA1_NO_MIPMAPS)
+		{
+			free(alphaimg);
+			alphaimg=newalphaimg;
+		}
+		if(format==ETC2PACKAGE_RG_NO_MIPMAPS) 
+		{
+			free(alphaimg);
+			free(alphaimg2);
+			alphaimg = NULL;
+			alphaimg2 = NULL;
+		}
+	}
 	height=active_height;
 	width=active_width;
 	fclose(f);
@@ -9538,7 +9479,7 @@ double calculatePSNRfile(char *srcfile, uint8 *origimg, uint8* origalpha)
 	uncompressFile(srcfile,img,alphaimg,active_width,active_height);
 
 	// calculate Mean Square Error (MSE)
-	double MSER=0,MSEG=0,MSEB=0,MSEA, PSNRR,PSNRG,PSNRA;
+	double MSER=0,MSEG=0,MSEA, PSNRR,PSNRG,PSNRA;
 	double MSE;
 	double wMSE;
 	double PSNR=0;
@@ -9548,7 +9489,6 @@ double calculatePSNRfile(char *srcfile, uint8 *origimg, uint8* origalpha)
 	MSEA=0;
 	wMSE = 0;
 	int width=((active_width+3)/4)*4;
-	int height=((active_height+3)/4)*4;
 	int numpixels = 0;
 	for(int y=0;y<active_height;y++)
 	{
@@ -10475,30 +10415,20 @@ inline void tryalltables_3bittable_all_subblocks_using_precalc_perceptual1000(ui
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compresses the individual mode exhaustively (perecptual error metric).
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockIndividualExhaustivePerceptual(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int total_best_err)
+unsigned int compressBlockIndividualExhaustivePerceptual(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int total_best_err)
 {
-	unsigned int best_err_norm_diff = MAXERR1000; 
-	unsigned int best_err_norm_444 = MAXERR1000; 
-	unsigned int best_err_flip_diff = MAXERR1000; 
-	unsigned int best_err_flip_444 = MAXERR1000; 
 	uint8 color_quant1[3], color_quant2[3];
 
 	int enc_color1[3];
 	int best_enc_color1[3], best_enc_color2[3];
 	
-	int min_error=MAXERR1000; 
 	unsigned int best_pixel_indices1_MSB=0;
 	unsigned int best_pixel_indices1_LSB=0;
 	unsigned int best_pixel_indices2_MSB=0;
 	unsigned int best_pixel_indices2_LSB=0;
-	unsigned int pixel_indices1_MSB=0;
-	unsigned int pixel_indices1_LSB=0;
-	unsigned int pixel_indices2_MSB=0;
 
 	unsigned int err_upper, err_lower;
 	unsigned int err_left, err_right;
-
-	unsigned int pixel_indices2_LSB=0;
 
 	unsigned int best_err_upper = MAXERR1000; 
 	unsigned int best_err_lower = MAXERR1000; 
@@ -10511,7 +10441,6 @@ unsigned int compressBlockIndividualExhaustivePerceptual(uint8 *img,int width,in
 	int best_right_col[3];
 
 
-	unsigned int table1=0, table2=0;
 	unsigned int best_table1=0, best_table2=0;
 
 	unsigned int precalc_err_UL_R[8*4*4];
@@ -10578,12 +10507,10 @@ unsigned int compressBlockIndividualExhaustivePerceptual(uint8 *img,int width,in
 	}
 
 	unsigned int test1, test2;
-	best_err = (unsigned int)compressBlockOnlyIndividualAveragePerceptual1000(img, width, height, startx, starty, test1, test2, best_enc_color1, best_enc_color2, best_flip, best_err_upper, best_err_lower, best_err_left, best_err_right, best_upper_col, best_lower_col, best_left_col, best_right_col);
+	best_err = (unsigned int)compressBlockOnlyIndividualAveragePerceptual1000(img, width, startx, starty, test1, test2, best_enc_color1, best_enc_color2, best_flip, best_err_upper, best_err_lower, best_err_left, best_err_right, best_upper_col, best_lower_col, best_left_col, best_right_col);
 	if(best_err < total_best_err)
 		total_best_err = best_err;
 
-	unsigned int tryblocks = 0;
-	unsigned int allblocks = 0;
 	int needtest;
 
 
@@ -10686,17 +10613,17 @@ unsigned int compressBlockIndividualExhaustivePerceptual(uint8 *img,int width,in
 	color_quant1[1] = best_enc_color1[1] << 4 | (best_enc_color1[1]);
 	color_quant1[2] = best_enc_color1[2] << 4 | (best_enc_color1[2]);
 	if(best_flip == 0)
-		tryalltables_3bittable2x4percep1000(img,width,height,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		tryalltables_3bittable2x4percep1000(img,width,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 	else
-		tryalltables_3bittable4x2percep1000(img,width,height,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		tryalltables_3bittable4x2percep1000(img,width,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 
 	color_quant2[0] = best_enc_color2[0] << 4 | (best_enc_color2[0]);
 	color_quant2[1] = best_enc_color2[1] << 4 | (best_enc_color2[1]);
 	color_quant2[2] = best_enc_color2[2] << 4 | (best_enc_color2[2]);
 	if(best_flip == 0)
-		tryalltables_3bittable2x4percep1000(img,width,height,startx+2,starty,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		tryalltables_3bittable2x4percep1000(img,width,startx+2,starty,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 	else
-		tryalltables_3bittable4x2percep1000(img,width,height,startx,starty+2,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		tryalltables_3bittable4x2percep1000(img,width,startx,starty+2,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
 	//     ETC1_RGB8_OES:
 	// 
@@ -10760,30 +10687,20 @@ unsigned int compressBlockIndividualExhaustivePerceptual(uint8 *img,int width,in
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compresses the individual mode exhaustively.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockIndividualExhaustive(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int total_best_err)
+unsigned int compressBlockIndividualExhaustive(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int total_best_err)
 {
-	unsigned int best_err_norm_diff = 255*255*16*3;
-	unsigned int best_err_norm_444 = 255*255*16*3;
-	unsigned int best_err_flip_diff = 255*255*16*3;
-	unsigned int best_err_flip_444 = 255*255*16*3;
 	uint8 color_quant1[3], color_quant2[3];
 
 	int enc_color1[3];
 	int best_enc_color1[3], best_enc_color2[3];
 	
-	int min_error=255*255*8*3;
 	unsigned int best_pixel_indices1_MSB=0;
 	unsigned int best_pixel_indices1_LSB=0;
 	unsigned int best_pixel_indices2_MSB=0;
 	unsigned int best_pixel_indices2_LSB=0;
-	unsigned int pixel_indices1_MSB=0;
-	unsigned int pixel_indices1_LSB=0;
-	unsigned int pixel_indices2_MSB=0;
 
 	unsigned int err_upper, err_lower;
 	unsigned int err_left, err_right;
-
-	unsigned int pixel_indices2_LSB=0;
 
 	unsigned int best_err_upper = 255*255*16*3;
 	unsigned int best_err_lower = 255*255*16*3;
@@ -10796,7 +10713,6 @@ unsigned int compressBlockIndividualExhaustive(uint8 *img,int width,int height,i
 	int best_right_col[3];
 
 
-	unsigned int table1=0, table2=0;
 	unsigned int best_table1=0, best_table2=0;
 
 	unsigned int precalc_err_UL_R[8*4*4];
@@ -10863,14 +10779,12 @@ unsigned int compressBlockIndividualExhaustive(uint8 *img,int width,int height,i
 	}
 
  	unsigned int test1, test2;
-	best_err = (unsigned int)compressBlockOnlyIndividualAverage(img, width, height, startx, starty, test1, test2, best_enc_color1, best_enc_color2, best_flip, best_err_upper, best_err_lower, best_err_left, best_err_right, best_upper_col, best_lower_col, best_left_col, best_right_col);
+	best_err = (unsigned int)compressBlockOnlyIndividualAverage(img, width, startx, starty, test1, test2, best_enc_color1, best_enc_color2, best_flip, best_err_upper, best_err_lower, best_err_left, best_err_right, best_upper_col, best_lower_col, best_left_col, best_right_col);
 
 	if(best_err < total_best_err)
 		total_best_err = best_err;
 
 
-	unsigned int tryblocks = 0;
-	unsigned int allblocks = 0;
 	int needtest;
 
 	for(enc_color1[0]=0; enc_color1[0]<16; enc_color1[0]++)
@@ -10970,17 +10884,17 @@ unsigned int compressBlockIndividualExhaustive(uint8 *img,int width,int height,i
 	color_quant1[1] = best_enc_color1[1] << 4 | (best_enc_color1[1]);
 	color_quant1[2] = best_enc_color1[2] << 4 | (best_enc_color1[2]);
 	if(best_flip == 0)
-		tryalltables_3bittable2x4(img,width,height,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		tryalltables_3bittable2x4(img,width,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 	else
-		tryalltables_3bittable4x2(img,width,height,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		tryalltables_3bittable4x2(img,width,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 
 	color_quant2[0] = best_enc_color2[0] << 4 | (best_enc_color2[0]);
 	color_quant2[1] = best_enc_color2[1] << 4 | (best_enc_color2[1]);
 	color_quant2[2] = best_enc_color2[2] << 4 | (best_enc_color2[2]);
 	if(best_flip == 0)
-		tryalltables_3bittable2x4(img,width,height,startx+2,starty,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		tryalltables_3bittable2x4(img,width,startx+2,starty,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 	else
-		tryalltables_3bittable4x2(img,width,height,startx,starty+2,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		tryalltables_3bittable4x2(img,width,startx,starty+2,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
 	//     ETC1_RGB8_OES:
 	// 
@@ -11043,12 +10957,8 @@ unsigned int compressBlockIndividualExhaustive(uint8 *img,int width,int height,i
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compresses the differential mode exhaustively (perecptual error metric).
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockDifferentialExhaustivePerceptual(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far)
+unsigned int compressBlockDifferentialExhaustivePerceptual(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far)
 {
-	unsigned int best_err_norm_diff = MAXERR1000;
-	unsigned int best_err_norm_444 = MAXERR1000;
-	unsigned int best_err_flip_diff = MAXERR1000;
-	unsigned int best_err_flip_444 = MAXERR1000;
 	uint8 color_quant1[3], color_quant2[3];
 
 	int enc_color1[3], enc_color2[3], diff[3];
@@ -11059,16 +10969,10 @@ unsigned int compressBlockDifferentialExhaustivePerceptual(uint8 *img,int width,
 	unsigned int best_pixel_indices1_LSB=0;
 	unsigned int best_pixel_indices2_MSB=0;
 	unsigned int best_pixel_indices2_LSB=0;
-	unsigned int pixel_indices1_MSB=0;
-	unsigned int pixel_indices1_LSB=0;
-	unsigned int pixel_indices2_MSB=0;
 
 	unsigned int *err_upper, *err_lower;
 	unsigned int *err_left, *err_right;
 
-	unsigned int pixel_indices2_LSB=0;
-
-	unsigned int table1=0, table2=0;
 	unsigned int best_table1=0, best_table2=0;
 
 	unsigned int precalc_err_UL_R[8*4*4];
@@ -11140,7 +11044,7 @@ unsigned int compressBlockDifferentialExhaustivePerceptual(uint8 *img,int width,
 	}
 
  	unsigned int test1, test2;
-	best_error_using_diff_mode = compressBlockOnlyDiffFlipAveragePerceptual1000(img, width, height, startx, starty, test1, test2);
+	best_error_using_diff_mode = compressBlockOnlyDiffFlipAveragePerceptual1000(img, width, startx, starty, test1, test2);
 	if(best_error_using_diff_mode < best_error_so_far)
 		best_error_so_far = best_error_using_diff_mode;
 
@@ -11365,17 +11269,17 @@ unsigned int compressBlockDifferentialExhaustivePerceptual(uint8 *img,int width,
 	color_quant1[1] = best_enc_color1[1] << 3 | (best_enc_color1[1] >> 2);
 	color_quant1[2] = best_enc_color1[2] << 3 | (best_enc_color1[2] >> 2);
 	if(best_flip == 0)
-		tryalltables_3bittable2x4percep1000(img,width,height,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		tryalltables_3bittable2x4percep1000(img,width,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 	else
-		tryalltables_3bittable4x2percep1000(img,width,height,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		tryalltables_3bittable4x2percep1000(img,width,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 
 	color_quant2[0] = best_enc_color2[0] << 3 | (best_enc_color2[0] >> 2);
 	color_quant2[1] = best_enc_color2[1] << 3 | (best_enc_color2[1] >> 2);
 	color_quant2[2] = best_enc_color2[2] << 3 | (best_enc_color2[2] >> 2);
 	if(best_flip == 0)
-		tryalltables_3bittable2x4percep1000(img,width,height,startx+2,starty,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		tryalltables_3bittable2x4percep1000(img,width,startx+2,starty,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 	else
-		tryalltables_3bittable4x2percep1000(img,width,height,startx,starty+2,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		tryalltables_3bittable4x2percep1000(img,width,startx,starty+2,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
 	diff[0] = best_enc_color2[0]-best_enc_color1[0];	
 	diff[1] = best_enc_color2[1]-best_enc_color1[1];	
@@ -11441,32 +11345,21 @@ unsigned int compressBlockDifferentialExhaustivePerceptual(uint8 *img,int width,
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compresses the differential mode exhaustively.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockDifferentialExhaustive(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int previous_best_err)
+unsigned int compressBlockDifferentialExhaustive(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int previous_best_err)
 {
-	unsigned int best_err_norm_diff = 255*255*16*3;
-	unsigned int best_err_norm_444 = 255*255*16*3;
-	unsigned int best_err_flip_diff = 255*255*16*3;
-	unsigned int best_err_flip_444 = 255*255*16*3;
 	uint8 color_quant1[3], color_quant2[3];
 
 	int enc_color1[3], enc_color2[3], diff[3];
 	int best_enc_color1[3], best_enc_color2[3];
 	
-	int min_error=255*255*8*3;
 	unsigned int best_pixel_indices1_MSB=0;
 	unsigned int best_pixel_indices1_LSB=0;
 	unsigned int best_pixel_indices2_MSB=0;
 	unsigned int best_pixel_indices2_LSB=0;
-	unsigned int pixel_indices1_MSB=0;
-	unsigned int pixel_indices1_LSB=0;
-	unsigned int pixel_indices2_MSB=0;
 
 	unsigned int *err_upper, *err_lower;
 	unsigned int *err_left, *err_right;
 
-	unsigned int pixel_indices2_LSB=0;
-
-	unsigned int table1=0, table2=0;
 	unsigned int best_table1=0, best_table2=0;
 
 	unsigned int precalc_err_UL_R[8*4*4];
@@ -11537,7 +11430,7 @@ unsigned int compressBlockDifferentialExhaustive(uint8 *img,int width,int height
 
 
 	unsigned int test1, test2;
-	best_err = (unsigned int)compressBlockOnlyDiffFlipAverage(img, width, height, startx, starty, test1, test2, best_enc_color1, best_enc_color2, best_flip);
+	best_err = (unsigned int)compressBlockOnlyDiffFlipAverage(img, width, startx, starty, test1, test2, best_enc_color1, best_enc_color2, best_flip);
 	if(previous_best_err < best_err)
 		total_best_err = previous_best_err;
 	else
@@ -11749,17 +11642,17 @@ unsigned int compressBlockDifferentialExhaustive(uint8 *img,int width,int height
 	color_quant1[1] = best_enc_color1[1] << 3 | (best_enc_color1[1] >> 2);
 	color_quant1[2] = best_enc_color1[2] << 3 | (best_enc_color1[2] >> 2);
 	if(best_flip == 0)
-		tryalltables_3bittable2x4(img,width,height,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		tryalltables_3bittable2x4(img,width,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 	else
-		tryalltables_3bittable4x2(img,width,height,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
+		tryalltables_3bittable4x2(img,width,startx,starty,color_quant1,best_table1,best_pixel_indices1_MSB, best_pixel_indices1_LSB);
 
 	color_quant2[0] = best_enc_color2[0] << 3 | (best_enc_color2[0] >> 2);
 	color_quant2[1] = best_enc_color2[1] << 3 | (best_enc_color2[1] >> 2);
 	color_quant2[2] = best_enc_color2[2] << 3 | (best_enc_color2[2] >> 2);
 	if(best_flip == 0)
-		tryalltables_3bittable2x4(img,width,height,startx+2,starty,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		tryalltables_3bittable2x4(img,width,startx+2,starty,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 	else
-		tryalltables_3bittable4x2(img,width,height,startx,starty+2,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
+		tryalltables_3bittable4x2(img,width,startx,starty+2,color_quant2,best_table2,best_pixel_indices2_MSB, best_pixel_indices2_LSB);
 
 	diff[0] = best_enc_color2[0]-best_enc_color1[0];	
 	diff[1] = best_enc_color2[1]-best_enc_color1[1];	
@@ -11825,7 +11718,7 @@ unsigned int compressBlockDifferentialExhaustive(uint8 *img,int width,int height
 #if EXHAUSTIVE_CODE_ACTIVE
 // This function uses real exhaustive search for the planar mode. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockPlanar57ExhaustivePerceptual(uint8 *img, int width,int height,int startx,int starty, unsigned int &compressed57_1, unsigned int &compressed57_2, unsigned int best_error_sofar, unsigned int best_error_planar_red, unsigned int best_error_planar_green, unsigned int best_error_planar_blue)
+void compressBlockPlanar57ExhaustivePerceptual(uint8 *img, int width,int startx,int starty, unsigned int &compressed57_1, unsigned int &compressed57_2, unsigned int best_error_sofar, unsigned int best_error_planar_red, unsigned int best_error_planar_green, unsigned int best_error_planar_blue)
 {
 	int colorO_enc[3], colorH_enc[3], colorV_enc[3];
 	int best_colorO_enc[3], best_colorH_enc[3], best_colorV_enc[3];
@@ -12082,7 +11975,7 @@ void compressBlockPlanar57ExhaustivePerceptual(uint8 *img, int width,int height,
 #if EXHAUSTIVE_CODE_ACTIVE
 // This function uses real exhaustive search for the planar mode. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockPlanar57Exhaustive(uint8 *img, int width,int height,int startx,int starty, unsigned int &compressed57_1, unsigned int &compressed57_2, unsigned int best_error_sofar, unsigned int best_error_red, unsigned int best_error_green, unsigned int best_error_blue)
+void compressBlockPlanar57Exhaustive(uint8 *img, int width,int startx,int starty, unsigned int &compressed57_1, unsigned int &compressed57_2, unsigned int best_error_sofar, unsigned int best_error_red, unsigned int best_error_green, unsigned int best_error_blue)
 {
 	int colorO_enc[3], colorH_enc[3], colorV_enc[3];
 	int best_colorO_enc[3], best_colorH_enc[3], best_colorV_enc[3];
@@ -12310,9 +12203,7 @@ void compressBlockPlanar57Exhaustive(uint8 *img, int width,int height,int startx
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 void precalcError59T_col0_Rpercep1000(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col0_R)
 {
-	unsigned int block_error = 0, 
-	  	     	 best_block_error = MAXERR1000,
-			     pixel_error, 
+	unsigned int pixel_error, 
 		         best_pixel_error;
 	int diff;
 	uint8 color;
@@ -12359,9 +12250,7 @@ void precalcError59T_col0_Rpercep1000(uint8* block, int colorRGB444_packed, unsi
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 void precalcError59T_col0_R(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col0_R)
 {
-	unsigned int block_error = 0, 
-	  	     	   best_block_error = MAXIMUM_ERROR, 
-							 pixel_error, 
+	unsigned int pixel_error, 
 							 best_pixel_error;
 	int diff;
 	uint8 color;
@@ -12405,9 +12294,7 @@ void precalcError59T_col0_R(uint8* block, int colorRGB444_packed, unsigned int *
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 void precalcError59T_col0_RGpercep1000(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col0_RG)
 {
-	unsigned int block_error = 0, 
-	  	     	 best_block_error = MAXERR1000,
-			     pixel_error, 
+	unsigned int pixel_error, 
 		         best_pixel_error;
 	int diff[3];
 	uint8 color[3];
@@ -12460,9 +12347,7 @@ void precalcError59T_col0_RGpercep1000(uint8* block, int colorRGB444_packed, uns
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 void precalcError59T_col0_RG(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col0_RG)
 {
-	unsigned int block_error = 0, 
-	  	     	 best_block_error = MAXIMUM_ERROR, 
-			     pixel_error, 
+	unsigned int pixel_error, 
 		         best_pixel_error;
 	int diff[3];
 	uint8 color[3];
@@ -12604,9 +12489,7 @@ void precalcError59T_col1_RG(uint8* block, int colorRGB444_packed, unsigned int 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 void precalcError59T_col0_RGBpercep1000(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col0_RGB)
 {
-	unsigned int block_error = 0, 
-	  	     	 best_block_error = MAXERR1000,
-			     pixel_error, 
+	unsigned int pixel_error, 
 		         best_pixel_error;
 	uint8 color[3];
 	int possible_colors[3][3];
@@ -12688,9 +12571,7 @@ void precalcError59T_col0_RGBpercep1000(uint8* block, int colorRGB444_packed, un
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 void precalcError59T_col0_RGB(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col0_RGB)
 {
-	unsigned int block_error = 0, 
-	  	     	 best_block_error = MAXIMUM_ERROR, 
-			     pixel_error, 
+	unsigned int pixel_error, 
 		         best_pixel_error;
 	uint8 color[3];
 	int possible_colors[3][3];
@@ -12823,7 +12704,7 @@ void precalcError59T_col1_RGB(uint8* block, int colorRGB444_packed, unsigned int
 #if EXHAUSTIVE_CODE_ACTIVE
 // Calculate a minimal error for the T-mode when compressing exhaustively.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calculateError59TusingPrecalcRperceptual1000(uint8* block, int *colorsRGB444_packed, unsigned int *precalc_err_col0_R, unsigned int *precalc_err_col1_R, unsigned int best_error_so_far) 
+unsigned int calculateError59TusingPrecalcRperceptual1000(int *colorsRGB444_packed, unsigned int *precalc_err_col0_R, unsigned int *precalc_err_col1_R, unsigned int best_error_so_far) 
 {
 	unsigned int	block_error = 0, 
 					best_block_error = MAXERR1000;
@@ -12913,7 +12794,7 @@ unsigned int calculateError59TusingPrecalcRperceptual1000(uint8* block, int *col
 #if EXHAUSTIVE_CODE_ACTIVE
 // Calculate a minimal error for the T-mode when compressing exhaustively.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calculateError59TusingPrecalcR(uint8* block, int *colorsRGB444_packed, unsigned int *precalc_err_col0_R, unsigned int *precalc_err_col1_R, unsigned int best_error_so_far) 
+unsigned int calculateError59TusingPrecalcR(int *colorsRGB444_packed, unsigned int *precalc_err_col0_R, unsigned int *precalc_err_col1_R, unsigned int best_error_so_far) 
 {
 	unsigned int	block_error = 0, 
 					best_block_error = MAXIMUM_ERROR;
@@ -13005,7 +12886,7 @@ unsigned int calculateError59TusingPrecalcR(uint8* block, int *colorsRGB444_pack
 #if EXHAUSTIVE_CODE_ACTIVE
 // Calculate a minimal error for the T-mode when compressing exhaustively.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calculateError59TusingPrecalcRGperceptual1000(uint8* block, int *colorsRGB444_packed, unsigned int *precalc_err_col0_RG, unsigned int *precalc_err_col1_RG, unsigned int best_error_so_far) 
+unsigned int calculateError59TusingPrecalcRGperceptual1000(int *colorsRGB444_packed, unsigned int *precalc_err_col0_RG, unsigned int *precalc_err_col1_RG, unsigned int best_error_so_far) 
 {
 	unsigned int	block_error = 0, 
 					best_block_error = MAXERR1000;
@@ -13098,7 +12979,7 @@ unsigned int calculateError59TusingPrecalcRGperceptual1000(uint8* block, int *co
 #if EXHAUSTIVE_CODE_ACTIVE
 // Calculate a minimal error for the T-mode when compressing exhaustively.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calculateError59TusingPrecalcRG(uint8* block, int *colorsRGB444_packed, unsigned int *precalc_err_col0_RG, unsigned int *precalc_err_col1_RG, unsigned int best_error_so_far) 
+unsigned int calculateError59TusingPrecalcRG(int *colorsRGB444_packed, unsigned int *precalc_err_col0_RG, unsigned int *precalc_err_col1_RG, unsigned int best_error_so_far) 
 {
 	unsigned int	block_error = 0, 
 					best_block_error = MAXIMUM_ERROR;
@@ -13188,7 +13069,7 @@ unsigned int calculateError59TusingPrecalcRG(uint8* block, int *colorsRGB444_pac
 #if EXHAUSTIVE_CODE_ACTIVE
 // Calculate a minimal error for the T-mode when compressing exhaustively.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calculateError59TusingPrecalcRGBperceptual1000(uint8* block, int *colorsRGB444_packed, unsigned int *precalc_err_col0_RGB, unsigned int *precalc_err_col1_RGB, unsigned int best_error_so_far) 
+unsigned int calculateError59TusingPrecalcRGBperceptual1000(int *colorsRGB444_packed, unsigned int *precalc_err_col0_RGB, unsigned int *precalc_err_col1_RGB, unsigned int best_error_so_far) 
 {
 	unsigned int	block_error = 0, 
 					      best_block_error = MAXERR1000;
@@ -13277,7 +13158,7 @@ unsigned int calculateError59TusingPrecalcRGBperceptual1000(uint8* block, int *c
 #if EXHAUSTIVE_CODE_ACTIVE
 // Calculate a minimal error for the T-mode when compressing exhaustively.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calculateError59TusingPrecalcRGB(uint8* block, int *colorsRGB444_packed, unsigned int *precalc_err_col0_RGB, unsigned int *precalc_err_col1_RGB, unsigned int best_error_so_far) 
+unsigned int calculateError59TusingPrecalcRGB(int *colorsRGB444_packed, unsigned int *precalc_err_col0_RGB, unsigned int *precalc_err_col1_RGB, unsigned int best_error_so_far) 
 {
 	unsigned int	block_error = 0, 
 					      best_block_error = MAXIMUM_ERROR;
@@ -13377,7 +13258,7 @@ unsigned int calculateError59TusingPrecalcRGB(uint8* block, int *colorsRGB444_pa
 // is less than best_error_so_far. To guarantee that the best possible T-representation is found, the function should be called using
 // best_error_so_far = 255*255*3*16, which is the maximum error for a block. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockTHUMB59TExhaustivePerceptual(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
+unsigned int compressBlockTHUMB59TExhaustivePerceptual(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
 {
 	uint8 colorsRGB444[2][3];
 	unsigned int pixel_indices;
@@ -13401,7 +13282,7 @@ unsigned int compressBlockTHUMB59TExhaustivePerceptual(uint8 *img,int width,int 
 
 	// First compress block quickly to a resonable quality so that we can
 	// rule out all blocks that are of worse quality than that. 
-	best_error_using_Tmode = (unsigned int) compressBlockTHUMB59TFastestOnlyColorPerceptual1000(img, width, height, startx, starty, best_colorsRGB444_packed);
+	best_error_using_Tmode = (unsigned int) compressBlockTHUMB59TFastestOnlyColorPerceptual1000(img, width, startx, starty, best_colorsRGB444_packed);
 	if(best_error_using_Tmode < best_error_so_far)
 		best_error_so_far = best_error_using_Tmode;
 
@@ -13476,7 +13357,6 @@ unsigned int compressBlockTHUMB59TExhaustivePerceptual(uint8 *img,int width,int 
 	}
 
 	unsigned int error;
-	unsigned int avoided = 0;
 	unsigned int notavoided = 0;
 
 	for(colorsRGB444[0][0] = 0; colorsRGB444[0][0] < 16; colorsRGB444[0][0]++)
@@ -13485,7 +13365,7 @@ unsigned int compressBlockTHUMB59TExhaustivePerceptual(uint8 *img,int width,int 
 		{
 			colorsRGB444_packed[0] = (colorsRGB444[0][0] << 8);
 			colorsRGB444_packed[1] = (colorsRGB444[1][0] << 8);
-			error = calculateError59TusingPrecalcRperceptual1000(block, colorsRGB444_packed, precalc_err_col0_R, precalc_err_col1_R, best_error_so_far);
+			error = calculateError59TusingPrecalcRperceptual1000(colorsRGB444_packed, precalc_err_col0_R, precalc_err_col1_R, best_error_so_far);
 			if(error < best_error_so_far)
 			{
 				notavoided = notavoided + 1;
@@ -13495,7 +13375,7 @@ unsigned int compressBlockTHUMB59TExhaustivePerceptual(uint8 *img,int width,int 
 					for(colorsRGB444[1][1] = 0; colorsRGB444[1][1] < 16; colorsRGB444[1][1]++)
 					{
 						colorsRGB444_packed[1] = (colorsRGB444[1][0] << 8) + (colorsRGB444[1][1] <<4);
-						error = calculateError59TusingPrecalcRGperceptual1000(block, colorsRGB444_packed, precalc_err_col0_RG, precalc_err_col1_RG, best_error_so_far);
+						error = calculateError59TusingPrecalcRGperceptual1000(colorsRGB444_packed, precalc_err_col0_RG, precalc_err_col1_RG, best_error_so_far);
 						if(error < best_error_so_far)
 						{
 							for(colorsRGB444[0][2] = 0; colorsRGB444[0][2] < 16; colorsRGB444[0][2]++)
@@ -13504,7 +13384,7 @@ unsigned int compressBlockTHUMB59TExhaustivePerceptual(uint8 *img,int width,int 
 								for(colorsRGB444[1][2] = 0; colorsRGB444[1][2] < 16; colorsRGB444[1][2]++)
 								{
 									colorsRGB444_packed[1] = (colorsRGB444[1][0] << 8) + (colorsRGB444[1][1] <<4) + colorsRGB444[1][2];
-									error = calculateError59TusingPrecalcRGBperceptual1000(block, colorsRGB444_packed, precalc_err_col0_RGB, precalc_err_col1_RGB, best_error_so_far);
+									error = calculateError59TusingPrecalcRGBperceptual1000(colorsRGB444_packed, precalc_err_col0_RGB, precalc_err_col1_RGB, best_error_so_far);
 
 									if(error < best_error_so_far)
 									{
@@ -13563,7 +13443,7 @@ unsigned int compressBlockTHUMB59TExhaustivePerceptual(uint8 *img,int width,int 
 // is less than best_error_so_far. To guarantee that the best possible T-representation is found, the function should be called using
 // best_error_so_far = 255*255*3*16, which is the maximum error for a block. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockTHUMB59TExhaustive(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
+unsigned int compressBlockTHUMB59TExhaustive(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
 {
 	uint8 colorsRGB444[2][3];
 	unsigned int pixel_indices;
@@ -13587,7 +13467,7 @@ unsigned int compressBlockTHUMB59TExhaustive(uint8 *img,int width,int height,int
 
 	// First compress block quickly to a resonable quality so that we can
 	// rule out all blocks that are of worse quality than that. 
-	best_error_using_Tmode = (unsigned int) compressBlockTHUMB59TFastestOnlyColor(img, width, height, startx, starty, best_colorsRGB444_packed);
+	best_error_using_Tmode = (unsigned int) compressBlockTHUMB59TFastestOnlyColor(img, width, startx, starty, best_colorsRGB444_packed);
 	if(best_error_using_Tmode < best_error_so_far)
 		best_error_so_far = best_error_using_Tmode;
 
@@ -13663,7 +13543,6 @@ unsigned int compressBlockTHUMB59TExhaustive(uint8 *img,int width,int height,int
 	}
 
 	unsigned int error;
-	unsigned int avoided = 0;
 	unsigned int notavoided = 0;
 
 	for(colorsRGB444[0][0] = 0; colorsRGB444[0][0] < 16; colorsRGB444[0][0]++)
@@ -13672,7 +13551,7 @@ unsigned int compressBlockTHUMB59TExhaustive(uint8 *img,int width,int height,int
 		{
 			colorsRGB444_packed[0] = (colorsRGB444[0][0] << 8);
 			colorsRGB444_packed[1] = (colorsRGB444[1][0] << 8);
-			error = calculateError59TusingPrecalcR(block, colorsRGB444_packed, precalc_err_col0_R, precalc_err_col1_R, best_error_so_far);
+			error = calculateError59TusingPrecalcR(colorsRGB444_packed, precalc_err_col0_R, precalc_err_col1_R, best_error_so_far);
 			if(error < best_error_so_far)
 			{
 				notavoided = notavoided + 1;
@@ -13682,7 +13561,7 @@ unsigned int compressBlockTHUMB59TExhaustive(uint8 *img,int width,int height,int
 					for(colorsRGB444[1][1] = 0; colorsRGB444[1][1] < 16; colorsRGB444[1][1]++)
 					{
 						colorsRGB444_packed[1] = (colorsRGB444[1][0] << 8) + (colorsRGB444[1][1] <<4);
-						error = calculateError59TusingPrecalcRG(block, colorsRGB444_packed, precalc_err_col0_RG, precalc_err_col1_RG, best_error_so_far);
+						error = calculateError59TusingPrecalcRG(colorsRGB444_packed, precalc_err_col0_RG, precalc_err_col1_RG, best_error_so_far);
 						if(error < best_error_so_far)
 						{
 							for(colorsRGB444[0][2] = 0; colorsRGB444[0][2] < 16; colorsRGB444[0][2]++)
@@ -13691,7 +13570,7 @@ unsigned int compressBlockTHUMB59TExhaustive(uint8 *img,int width,int height,int
 								for(colorsRGB444[1][2] = 0; colorsRGB444[1][2] < 16; colorsRGB444[1][2]++)
 								{
 									colorsRGB444_packed[1] = (colorsRGB444[1][0] << 8) + (colorsRGB444[1][1] <<4) + colorsRGB444[1][2];
-									error = calculateError59TusingPrecalcRGB(block, colorsRGB444_packed, precalc_err_col0_RGB, precalc_err_col1_RGB, best_error_so_far);
+									error = calculateError59TusingPrecalcRGB(colorsRGB444_packed, precalc_err_col0_RGB, precalc_err_col1_RGB, best_error_so_far);
 
 									if(error < best_error_so_far)
 									{
@@ -13742,7 +13621,6 @@ unsigned int compressBlockTHUMB59TExhaustive(uint8 *img,int width,int height,int
 void precalcErrorR_58Hperceptual1000(uint8* srcimg, int width, int startx, int starty, uint8 (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_errR) 
 {
 	unsigned int block_error = 0, 
-		   best_block_error = MAXERR1000, 
 		   pixel_error, 
 		   best_pixel_error;
 	int diff[3];
@@ -13794,7 +13672,6 @@ void precalcErrorR_58Hperceptual1000(uint8* srcimg, int width, int startx, int s
 void precalcErrorR_58H(uint8* srcimg, int width, int startx, int starty, uint8 (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_errR) 
 {
 	double block_error = 0, 
-		   best_block_error = MAXIMUM_ERROR, 
 		   pixel_error, 
 		   best_pixel_error;
 	int diff[3];
@@ -13846,7 +13723,6 @@ void precalcErrorR_58H(uint8* srcimg, int width, int startx, int starty, uint8 (
 void precalcErrorRG_58Hperceptual1000(uint8* srcimg, int width, int startx, int starty, uint8 (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_errRG) 
 {
 	unsigned int block_error = 0, 
-		   best_block_error = MAXERR1000,
 		   pixel_error, 
 		   best_pixel_error;
 	int diff[3];
@@ -13902,7 +13778,6 @@ void precalcErrorRG_58Hperceptual1000(uint8* srcimg, int width, int startx, int 
 void precalcErrorRG_58H(uint8* srcimg, int width, int startx, int starty, uint8 (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_errRG) 
 {
 	double block_error = 0, 
-		   best_block_error = MAXIMUM_ERROR, 
 		   pixel_error, 
 		   best_pixel_error;
 	int diff[3];
@@ -14708,7 +14583,7 @@ unsigned int calculateErrorFromPrecalc58H(int *colorsRGB444_packed, unsigned int
 // Instead if the 12-bit word red0,green0,blue0 < red1,green1,blue1, d0 is assumed to be 0.
 // Else, it is assumed to be 1.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockTHUMB58HExhaustivePerceptual(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
+unsigned int compressBlockTHUMB58HExhaustivePerceptual(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
 {
 	unsigned int best_error_using_Hmode;
 	uint8 best_colorsRGB444[2][3];
@@ -14739,7 +14614,7 @@ unsigned int compressBlockTHUMB58HExhaustivePerceptual(uint8 *img,int width,int 
 	if(!precalc_err_R){printf("Out of memory allocating \n");exit(1);}
 
  	unsigned int test1, test2;
-	best_error_using_Hmode = (unsigned int)compressBlockTHUMB58HFastestPerceptual1000(img,width, height, startx, starty, test1, test2);
+	best_error_using_Hmode = (unsigned int)compressBlockTHUMB58HFastestPerceptual1000(img,width, startx, starty, test1, test2);
     best_colorsRGB444_packed[0] = 0;
 	best_colorsRGB444_packed[0] = GETBITSHIGH(test1, 12, 57);
     best_colorsRGB444_packed[1] = 0;
@@ -14787,9 +14662,6 @@ unsigned int compressBlockTHUMB58HExhaustivePerceptual(uint8 *img,int width,int 
 		colorsRGB444[0][2] = (colorRGB444_packed) & 0xf;
 		precalcErrorR_58Hperceptual1000(img, width, startx, starty, colorsRGB444, colorRGB444_packed, precalc_err_R);
 	}
-
-	int trycols = 0;
-	int allcols = 0;
 
 	for( colorsRGB444[0][0] = 0; colorsRGB444[0][0] <16; colorsRGB444[0][0]++)
 	{
@@ -14920,7 +14792,7 @@ unsigned int compressBlockTHUMB58HExhaustivePerceptual(uint8 *img,int width,int 
 // Instead if the 12-bit word red0,green0,blue0 < red1,green1,blue1, d0 is assumed to be 0.
 // Else, it is assumed to be 1.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockTHUMB58HExhaustive(uint8 *img,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
+unsigned int compressBlockTHUMB58HExhaustive(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
 {
 	unsigned int best_error_using_Hmode;
 	uint8 best_colorsRGB444[2][3];
@@ -14951,7 +14823,7 @@ unsigned int compressBlockTHUMB58HExhaustive(uint8 *img,int width,int height,int
 	if(!precalc_err_R){printf("Out of memory allocating \n");exit(1);}
 
  	unsigned int test1, test2;
-	best_error_using_Hmode = (unsigned int)compressBlockTHUMB58HFastest(img,width, height, startx, starty, test1, test2);
+	best_error_using_Hmode = (unsigned int)compressBlockTHUMB58HFastest(img,width, startx, starty, test1, test2);
     best_colorsRGB444_packed[0] = 0;
 	best_colorsRGB444_packed[0] = GETBITSHIGH(test1, 12, 57);
     best_colorsRGB444_packed[1] = 0;
@@ -14998,9 +14870,6 @@ unsigned int compressBlockTHUMB58HExhaustive(uint8 *img,int width,int height,int
 		colorsRGB444[0][2] = (colorRGB444_packed) & 0xf;
 		precalcErrorR_58H(img, width, startx, starty, colorsRGB444, colorRGB444_packed, precalc_err_R);
 	}
-
-	int trycols = 0;
-	int allcols = 0;
 
 	for( colorsRGB444[0][0] = 0; colorsRGB444[0][0] <16; colorsRGB444[0][0]++)
 	{
@@ -15105,7 +14974,7 @@ unsigned int compressBlockTHUMB58HExhaustive(uint8 *img,int width,int height,int
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compress a block exhaustively for the ETC1 codec.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockETC1Exhaustive(uint8 *img, uint8 *imgdec,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockETC1Exhaustive(uint8 *img, uint8 *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int error_currently_best;
 
@@ -15129,15 +14998,15 @@ void compressBlockETC1Exhaustive(uint8 *img, uint8 *imgdec,int width,int height,
 	unsigned int etc1_word1;
 	unsigned int etc1_word2;
 
-	error_etc1 = (unsigned int) compressBlockDiffFlipFast(img, imgdec, width, height, startx, starty, etc1_word1, etc1_word2);
+	error_etc1 = (unsigned int) compressBlockDiffFlipFast(img, imgdec, width, startx, starty, etc1_word1, etc1_word2);
 	if(error_etc1 < error_currently_best)
 		error_currently_best = error_etc1;
 
- 	error_etc1_individual = compressBlockIndividualExhaustive(img, width, height, startx, starty, etc1_individual_word1, etc1_individual_word2, error_currently_best);
+ 	error_etc1_individual = compressBlockIndividualExhaustive(img, width, startx, starty, etc1_individual_word1, etc1_individual_word2, error_currently_best);
 	if(error_etc1_individual < error_currently_best)
 		error_currently_best = error_etc1_individual;
 
-  	error_etc1_differential = compressBlockDifferentialExhaustive(img, width, height, startx, starty, etc1_differential_word1, etc1_differential_word2, error_currently_best);
+  	error_etc1_differential = compressBlockDifferentialExhaustive(img, width, startx, starty, etc1_differential_word1, etc1_differential_word2, error_currently_best);
 	if(error_etc1_differential < error_currently_best)
 		error_currently_best = error_etc1_differential;
 
@@ -15170,7 +15039,7 @@ void compressBlockETC1Exhaustive(uint8 *img, uint8 *imgdec,int width,int height,
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compress a block exhaustively for the ETC1 codec using perceptual error measure.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockETC1ExhaustivePerceptual(uint8 *img, uint8 *imgdec,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockETC1ExhaustivePerceptual(uint8 *img, uint8 *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int error_currently_best;
 	
@@ -15195,19 +15064,19 @@ void compressBlockETC1ExhaustivePerceptual(uint8 *img, uint8 *imgdec,int width,i
 	unsigned int etc1_word1;
 	unsigned int etc1_word2;
 
-	compressBlockDiffFlipFastPerceptual(img, imgdec, width, height, startx, starty, etc1_word1, etc1_word2);
-	decompressBlockDiffFlip(etc1_word1, etc1_word2, imgdec, width, height, startx, starty);
-	error_etc1 = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockDiffFlipFastPerceptual(img, imgdec, width, startx, starty, etc1_word1, etc1_word2);
+	decompressBlockDiffFlip(etc1_word1, etc1_word2, imgdec, width, startx, starty);
+	error_etc1 = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, startx, starty);
 	if(error_etc1 < error_currently_best)
 		error_currently_best = error_etc1;
 
 	// Second pass --- now find the lowest error, but only if it is lower than error_currently_best
 
-	error_etc1_differential = compressBlockDifferentialExhaustivePerceptual(img, width, height, startx, starty, etc1_differential_word1, etc1_differential_word2, error_currently_best);
+	error_etc1_differential = compressBlockDifferentialExhaustivePerceptual(img, width, startx, starty, etc1_differential_word1, etc1_differential_word2, error_currently_best);
  	if(error_etc1_differential < error_currently_best)
  		error_currently_best = error_etc1_differential;
 
-  	error_etc1_individual = compressBlockIndividualExhaustivePerceptual(img, width, height, startx, starty, etc1_individual_word1, etc1_individual_word2, error_currently_best);
+  	error_etc1_individual = compressBlockIndividualExhaustivePerceptual(img, width, startx, starty, etc1_individual_word1, etc1_individual_word2, error_currently_best);
   	if(error_etc1_individual < error_currently_best)
  		error_currently_best = error_etc1_individual;
 
@@ -15241,7 +15110,7 @@ void compressBlockETC1ExhaustivePerceptual(uint8 *img, uint8 *imgdec,int width,i
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compress a block exhaustively for the ETC2 RGB codec using perceptual error measure.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockETC2ExhaustivePerceptual(uint8 *img, uint8 *imgdec,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockETC2ExhaustivePerceptual(uint8 *img, uint8 *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int error_currently_best;
 	
@@ -15284,27 +15153,27 @@ void compressBlockETC2ExhaustivePerceptual(uint8 *img, uint8 *imgdec,int width,i
 	unsigned int etc1_word1;
 	unsigned int etc1_word2;
 
-	compressBlockDiffFlipFastPerceptual(img, imgdec, width, height, startx, starty, etc1_word1, etc1_word2);
-	decompressBlockDiffFlip(etc1_word1, etc1_word2, imgdec, width, height, startx, starty);
-	error_etc1 = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockDiffFlipFastPerceptual(img, imgdec, width, startx, starty, etc1_word1, etc1_word2);
+	decompressBlockDiffFlip(etc1_word1, etc1_word2, imgdec, width, startx, starty);
+	error_etc1 = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, startx, starty);
 	if(error_etc1 < error_currently_best)
 		error_currently_best = error_etc1;
 
 	// The planar mode treats every channel independently and should not be affected by the weights in the error measure. 
 	// We can hence use the nonperceptual version of the encoder also to find the best perceptual description of the block.
-	compressBlockPlanar57(img, width, height, startx, starty, planar57_word1, planar57_word2);
-	decompressBlockPlanar57errorPerComponent(planar57_word1, planar57_word2, imgdec, width, height, startx, starty, img, error_planar_red, error_planar_green, error_planar_blue);
- 	error_planar = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockPlanar57(img, width, startx, starty, planar57_word1, planar57_word2);
+	decompressBlockPlanar57errorPerComponent(planar57_word1, planar57_word2, imgdec, width, startx, starty, img, error_planar_red, error_planar_green, error_planar_blue);
+ 	error_planar = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, startx, starty);
 	stuff57bits(planar57_word1, planar57_word2, planar_word1, planar_word2);
 	if(error_planar < error_currently_best)
 		error_currently_best = (unsigned int) error_planar;
 
-	error_thumbT = (unsigned int) compressBlockTHUMB59TFastestPerceptual1000(img,width, height, startx, starty, thumbT59_word1, thumbT59_word2);
+	error_thumbT = (unsigned int) compressBlockTHUMB59TFastestPerceptual1000(img,width, startx, starty, thumbT59_word1, thumbT59_word2);
 	stuff59bits(thumbT59_word1, thumbT59_word2, thumbT_word1, thumbT_word2);
 	if(error_thumbT < error_currently_best)
 		error_currently_best = error_thumbT;
 
-	error_thumbH = (unsigned int) compressBlockTHUMB58HFastestPerceptual1000(img,width,height,startx, starty, thumbH58_word1, thumbH58_word2);
+	error_thumbH = (unsigned int) compressBlockTHUMB58HFastestPerceptual1000(img,width,startx, starty, thumbH58_word1, thumbH58_word2);
 	stuff58bits(thumbH58_word1, thumbH58_word2, thumbH_word1, thumbH_word2);
 	if(error_thumbH < error_currently_best)
 		error_currently_best = error_thumbH;
@@ -15315,27 +15184,27 @@ void compressBlockETC2ExhaustivePerceptual(uint8 *img, uint8 *imgdec,int width,i
 	error_planar_red *=PERCEPTUAL_WEIGHT_R_SQUARED_TIMES1000;
 	error_planar_green *=PERCEPTUAL_WEIGHT_G_SQUARED_TIMES1000;
 	error_planar_blue *=PERCEPTUAL_WEIGHT_B_SQUARED_TIMES1000;
-	compressBlockPlanar57ExhaustivePerceptual(img, width, height, startx, starty, planar57_word1, planar57_word2, error_currently_best, error_planar_red, error_planar_green, error_planar_blue);	
-	decompressBlockPlanar57(planar57_word1, planar57_word2, imgdec, width, height, startx, starty);
-	error_planar = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockPlanar57ExhaustivePerceptual(img, width, startx, starty, planar57_word1, planar57_word2, error_currently_best, error_planar_red, error_planar_green, error_planar_blue);	
+	decompressBlockPlanar57(planar57_word1, planar57_word2, imgdec, width, startx, starty);
+	error_planar = 1000*calcBlockPerceptualErrorRGB(img, imgdec, width, startx, starty);
 	stuff57bits(planar57_word1, planar57_word2, planar_word1, planar_word2);
 	if(error_planar < error_currently_best)
 		error_currently_best = (unsigned int) error_planar;
 	
-	error_etc1_differential = compressBlockDifferentialExhaustivePerceptual(img, width, height, startx, starty, etc1_differential_word1, etc1_differential_word2, error_currently_best);
+	error_etc1_differential = compressBlockDifferentialExhaustivePerceptual(img, width, startx, starty, etc1_differential_word1, etc1_differential_word2, error_currently_best);
 	if(error_etc1_differential < error_currently_best)
 		error_currently_best = error_etc1_differential;
 
-	error_etc1_individual = compressBlockIndividualExhaustivePerceptual(img, width, height, startx, starty, etc1_individual_word1, etc1_individual_word2, error_currently_best);
+	error_etc1_individual = compressBlockIndividualExhaustivePerceptual(img, width, startx, starty, etc1_individual_word1, etc1_individual_word2, error_currently_best);
 	if(error_etc1_individual < error_currently_best)
 		error_currently_best = error_etc1_individual;
 
-	error_thumbH = compressBlockTHUMB58HExhaustivePerceptual(img,width,height,startx, starty, thumbH58_word1, thumbH58_word2, error_currently_best);
+	error_thumbH = compressBlockTHUMB58HExhaustivePerceptual(img,width,startx, starty, thumbH58_word1, thumbH58_word2, error_currently_best);
 	stuff58bits(thumbH58_word1, thumbH58_word2, thumbH_word1, thumbH_word2);
 	if( error_thumbH < error_currently_best)
 		error_currently_best = error_thumbH;
 
-	error_thumbT = compressBlockTHUMB59TExhaustivePerceptual(img,width, height, startx, starty, thumbT59_word1, thumbT59_word2, error_currently_best);
+	error_thumbT = compressBlockTHUMB59TExhaustivePerceptual(img,width, startx, starty, thumbT59_word1, thumbT59_word2, error_currently_best);
 	stuff59bits(thumbT59_word1, thumbT59_word2, thumbT_word1, thumbT_word2);
 	if(error_thumbT < error_currently_best)
 		error_currently_best = error_thumbT;
@@ -15394,7 +15263,7 @@ void compressBlockETC2ExhaustivePerceptual(uint8 *img, uint8 *imgdec,int width,i
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compress a block exhaustively for the ETC2 RGB codec.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockETC2Exhaustive(uint8 *img, uint8 *imgdec,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockETC2Exhaustive(uint8 *img, uint8 *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int error_currently_best;
 
@@ -15439,49 +15308,49 @@ void compressBlockETC2Exhaustive(uint8 *img, uint8 *imgdec,int width,int height,
 	unsigned int etc1_word1;
 	unsigned int etc1_word2;
 
-	error_etc1 = (unsigned int) compressBlockDiffFlipFast(img, imgdec, width, height, startx, starty, etc1_word1, etc1_word2);
+	error_etc1 = (unsigned int) compressBlockDiffFlipFast(img, imgdec, width, startx, starty, etc1_word1, etc1_word2);
 	if(error_etc1 < error_currently_best)
 		error_currently_best = error_etc1;
 
-	compressBlockPlanar57(img, width, height, startx, starty, planar57_word1, planar57_word2);
-	decompressBlockPlanar57errorPerComponent(planar57_word1, planar57_word2, imgdec, width, height, startx, starty, img, error_planar_red, error_planar_green, error_planar_blue);
-	error_planar = calcBlockErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockPlanar57(img, width, startx, starty, planar57_word1, planar57_word2);
+	decompressBlockPlanar57errorPerComponent(planar57_word1, planar57_word2, imgdec, width, startx, starty, img, error_planar_red, error_planar_green, error_planar_blue);
+	error_planar = calcBlockErrorRGB(img, imgdec, width, startx, starty);
 	stuff57bits(planar57_word1, planar57_word2, planar_word1, planar_word2);
 	if(error_planar < error_currently_best)
 		error_currently_best = (unsigned int) error_planar;
 
-	error_thumbT = (unsigned int) compressBlockTHUMB59TFastest(img,width, height, startx, starty, thumbT59_word1, thumbT59_word2);
+	error_thumbT = (unsigned int) compressBlockTHUMB59TFastest(img,width, startx, starty, thumbT59_word1, thumbT59_word2);
 	stuff59bits(thumbT59_word1, thumbT59_word2, thumbT_word1, thumbT_word2);
 	if(error_thumbT < error_currently_best)
 		error_currently_best = error_thumbT;
 
-	error_thumbH = (unsigned int) compressBlockTHUMB58HFastest(img,width,height,startx, starty, thumbH58_word1, thumbH58_word2);
+	error_thumbH = (unsigned int) compressBlockTHUMB58HFastest(img,width,startx, starty, thumbH58_word1, thumbH58_word2);
 	stuff58bits(thumbH58_word1, thumbH58_word2, thumbH_word1, thumbH_word2);
 	if(error_thumbH < error_currently_best)
 		error_currently_best = error_thumbH;
 
 	// Second pass --- now find the lowest error, but only if it is lower than error_currently_best
-	error_etc1_differential = compressBlockDifferentialExhaustive(img, width, height, startx, starty, etc1_differential_word1, etc1_differential_word2, error_currently_best);
+	error_etc1_differential = compressBlockDifferentialExhaustive(img, width, startx, starty, etc1_differential_word1, etc1_differential_word2, error_currently_best);
 	if(error_etc1_differential < error_currently_best)
 		error_currently_best = error_etc1_differential;
 
-	compressBlockPlanar57Exhaustive(img, width, height, startx, starty, planar57_word1, planar57_word2, error_currently_best, error_planar_red, error_planar_green, error_planar_blue);
-	decompressBlockPlanar57(planar57_word1, planar57_word2, imgdec, width, height, startx, starty);
-	error_planar = calcBlockErrorRGB(img, imgdec, width, height, startx, starty);
+	compressBlockPlanar57Exhaustive(img, width, startx, starty, planar57_word1, planar57_word2, error_currently_best, error_planar_red, error_planar_green, error_planar_blue);
+	decompressBlockPlanar57(planar57_word1, planar57_word2, imgdec, width, startx, starty);
+	error_planar = calcBlockErrorRGB(img, imgdec, width, startx, starty);
 	stuff57bits(planar57_word1, planar57_word2, planar_word1, planar_word2);
 	if(error_planar < error_currently_best)
 		error_currently_best = (unsigned int) error_planar;
 	
-	error_etc1_individual = compressBlockIndividualExhaustive(img, width, height, startx, starty, etc1_individual_word1, etc1_individual_word2, error_currently_best);
+	error_etc1_individual = compressBlockIndividualExhaustive(img, width, startx, starty, etc1_individual_word1, etc1_individual_word2, error_currently_best);
 	if(error_etc1_individual < error_currently_best)
 		error_currently_best = error_etc1_individual;
 
-	error_thumbH = compressBlockTHUMB58HExhaustive(img,width,height,startx, starty, thumbH58_word1, thumbH58_word2, error_currently_best);
+	error_thumbH = compressBlockTHUMB58HExhaustive(img,width,startx, starty, thumbH58_word1, thumbH58_word2, error_currently_best);
 	if( error_thumbH < error_currently_best)
 		error_currently_best = error_thumbH;
 	stuff58bits(thumbH58_word1, thumbH58_word2, thumbH_word1, thumbH_word2);
 
-	error_thumbT = compressBlockTHUMB59TExhaustive(img,width, height, startx, starty, thumbT59_word1, thumbT59_word2, error_currently_best);
+	error_thumbT = compressBlockTHUMB59TExhaustive(img,width, startx, starty, thumbT59_word1, thumbT59_word2, error_currently_best);
 	if(error_thumbT < error_currently_best)
 		error_currently_best = error_thumbT;
 	stuff59bits(thumbT59_word1, thumbT59_word2, thumbT_word1, thumbT_word2);
@@ -15569,8 +15438,8 @@ void compressImageFile(uint8 *img, uint8 *alphaimg,int width,int height,char *ds
 	{
 		version[0] = '1'; version[1] = '0';
 	}
-
-	if(f=fopen(dstfile,"wb"))
+    f = fopen(dstfile, "wb");
+	if(f)
 	{
 		w=expandedwidth/4;  w*=4;
 		h=expandedheight/4; h*=4;
@@ -15762,10 +15631,10 @@ void compressImageFile(uint8 *img, uint8 *alphaimg,int width,int height,char *ds
 					if(metric==METRIC_NONPERCEPTUAL) 
 					{
 						if(speed==SPEED_FAST)
-							compressBlockDiffFlipFast(img, imgdec, expandedwidth, expandedheight, 4*x, 4*y, block1, block2);
+							compressBlockDiffFlipFast(img, imgdec, expandedwidth, 4*x, 4*y, block1, block2);
 						else
 #if EXHAUSTIVE_CODE_ACTIVE
-							compressBlockETC1Exhaustive(img, imgdec, expandedwidth, expandedheight, 4*x, 4*y, block1, block2);		
+							compressBlockETC1Exhaustive(img, imgdec, expandedwidth, 4*x, 4*y, block1, block2);		
 #else
 							printf("Not implemented in this version\n");
 #endif
@@ -15773,10 +15642,10 @@ void compressImageFile(uint8 *img, uint8 *alphaimg,int width,int height,char *ds
 					else 
 					{
 						if(speed==SPEED_FAST)
-							compressBlockDiffFlipFastPerceptual(img, imgdec, expandedwidth, expandedheight, 4*x, 4*y, block1, block2);
+							compressBlockDiffFlipFastPerceptual(img, imgdec, expandedwidth, 4*x, 4*y, block1, block2);
 						else
 #if EXHAUSTIVE_CODE_ACTIVE
-							compressBlockETC1ExhaustivePerceptual(img, imgdec, expandedwidth, expandedheight, 4*x, 4*y, block1, block2);	
+							compressBlockETC1ExhaustivePerceptual(img, imgdec, expandedwidth, 4*x, 4*y, block1, block2);	
 #else
 							printf("Not implemented in this version\n");
 #endif
@@ -15804,7 +15673,7 @@ void compressImageFile(uint8 *img, uint8 *alphaimg,int width,int height,char *ds
 							compressBlockETC2Fast(img, alphaimg,imgdec, expandedwidth, expandedheight, 4*x, 4*y, block1, block2);
 						else
 #if EXHAUSTIVE_CODE_ACTIVE
-							compressBlockETC2Exhaustive(img, imgdec, expandedwidth, expandedheight, 4*x, 4*y, block1, block2);		
+							compressBlockETC2Exhaustive(img, imgdec, expandedwidth, 4*x, 4*y, block1, block2);		
 #else
 							printf("Not implemented in this version\n");
 #endif
@@ -15812,10 +15681,10 @@ void compressImageFile(uint8 *img, uint8 *alphaimg,int width,int height,char *ds
 					else 
 					{
 						if(speed==SPEED_FAST)
-							compressBlockETC2FastPerceptual(img, imgdec, expandedwidth, expandedheight, 4*x, 4*y, block1, block2);
+							compressBlockETC2FastPerceptual(img, imgdec, expandedwidth, 4*x, 4*y, block1, block2);
 						else
 #if EXHAUSTIVE_CODE_ACTIVE
-							compressBlockETC2ExhaustivePerceptual(img, imgdec, expandedwidth, expandedheight, 4*x, 4*y, block1, block2);	
+							compressBlockETC2ExhaustivePerceptual(img, imgdec, expandedwidth, 4*x, 4*y, block1, block2);	
 #else
 							printf("Not implemented in this version\n");
 #endif
@@ -15827,9 +15696,9 @@ void compressImageFile(uint8 *img, uint8 *alphaimg,int width,int height,char *ds
 				{
 					uint8 alphadata[8];
 					if(speed==SPEED_SLOW)
-						compressBlockAlphaSlow(alphaimg,4*x,4*y,expandedwidth,expandedheight,alphadata);
+						compressBlockAlphaSlow(alphaimg,4*x,4*y,expandedwidth,alphadata);
 					else
-						compressBlockAlphaFast(alphaimg,4*x,4*y,expandedwidth,expandedheight,alphadata);
+						compressBlockAlphaFast(alphaimg,4*x,4*y,expandedwidth,alphadata);
 					//write the 8 bytes of alphadata into f.
 					fwrite(alphadata,1,8,f);
 				}
@@ -15845,14 +15714,14 @@ void compressImageFile(uint8 *img, uint8 *alphaimg,int width,int height,char *ds
 				if(format==ETC2PACKAGE_R_NO_MIPMAPS||format==ETC2PACKAGE_RG_NO_MIPMAPS) 
 				{ 
 					uint8 alphadata[8];
-					compressBlockAlpha16(alphaimg,4*x,4*y,expandedwidth,expandedheight,alphadata);
+					compressBlockAlpha16(alphaimg,4*x,4*y,expandedwidth,alphadata);
 					fwrite(alphadata,1,8,f);
 				}
 				//compression of second alpha channel in RG-compression
 				if(format==ETC2PACKAGE_RG_NO_MIPMAPS) 
 				{
 					uint8 alphadata[8];
-					compressBlockAlpha16(alphaimg2,4*x,4*y,expandedwidth,expandedheight,alphadata);
+					compressBlockAlpha16(alphaimg2,4*x,4*y,expandedwidth,alphadata);
 					fwrite(alphadata,1,8,f);
 				}
 #if 1
@@ -15879,7 +15748,7 @@ void compressImageFile(uint8 *img, uint8 *alphaimg,int width,int height,char *ds
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 void compressFile(char *srcfile,char *dstfile)
 {
-	uint8 *srcimg;
+	uint8 *srcimg = NULL;
 	int width,height;
 	int extendedwidth, extendedheight;
 	struct _timeb tstruct;
@@ -15980,7 +15849,7 @@ double calculatePSNRTwoFiles(char *srcfile1,char *srcfile2)
 	uint8 *srcimg2;
 	int width1, height1;
 	int width2, height2;
-	double PSNR;
+	double PSNR = 0;
 	double perceptually_weighted_PSNR;
 
 	if(readSrcFileNoExpand(srcfile1,srcimg1,width1,height1))
@@ -16021,9 +15890,6 @@ int main(int argc,char *argv[])
 		char srcfile[200];
 		char dstfile[200];
 		readArguments(argc,argv,srcfile,dstfile);
-		
-		int q = find_pos_of_extension(srcfile);
-		int q2 = find_pos_of_extension(dstfile);
 		
 		if(!fileExist(srcfile))
 		{
