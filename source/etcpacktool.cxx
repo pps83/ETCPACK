@@ -52,7 +52,7 @@
 #include <time.h>
 #include <sys/timeb.h>
 #include "image.h"
-#include "etcpack.h"
+#include "../etcpack.h"
 
 // Typedefs
 typedef unsigned char uint8;
