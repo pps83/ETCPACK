@@ -24,9 +24,15 @@
     <ClCompile Include="..\source\image.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\etcpacktool.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\etcpack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

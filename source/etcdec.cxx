@@ -213,13 +213,13 @@ typedef short int16;
 
 
 // Global tables
-static uint8 table59T[8] = {3,6,11,16,23,32,41,64};  // 3-bit table for the 59 bit T-mode
-static uint8 table58H[8] = {3,6,11,16,23,32,41,64};  // 3-bit table for the 58 bit H-mode
+static const uint8 table59T[8] = {3,6,11,16,23,32,41,64};  // 3-bit table for the 59 bit T-mode
+static const uint8 table58H[8] = {3,6,11,16,23,32,41,64};  // 3-bit table for the 58 bit H-mode
 static int compressParams[16][4] = {{-8, -2,  2, 8}, {-8, -2,  2, 8}, {-17, -5, 5, 17}, {-17, -5, 5, 17}, {-29, -9, 9, 29}, {-29, -9, 9, 29}, {-42, -13, 13, 42}, {-42, -13, 13, 42}, {-60, -18, 18, 60}, {-60, -18, 18, 60}, {-80, -24, 24, 80}, {-80, -24, 24, 80}, {-106, -33, 33, 106}, {-106, -33, 33, 106}, {-183, -47, 47, 183}, {-183, -47, 47, 183}};
 static int unscramble[4] = {2, 3, 1, 0};
-int alphaTableInitialized = 0;
+static int alphaTableInitialized = 0;
 int alphaTable[256][8];
-int alphaBase[16][4] = {	
+int const alphaBase[16][4] = {	
               {-15,-9,-6,-3},
 							{-13,-10,-7,-3},
 							{-13,-8,-5,-2},
@@ -238,9 +238,6 @@ int alphaBase[16][4] = {
 							{ -9,-7,-5,-3}
 											};
 
-// Global variables
-int formatSigned = 0;
-
 // Enums
  enum{PATTERN_H = 0, 
       PATTERN_T = 1};
@@ -250,9 +247,8 @@ int formatSigned = 0;
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 void setupAlphaTable() 
 {
-  if(alphaTableInitialized)
-    return;
-  alphaTableInitialized = 1;
+	if(alphaTableInitialized)
+		return;
 
 	//read table used for alpha compression
 	int buf;
@@ -280,48 +276,7 @@ void setupAlphaTable()
 			//note: we don't do clamping here, though we could, because we'll be clamped afterwards anyway.
 		}
 	}
-}
-
-// Read a word in big endian style
-// NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void read_big_endian_2byte_word(unsigned short *blockadr, FILE *f)
-{
-	uint8 bytes[2];
-	unsigned short block;
-
-	fread(&bytes[0], 1, 1, f);
-	fread(&bytes[1], 1, 1, f);
-
-	block = 0;
-	block |= bytes[0];
-	block = block << 8;
-	block |= bytes[1];
-
-	blockadr[0] = block;
-}
-
-// Read a word in big endian style
-// NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void read_big_endian_4byte_word(unsigned int *blockadr, FILE *f)
-{
-	uint8 bytes[4];
-	unsigned int block;
-
-	fread(&bytes[0], 1, 1, f);
-	fread(&bytes[1], 1, 1, f);
-	fread(&bytes[2], 1, 1, f);
-	fread(&bytes[3], 1, 1, f);
-
-	block = 0;
-	block |= bytes[0];
-	block = block << 8;
-	block |= bytes[1];
-	block = block << 8;
-	block |= bytes[2];
-	block = block << 8;
-	block |= bytes[3];
-
-	blockadr[0] = block;
+	alphaTableInitialized = 1;
 }
 
 // The format stores the bits for the three extra modes in a roundabout way to be able to
@@ -1482,6 +1437,7 @@ void decompressBlockTHUMB58HAlpha(unsigned int block_part1, unsigned int block_p
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 void decompressBlockETC21BitAlphaC(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alphaimg, int width, int startx, int starty, int channelsRGB)
 {
+	setupAlphaTable();
 	int diffbit;
 	signed char color1[3];
 	signed char diff[3];
@@ -1643,13 +1599,14 @@ int clamp(int val)
 	return val;
 }
 
-// Decodes tha alpha component in a block coded with GL_COMPRESSED_RGBA8_ETC2_EAC.
+// Decodes the alpha component in a block coded with GL_COMPRESSED_RGBA8_ETC2_EAC.
 // Note that this decoding is slightly different from that of GL_COMPRESSED_R11_EAC.
 // However, a hardware decoder can share gates between the two formats as explained
 // in the specification under GL_COMPRESSED_R11_EAC.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 void decompressBlockAlphaC(uint8* data, uint8* img, int width, int ix, int iy, int channels) 
 {
+	setupAlphaTable();
 	int alpha = data[0];
 	int table = data[1];
 	
@@ -1771,8 +1728,9 @@ uint16 get16bits11bits(int base, int table, int mul, int index)
 
 // Decompresses a block using one of the GL_COMPRESSED_R11_EAC or GL_COMPRESSED_SIGNED_R11_EAC-formats
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void decompressBlockAlpha16bitC(uint8* data, uint8* img, int width, int ix, int iy, int channels) 
+void decompressBlockAlpha16bitC(uint8* data, uint8* img, int width, int ix, int iy, int channels, int formatSigned)
 {
+	setupAlphaTable();
 	int alpha = data[0];
 	int table = data[1];
 
@@ -1835,7 +1793,7 @@ void decompressBlockAlpha16bitC(uint8* data, uint8* img, int width, int ix, int 
 	}			
 }
 
-void decompressBlockAlpha16bit(uint8* data, uint8* img, int width, int ix, int iy)
+void decompressBlockAlpha16bit(uint8* data, uint8* img, int width, int ix, int iy, int formatSigned)
 {
-  decompressBlockAlpha16bitC(data, img, width, ix, iy, 1);
+  decompressBlockAlpha16bitC(data, img, width, ix, iy, 1, formatSigned);
 }
