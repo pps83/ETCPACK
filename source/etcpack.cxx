@@ -55,32 +55,32 @@
 #include "../etcpack.h"
 
 // Typedefs
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef short int16;
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef short int16_t;
 
 // Functions needed for decrompession ---- in etcdec.cxx
 void unstuff57bits(unsigned int planar_word1, unsigned int planar_word2, unsigned int &planar57_word1, unsigned int &planar57_word2);
 void unstuff59bits(unsigned int thumbT_word1, unsigned int thumbT_word2, unsigned int &thumbT59_word1, unsigned int &thumbT59_word2);
 void unstuff58bits(unsigned int thumbH_word1, unsigned int thumbH_word2, unsigned int &thumbH58_word1, unsigned int &thumbH58_word2);
-void decompressColor(int R_B, int G_B, int B_B, uint8 (colors_RGB444)[2][3], uint8 (colors)[2][3]);
-void calculatePaintColors59T(uint8 d, uint8 p, uint8 (colors)[2][3], uint8 (possible_colors)[4][3]);
-void calculatePaintColors58H(uint8 d, uint8 p, uint8 (colors)[2][3], uint8 (possible_colors)[4][3]);
-void decompressBlockTHUMB59T(unsigned int block_part1, unsigned int block_part2, uint8 *img,int width,int startx,int starty);
-void decompressBlockTHUMB58H(unsigned int block_part1, unsigned int block_part2, uint8 *img,int width,int startx,int starty);
-void decompressBlockPlanar57(unsigned int compressed57_1, unsigned int compressed57_2, uint8 *img,int width,int startx,int starty);
-void decompressBlockDiffFlip(unsigned int block_part1, unsigned int block_part2, uint8 *img,int width,int startx,int starty);
-void decompressBlockETC2(unsigned int block_part1, unsigned int block_part2, uint8 *img,int width,int startx,int starty);
-void decompressBlockDifferentialWithAlpha(unsigned int block_part1,unsigned int block_part2, uint8* img, uint8* alpha, int width, int startx, int starty);
-void decompressBlockETC21BitAlpha(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alphaimg, int width,int startx,int starty);
-void decompressBlockTHUMB58HAlpha(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alpha,int width,int startx,int starty);
-void decompressBlockTHUMB59TAlpha(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alpha,int width,int startx,int starty);
-uint8 getbit(uint8 input, int frompos, int topos);
+void decompressColor(int R_B, int G_B, int B_B, uint8_t (colors_RGB444)[2][3], uint8_t (colors)[2][3]);
+void calculatePaintColors59T(uint8_t d, uint8_t p, uint8_t (colors)[2][3], uint8_t (possible_colors)[4][3]);
+void calculatePaintColors58H(uint8_t d, uint8_t p, uint8_t (colors)[2][3], uint8_t (possible_colors)[4][3]);
+void decompressBlockTHUMB59T(unsigned int block_part1, unsigned int block_part2, uint8_t *img,int width,int startx,int starty);
+void decompressBlockTHUMB58H(unsigned int block_part1, unsigned int block_part2, uint8_t *img,int width,int startx,int starty);
+void decompressBlockPlanar57(unsigned int compressed57_1, unsigned int compressed57_2, uint8_t *img,int width,int startx,int starty);
+void decompressBlockDiffFlip(unsigned int block_part1, unsigned int block_part2, uint8_t *img,int width,int startx,int starty);
+void decompressBlockETC2(unsigned int block_part1, unsigned int block_part2, uint8_t *img,int width,int startx,int starty);
+void decompressBlockDifferentialWithAlpha(unsigned int block_part1,unsigned int block_part2, uint8_t* img, uint8_t* alpha, int width, int startx, int starty);
+void decompressBlockETC21BitAlpha(unsigned int block_part1, unsigned int block_part2, uint8_t *img, uint8_t* alphaimg, int width,int startx,int starty);
+void decompressBlockTHUMB58HAlpha(unsigned int block_part1, unsigned int block_part2, uint8_t *img, uint8_t* alpha,int width,int startx,int starty);
+void decompressBlockTHUMB59TAlpha(unsigned int block_part1, unsigned int block_part2, uint8_t *img, uint8_t* alpha,int width,int startx,int starty);
+uint8_t getbit(uint8_t input, int frompos, int topos);
 int clamp(int val);
-void decompressBlockAlpha(uint8* data,uint8* img,int width,int ix,int iy);
-uint16 get16bits11bits(int base, int table, int mul, int index);
-void decompressBlockAlpha16bit(uint8* data,uint8* img,int width,int ix,int iy, int formatSigned);
-int16 get16bits11signed(int base, int table, int mul, int index);
+void decompressBlockAlpha(uint8_t* data,uint8_t* img,int width,int ix,int iy);
+uint16_t get16bits11bits(int base, int table, int mul, int index);
+void decompressBlockAlpha16bit(uint8_t* data,uint8_t* img,int width,int ix,int iy, int formatSigned);
+int16_t get16bits11signed(int base, int table, int mul, int index);
 void setupAlphaTable();
 
 
@@ -153,9 +153,9 @@ void setupAlphaTable();
 #define	TABLE_BITS_58H 3
 
 // Global tables
-static const uint8 table59T[8] = {3,6,11,16,23,32,41,64};  // 3-bit table for the 59 bit T-mode
-static const uint8 table58H[8] = {3,6,11,16,23,32,41,64};  // 3-bit table for the 58 bit H-mode
-static const uint8 weight[3] = {1,1,1};			// Color weight
+static const uint8_t table59T[8] = {3,6,11,16,23,32,41,64};  // 3-bit table for the 59 bit T-mode
+static const uint8_t table58H[8] = {3,6,11,16,23,32,41,64};  // 3-bit table for the 58 bit H-mode
+static const uint8_t weight[3] = {1,1,1};			// Color weight
 
 // Enums
 enum{PATTERN_H = 0, 
@@ -210,7 +210,7 @@ static const int compressParamsFast[32] = {  -8,  -2,  2,   8,
 
 // Computes the average color in a 2x4 area and returns the average color as a float.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void computeAverageColor2x4noQuantFloat(uint8 *img,int width,int startx,int starty,float *avg_color)
+void computeAverageColor2x4noQuantFloat(uint8_t *img,int width,int startx,int starty,float *avg_color)
 {
 	int r=0,g=0,b=0;
 	for(int y=starty; y<starty+4; y++)
@@ -231,7 +231,7 @@ void computeAverageColor2x4noQuantFloat(uint8 *img,int width,int startx,int star
 
 // Computes the average color in a 4x2 area and returns the average color as a float.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void computeAverageColor4x2noQuantFloat(uint8 *img,int width,int startx,int starty,float *avg_color)
+void computeAverageColor4x2noQuantFloat(uint8_t *img,int width,int startx,int starty,float *avg_color)
 {
 	int r=0,g=0,b=0;
 	for(int y=starty; y<starty+2; y++)
@@ -251,9 +251,9 @@ void computeAverageColor4x2noQuantFloat(uint8 *img,int width,int startx,int star
 
 // Finds all pixel indices for a 2x4 block.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int compressBlockWithTable2x4(uint8 *img,int width,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
+int compressBlockWithTable2x4(uint8_t *img,int width,int startx,int starty,uint8_t *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
 {
-	uint8 orig[3],approx[3];
+	uint8_t orig[3],approx[3];
 	unsigned int pixel_indices_MSB=0, pixel_indices_LSB=0, pixel_indices = 0;
 	int sum_error=0;
 	int q, i;
@@ -311,9 +311,9 @@ int compressBlockWithTable2x4(uint8 *img,int width,int startx,int starty,uint8 *
 // Finds all pixel indices for a 2x4 block using perceptual weighting of error.
 // Done using fixed poinit arithmetics where weights are multiplied by 1000.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockWithTable2x4percep1000(uint8 *img,int width,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
+unsigned int compressBlockWithTable2x4percep1000(uint8_t *img,int width,int startx,int starty,uint8_t *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
 {
-	uint8 orig[3],approx[3];
+	uint8_t orig[3],approx[3];
 	unsigned int pixel_indices_MSB=0, pixel_indices_LSB=0, pixel_indices = 0;
 	unsigned int sum_error=0;
 	int q, i;
@@ -374,9 +374,9 @@ unsigned int compressBlockWithTable2x4percep1000(uint8 *img,int width,int startx
 
 // Finds all pixel indices for a 2x4 block using perceptual weighting of error.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-float compressBlockWithTable2x4percep(uint8 *img,int width,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
+float compressBlockWithTable2x4percep(uint8_t *img,int width,int startx,int starty,uint8_t *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
 {
-	uint8 orig[3],approx[3];
+	uint8_t orig[3],approx[3];
 	unsigned int pixel_indices_MSB=0, pixel_indices_LSB=0, pixel_indices = 0;
 	float sum_error=0;
 	int q, i;
@@ -436,9 +436,9 @@ float compressBlockWithTable2x4percep(uint8 *img,int width,int startx,int starty
 
 // Finds all pixel indices for a 4x2 block.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int compressBlockWithTable4x2(uint8 *img,int width,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
+int compressBlockWithTable4x2(uint8_t *img,int width,int startx,int starty,uint8_t *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
 {
-	uint8 orig[3],approx[3];
+	uint8_t orig[3],approx[3];
 	unsigned int pixel_indices_MSB=0, pixel_indices_LSB=0, pixel_indices = 0;
 	int sum_error=0;
 	int q;
@@ -495,9 +495,9 @@ int compressBlockWithTable4x2(uint8 *img,int width,int startx,int starty,uint8 *
 // Finds all pixel indices for a 4x2 block using perceptual weighting of error.
 // Done using fixed point arithmetics where 1000 corresponds to 1.0.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockWithTable4x2percep1000(uint8 *img,int width,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
+unsigned int compressBlockWithTable4x2percep1000(uint8_t *img,int width,int startx,int starty,uint8_t *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
 {
-	uint8 orig[3],approx[3];
+	uint8_t orig[3],approx[3];
 	unsigned int pixel_indices_MSB=0, pixel_indices_LSB=0, pixel_indices = 0;
 	unsigned int sum_error=0;
 	int q;
@@ -556,9 +556,9 @@ unsigned int compressBlockWithTable4x2percep1000(uint8 *img,int width,int startx
 
 // Finds all pixel indices for a 4x2 block using perceptual weighting of error.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-float compressBlockWithTable4x2percep(uint8 *img,int width,int startx,int starty,uint8 *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
+float compressBlockWithTable4x2percep(uint8_t *img,int width,int startx,int starty,uint8_t *avg_color,int table,unsigned int *pixel_indices_MSBp, unsigned int *pixel_indices_LSBp)
 {
-	uint8 orig[3],approx[3];
+	uint8_t orig[3],approx[3];
 	unsigned int pixel_indices_MSB=0, pixel_indices_LSB=0, pixel_indices = 0;
 	float sum_error=0;
 	int q;
@@ -773,7 +773,7 @@ const unsigned int square_table_percep_blue[511] = {
 
 // Find the best table to use for a 2x4 area by testing all.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int tryalltables_3bittable2x4(uint8 *img,int width,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
+int tryalltables_3bittable2x4(uint8_t *img,int width,int startx,int starty,uint8_t *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
 {
 	int min_error = 3*255*255*16;
 	int q;
@@ -799,7 +799,7 @@ int tryalltables_3bittable2x4(uint8 *img,int width,int startx,int starty,uint8 *
 // Uses perceptual weighting. 
 // Uses fixed point implementation where 1000 equals 1.0
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int tryalltables_3bittable2x4percep1000(uint8 *img,int width,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
+unsigned int tryalltables_3bittable2x4percep1000(uint8_t *img,int width,int startx,int starty,uint8_t *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
 {
 	unsigned int min_error = MAXERR1000;
 	int q;
@@ -827,7 +827,7 @@ unsigned int tryalltables_3bittable2x4percep1000(uint8 *img,int width,int startx
 // Find the best table to use for a 2x4 area by testing all.
 // Uses perceptual weighting. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int tryalltables_3bittable2x4percep(uint8 *img,int width,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
+int tryalltables_3bittable2x4percep(uint8_t *img,int width,int startx,int starty,uint8_t *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
 {
 	float min_error = 3*255*255*16;
 	int q;
@@ -852,7 +852,7 @@ int tryalltables_3bittable2x4percep(uint8 *img,int width,int startx,int starty,u
 
 // Find the best table to use for a 4x2 area by testing all.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int tryalltables_3bittable4x2(uint8 *img,int width,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
+int tryalltables_3bittable4x2(uint8_t *img,int width,int startx,int starty,uint8_t *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
 {
 	int min_error = 3*255*255*16;
 	int q;
@@ -879,7 +879,7 @@ int tryalltables_3bittable4x2(uint8 *img,int width,int startx,int starty,uint8 *
 // Uses perceptual weighting. 
 // Uses fixed point implementation where 1000 equals 1.0
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int tryalltables_3bittable4x2percep1000(uint8 *img,int width,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
+unsigned int tryalltables_3bittable4x2percep1000(uint8_t *img,int width,int startx,int starty,uint8_t *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
 {
 	unsigned int min_error = MAXERR1000;
 	int q;
@@ -904,7 +904,7 @@ unsigned int tryalltables_3bittable4x2percep1000(uint8 *img,int width,int startx
 // Find the best table to use for a 4x2 area by testing all.
 // Uses perceptual weighting. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int tryalltables_3bittable4x2percep(uint8 *img,int width,int startx,int starty,uint8 *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
+int tryalltables_3bittable4x2percep(uint8_t *img,int width,int startx,int starty,uint8_t *avg_color, unsigned int &best_table,unsigned int &best_pixel_indices_MSB, unsigned int &best_pixel_indices_LSB)
 {
 	float min_error = 3*255*255*16;
 	int q;
@@ -940,8 +940,8 @@ void quantize444ColorCombined(float *avg_col_in, int *enc_color)
 	float dr, dg, db;
 	float kr, kg, kb;
 	float wR2, wG2, wB2;
-	uint8 low_color[3];
-	uint8 high_color[3];
+	uint8_t low_color[3];
+	uint8_t high_color[3];
 	float lowhightable[8];
 	int q;
 	float kval = (float) (255.0/15.0);
@@ -1099,13 +1099,13 @@ void quantize444ColorCombined(float *avg_col_in, int *enc_color)
 // (See the presentation http://www.jacobstrom.com/publications/PACKMAN.ppt for more info.) 
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void quantize555ColorCombined(float *avg_col_in, int *enc_color, uint8 *avg_color)
+void quantize555ColorCombined(float *avg_col_in, int *enc_color, uint8_t *avg_color)
 {
 	float dr, dg, db;
 	float kr, kg, kb;
 	float wR2, wG2, wB2;
-	uint8 low_color[3];
-	uint8 high_color[3];
+	uint8_t low_color[3];
+	uint8_t high_color[3];
 	float lowhightable[8];
 	int q;
 	float kval = (float) (255.0/31.0);
@@ -1247,13 +1247,13 @@ void quantize555ColorCombined(float *avg_col_in, int *enc_color, uint8 *avg_colo
 // (See the presentation http://www.jacobstrom.com/publications/PACKMAN.ppt for more info.) 
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void quantize444ColorCombinedPerceptual(float *avg_col_in, int *enc_color, uint8 *avg_color)
+void quantize444ColorCombinedPerceptual(float *avg_col_in, int *enc_color, uint8_t *avg_color)
 {
 	float dr, dg, db;
 	float kr, kg, kb;
 	float wR2, wG2, wB2;
-	uint8 low_color[3];
-	uint8 high_color[3];
+	uint8_t low_color[3];
+	uint8_t high_color[3];
 	float lowhightable[8];
 	int q;
 	float kval = (float) (255.0/15.0);
@@ -1394,13 +1394,13 @@ void quantize444ColorCombinedPerceptual(float *avg_col_in, int *enc_color, uint8
 // (See the presentation http://www.jacobstrom.com/publications/PACKMAN.ppt for more info.) 
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void quantize555ColorCombinedPerceptual(float *avg_col_in, int *enc_color, uint8 *avg_color)
+void quantize555ColorCombinedPerceptual(float *avg_col_in, int *enc_color, uint8_t *avg_color)
 {
 	float dr, dg, db;
 	float kr, kg, kb;
 	float wR2, wG2, wB2;
-	uint8 low_color[3];
-	uint8 high_color[3];
+	uint8_t low_color[3];
+	uint8_t high_color[3];
 	float lowhightable[8];
 	int q;
 	float kval = (float) (255.0/31.0);
@@ -1536,11 +1536,11 @@ void quantize555ColorCombinedPerceptual(float *avg_col_in, int *enc_color, uint8
 // Uses a perceptual error metric.
 // Uses fixed point arithmetics where 1000 equals 1.0
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockOnlyIndividualAveragePerceptual1000(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, int *best_enc_color1, int*best_enc_color2, int &best_flip, unsigned int &best_err_upper, unsigned int &best_err_lower, unsigned int &best_err_left, unsigned int &best_err_right, int *best_color_upper, int *best_color_lower, int *best_color_left, int *best_color_right)
+unsigned int compressBlockOnlyIndividualAveragePerceptual1000(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, int *best_enc_color1, int*best_enc_color2, int &best_flip, unsigned int &best_err_upper, unsigned int &best_err_lower, unsigned int &best_err_left, unsigned int &best_err_right, int *best_color_upper, int *best_color_lower, int *best_color_left, int *best_color_right)
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
-	uint8 avg_color_quant1[3], avg_color_quant2[3];
+	uint8_t avg_color_quant1[3], avg_color_quant2[3];
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3];
@@ -1733,11 +1733,11 @@ unsigned int compressBlockOnlyIndividualAveragePerceptual1000(uint8 *img,int wid
 
 // Compresses the block using only the individual mode in ETC1/ETC2 using the average color as the base color.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int compressBlockOnlyIndividualAverage(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, int *best_enc_color1, int*best_enc_color2, int &best_flip, unsigned int &best_err_upper, unsigned int &best_err_lower, unsigned int &best_err_left, unsigned int &best_err_right, int *best_color_upper, int *best_color_lower, int *best_color_left, int *best_color_right)
+int compressBlockOnlyIndividualAverage(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, int *best_enc_color1, int*best_enc_color2, int &best_flip, unsigned int &best_err_upper, unsigned int &best_err_lower, unsigned int &best_err_left, unsigned int &best_err_right, int *best_color_upper, int *best_color_lower, int *best_color_left, int *best_color_right)
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
-	uint8 avg_color_quant1[3], avg_color_quant2[3];
+	uint8_t avg_color_quant1[3], avg_color_quant2[3];
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3];
@@ -1932,11 +1932,11 @@ int compressBlockOnlyIndividualAverage(uint8 *img,int width,int startx,int start
 // Uses the average color as the base color in each half-block.
 // Tries both flipped and unflipped.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockDiffFlipAverage(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockDiffFlipAverage(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
-	uint8 avg_color_quant1[3], avg_color_quant2[3];
+	uint8_t avg_color_quant1[3], avg_color_quant2[3];
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3], diff[3];
@@ -2247,11 +2247,11 @@ void compressBlockDiffFlipAverage(uint8 *img,int width,int startx,int starty, un
 // If average colors are too different, use the average color of the entire block in both half-blocks.
 // Tries both flipped and unflipped.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int compressBlockOnlyDiffFlipAverage(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, int *best_enc_color1, int*best_enc_color2, int &best_flip)
+int compressBlockOnlyDiffFlipAverage(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, int *best_enc_color1, int*best_enc_color2, int &best_flip)
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
-	uint8 avg_color_quant1[3], avg_color_quant2[3];
+	uint8_t avg_color_quant1[3], avg_color_quant2[3];
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3], diff[3];
@@ -2480,11 +2480,11 @@ int compressBlockOnlyDiffFlipAverage(uint8 *img,int width,int startx,int starty,
 // Tries both flipped and unflipped.
 // Uses fixed point arithmetics where 1000 represents 1.0.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockOnlyDiffFlipAveragePerceptual1000(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+unsigned int compressBlockOnlyDiffFlipAveragePerceptual1000(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
-	uint8 avg_color_quant1[3], avg_color_quant2[3];
+	uint8_t avg_color_quant1[3], avg_color_quant2[3];
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3], diff[3];
@@ -2700,11 +2700,11 @@ unsigned int compressBlockOnlyDiffFlipAveragePerceptual1000(uint8 *img,int width
 // Uses a perceptual error metric.
 // Tries both flipped and unflipped.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockDiffFlipAveragePerceptual(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+double compressBlockDiffFlipAveragePerceptual(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
-	uint8 avg_color_quant1[3], avg_color_quant2[3];
+	uint8_t avg_color_quant1[3], avg_color_quant2[3];
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3], diff[3];
@@ -3086,7 +3086,7 @@ void transposeMatrix( dMatrix *mat)
 // This can be used to quickly rule out combinations of colors.
 // Here we calculate the minimum error for the block if we know the red component for O and V.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcBBBred(uint8 *block, int colorO, int colorV)
+unsigned int calcBBBred(uint8_t *block, int colorO, int colorV)
 {
 	colorO = (colorO << 2) | (colorO >> 4);
 	colorV = (colorV << 2) | (colorV >> 4);
@@ -3106,7 +3106,7 @@ unsigned int calcBBBred(uint8 *block, int colorO, int colorV)
 
 // Calculating the minimum error for the block if we know the red component for H and V.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcCCCred(uint8 *block, int colorH, int colorV)
+unsigned int calcCCCred(uint8_t *block, int colorH, int colorV)
 {
     colorH = (colorH << 2) | (colorH >> 4);
     colorV = (colorV << 2) | (colorV >> 4);
@@ -3123,7 +3123,7 @@ unsigned int calcCCCred(uint8 *block, int colorH, int colorV)
 // Calculating the minimum error for the block if we know the red component for O and H.
 // Uses perceptual error metric.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcLowestPossibleRedOHperceptual(uint8 *block, int colorO, int colorH, unsigned int best_error_sofar)
+unsigned int calcLowestPossibleRedOHperceptual(uint8_t *block, int colorO, int colorH, unsigned int best_error_sofar)
 {
 	colorO = (colorO << 2) | (colorO >> 4);
 	colorH = (colorH << 2) | (colorH >> 4);
@@ -3143,7 +3143,7 @@ unsigned int calcLowestPossibleRedOHperceptual(uint8 *block, int colorO, int col
 
 // Calculating the minimum error for the block (in planar mode) if we know the red component for O and H.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcLowestPossibleRedOH(uint8 *block, int colorO, int colorH, unsigned int best_error_sofar)
+unsigned int calcLowestPossibleRedOH(uint8_t *block, int colorO, int colorH, unsigned int best_error_sofar)
 {
 	colorO = (colorO << 2) | (colorO >> 4);
 	colorH = (colorH << 2) | (colorH >> 4);
@@ -3164,7 +3164,7 @@ unsigned int calcLowestPossibleRedOH(uint8 *block, int colorO, int colorH, unsig
 // Calculating the minimum error for the block (in planar mode) if we know the red component for O and H and V.
 // Uses perceptual error metric. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcErrorPlanarOnlyRedPerceptual(uint8 *block, int colorO, int colorH, int colorV, unsigned int lowest_possible_error, unsigned int BBBvalue, unsigned int CCCvalue, unsigned int best_error_sofar)
+unsigned int calcErrorPlanarOnlyRedPerceptual(uint8_t *block, int colorO, int colorH, int colorV, unsigned int lowest_possible_error, unsigned int BBBvalue, unsigned int CCCvalue, unsigned int best_error_sofar)
 {
 	colorO = (colorO << 2) | (colorO >> 4);
 	colorH = (colorH << 2) | (colorH >> 4);
@@ -3206,7 +3206,7 @@ unsigned int calcErrorPlanarOnlyRedPerceptual(uint8 *block, int colorO, int colo
 
 // Calculating the minimum error for the block (in planar mode) if we know the red component for O and H and V.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcErrorPlanarOnlyRed(uint8 *block, int colorO, int colorH, int colorV, unsigned int lowest_possible_error, unsigned int BBBvalue, unsigned int CCCvalue, unsigned int best_error_sofar)
+unsigned int calcErrorPlanarOnlyRed(uint8_t *block, int colorO, int colorH, int colorV, unsigned int lowest_possible_error, unsigned int BBBvalue, unsigned int CCCvalue, unsigned int best_error_sofar)
 {
 	colorO = (colorO << 2) | (colorO >> 4);
 	colorH = (colorH << 2) | (colorH >> 4);
@@ -3249,7 +3249,7 @@ unsigned int calcErrorPlanarOnlyRed(uint8 *block, int colorO, int colorH, int co
 // Calculating the minimum error for the block (in planar mode) if we know the red component for O and H.
 // Uses perceptual error metrics.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcLowestPossibleGreenOHperceptual(uint8 *block, int colorO, int colorH, unsigned int best_error_sofar)
+unsigned int calcLowestPossibleGreenOHperceptual(uint8_t *block, int colorO, int colorH, unsigned int best_error_sofar)
 {
 	colorO = (colorO << 1) | (colorO >> 6);
 	colorH = (colorH << 1) | (colorH >> 6);
@@ -3268,7 +3268,7 @@ unsigned int calcLowestPossibleGreenOHperceptual(uint8 *block, int colorO, int c
 
 // Calculating the minimum error for the block (in planar mode) if we know the red component for O and H.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcLowestPossibleGreenOH(uint8 *block, int colorO, int colorH, unsigned int best_error_sofar)
+unsigned int calcLowestPossibleGreenOH(uint8_t *block, int colorO, int colorH, unsigned int best_error_sofar)
 {
 	colorO = (colorO << 1) | (colorO >> 6);
 	colorH = (colorH << 1) | (colorH >> 6);
@@ -3287,7 +3287,7 @@ unsigned int calcLowestPossibleGreenOH(uint8 *block, int colorO, int colorH, uns
 
 // Calculating the minimum error for the block (in planar mode) if we know the green component for O and V.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcBBBgreen(uint8 *block, int colorO, int colorV)
+unsigned int calcBBBgreen(uint8_t *block, int colorO, int colorV)
 {
 	colorO = (colorO << 1) | (colorO >> 6);
 	colorV = (colorV << 1) | (colorV >> 6);
@@ -3308,7 +3308,7 @@ unsigned int calcBBBgreen(uint8 *block, int colorO, int colorV)
 
 // Calculating the minimum error for the block (in planar mode) if we know the green component for H and V.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcCCCgreen(uint8 *block, int colorH, int colorV)
+unsigned int calcCCCgreen(uint8_t *block, int colorH, int colorV)
 {
 	colorH = (colorH << 1) | (colorH >> 6);
 	colorV = (colorV << 1) | (colorV >> 6);
@@ -3325,7 +3325,7 @@ unsigned int calcCCCgreen(uint8 *block, int colorH, int colorV)
 // Calculating the minimum error for the block (in planar mode) if we know the green component for H V and O.
 // Uses perceptual error metric.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcErrorPlanarOnlyGreenPerceptual(uint8 *block, int colorO, int colorH, int colorV, unsigned int lowest_possible_error, unsigned int BBBvalue, unsigned int CCCvalue, unsigned int best_error_sofar)
+unsigned int calcErrorPlanarOnlyGreenPerceptual(uint8_t *block, int colorO, int colorH, int colorV, unsigned int lowest_possible_error, unsigned int BBBvalue, unsigned int CCCvalue, unsigned int best_error_sofar)
 {
 	colorO = (colorO << 1) | (colorO >> 6);
 	colorH = (colorH << 1) | (colorH >> 6);
@@ -3368,7 +3368,7 @@ unsigned int calcErrorPlanarOnlyGreenPerceptual(uint8 *block, int colorO, int co
 
 // Calculating the minimum error for the block (in planar mode) if we know the green component for H V and O.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcErrorPlanarOnlyGreen(uint8 *block, int colorO, int colorH, int colorV, unsigned int lowest_possible_error, unsigned int BBBvalue, unsigned int CCCvalue, unsigned int best_error_sofar)
+unsigned int calcErrorPlanarOnlyGreen(uint8_t *block, int colorO, int colorH, int colorV, unsigned int lowest_possible_error, unsigned int BBBvalue, unsigned int CCCvalue, unsigned int best_error_sofar)
 {
 	colorO = (colorO << 1) | (colorO >> 6);
 	colorH = (colorH << 1) | (colorH >> 6);
@@ -3411,7 +3411,7 @@ unsigned int calcErrorPlanarOnlyGreen(uint8 *block, int colorO, int colorH, int 
 // Calculating the minimum error for the block (in planar mode) if we know the blue component for O and V.
 // Uses perceptual error metric.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcBBBbluePerceptual(uint8 *block, int colorO, int colorV)
+unsigned int calcBBBbluePerceptual(uint8_t *block, int colorO, int colorV)
 {
 	colorO = (colorO << 2) | (colorO >> 4);
 	colorV = (colorV << 2) | (colorV >> 4);
@@ -3431,7 +3431,7 @@ unsigned int calcBBBbluePerceptual(uint8 *block, int colorO, int colorV)
 
 // Calculating the minimum error for the block (in planar mode) if we know the blue component for O and V.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcBBBblue(uint8 *block, int colorO, int colorV)
+unsigned int calcBBBblue(uint8_t *block, int colorO, int colorV)
 {
 	colorO = (colorO << 2) | (colorO >> 4);
 	colorV = (colorV << 2) | (colorV >> 4);
@@ -3452,7 +3452,7 @@ unsigned int calcBBBblue(uint8 *block, int colorO, int colorV)
 // Calculating the minimum error for the block (in planar mode) if we know the blue component for H and V.
 // Uses perceptual error metric.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcCCCbluePerceptual(uint8 *block, int colorH, int colorV)
+unsigned int calcCCCbluePerceptual(uint8_t *block, int colorH, int colorV)
 {
 	colorH = (colorH << 2) | (colorH >> 4);
 	colorV = (colorV << 2) | (colorV >> 4);
@@ -3468,7 +3468,7 @@ unsigned int calcCCCbluePerceptual(uint8 *block, int colorH, int colorV)
 
 // Calculating the minimum error for the block (in planar mode) if we know the blue component for O and V.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcCCCblue(uint8 *block, int colorH, int colorV)
+unsigned int calcCCCblue(uint8_t *block, int colorH, int colorV)
 {
 	colorH = (colorH << 2) | (colorH >> 4);
 	colorV = (colorV << 2) | (colorV >> 4);
@@ -3485,7 +3485,7 @@ unsigned int calcCCCblue(uint8 *block, int colorH, int colorV)
 // Calculating the minimum error for the block (in planar mode) if we know the blue component for O and H.
 // Uses perceptual error metric.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcLowestPossibleBlueOHperceptual(uint8 *block, int colorO, int colorH, unsigned int best_error_sofar)
+unsigned int calcLowestPossibleBlueOHperceptual(uint8_t *block, int colorO, int colorH, unsigned int best_error_sofar)
 {
 	colorO = (colorO << 2) | (colorO >> 4);
 	colorH = (colorH << 2) | (colorH >> 4);
@@ -3505,7 +3505,7 @@ unsigned int calcLowestPossibleBlueOHperceptual(uint8 *block, int colorO, int co
 
 // Calculating the minimum error for the block (in planar mode) if we know the blue component for O and H.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcLowestPossibleBlueOH(uint8 *block, int colorO, int colorH, unsigned int best_error_sofar)
+unsigned int calcLowestPossibleBlueOH(uint8_t *block, int colorO, int colorH, unsigned int best_error_sofar)
 {
 	colorO = (colorO << 2) | (colorO >> 4);
 	colorH = (colorH << 2) | (colorH >> 4);
@@ -3526,7 +3526,7 @@ unsigned int calcLowestPossibleBlueOH(uint8 *block, int colorO, int colorH, unsi
 // Calculating the minimum error for the block (in planar mode) if we know the blue component for O, V and H.
 // Uses perceptual error metric.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcErrorPlanarOnlyBluePerceptual(uint8 *block, int colorO, int colorH, int colorV, unsigned int lowest_possible_error, unsigned int BBBvalue, unsigned int CCCvalue, unsigned int best_error_sofar)
+unsigned int calcErrorPlanarOnlyBluePerceptual(uint8_t *block, int colorO, int colorH, int colorV, unsigned int lowest_possible_error, unsigned int BBBvalue, unsigned int CCCvalue, unsigned int best_error_sofar)
 {
 	colorO = (colorO << 2) | (colorO >> 4);
 	colorH = (colorH << 2) | (colorH >> 4);
@@ -3569,7 +3569,7 @@ unsigned int calcErrorPlanarOnlyBluePerceptual(uint8 *block, int colorO, int col
 
 // Calculating the minimum error for the block (in planar mode) if we know the blue component for O, V and H.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calcErrorPlanarOnlyBlue(uint8 *block, int colorO, int colorH, int colorV, unsigned int lowest_possible_error, unsigned int BBBvalue, unsigned int CCCvalue, unsigned int best_error_sofar)
+unsigned int calcErrorPlanarOnlyBlue(uint8_t *block, int colorO, int colorH, int colorV, unsigned int lowest_possible_error, unsigned int BBBvalue, unsigned int CCCvalue, unsigned int best_error_sofar)
 {
 	colorO = (colorO << 2) | (colorO >> 4);
 	colorH = (colorH << 2) | (colorH >> 4);
@@ -3616,7 +3616,7 @@ unsigned int calcErrorPlanarOnlyBlue(uint8 *block, int colorO, int colorH, int c
 // This is close to optimal, but not quite, due to nonlinearities in the expantion from 6 and 7 bits to 8, and
 // in the clamping to a number between 0 and the maximum. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockPlanar57(uint8 *img, int width,int startx,int starty, unsigned int &compressed57_1, unsigned int &compressed57_2)
+void compressBlockPlanar57(uint8_t *img, int width,int startx,int starty, unsigned int &compressed57_1, unsigned int &compressed57_2)
 {
 	// Use least squares to find the solution with the smallest error.
 	// That is, find the vector x so that |Ax-b|^2 is minimized, where
@@ -3650,7 +3650,7 @@ void compressBlockPlanar57(uint8 *img, int width,int startx,int starty, unsigned
 
 	double coeffsC[9] = {0.2875, -0.0125, -0.0125, -0.0125, 0.4875, -0.3125, -0.0125, -0.3125, 0.4875};
 	double colorO[3], colorH[3], colorV[3];
-	uint8 colorO8[3], colorH8[3], colorV8[3];
+	uint8_t colorO8[3], colorH8[3], colorV8[3];
 	
 	dMatrix *D_matrix;
 	dMatrix *x_vector;
@@ -3791,8 +3791,8 @@ void stuff57bits(unsigned int planar57_word1, unsigned int planar57_word2, unsig
 	//     | R1' (5 bits) | dR2    | G1' (5 bits) | dG2    | B1' (5 bits) | dB2    | cw 1   | cw 2   |bit |bit |
 	//      ---------------------------------------------------------------------------------------------------
 
-	uint8 RO, GO1, GO2, BO1, BO2, BO3, RH1, RH2, GH, BH, RV, GV, BV;
-	uint8 bit, a, b, c, d, bits;
+	uint8_t RO, GO1, GO2, BO1, BO2, BO3, RH1, RH2, GH, BH, RV, GV, BV;
+	uint8_t bit, a, b, c, d, bits;
 
 	RO = GETBITSHIGH( planar57_word1, 6, 63);
 	GO1= GETBITSHIGH( planar57_word1, 1, 57);
@@ -3894,7 +3894,7 @@ void stuff58bits(unsigned int thumbH58_word1, unsigned int thumbH58_word2, unsig
 	//      --------------------------------------------------------------------------------------------------|
 
 	unsigned int part0, part1, part2, part3;
-	uint8 bit, a, b, c, d, bits;
+	uint8_t bit, a, b, c, d, bits;
 
 	// move parts
 	part0 = GETBITSHIGH( thumbH58_word1, 7, 57);
@@ -3934,7 +3934,7 @@ void stuff58bits(unsigned int thumbH58_word1, unsigned int thumbH58_word2, unsig
 void stuff58bitsDiffFalse(unsigned int thumbH58_word1, unsigned int thumbH58_word2, unsigned int &thumbH_word1, unsigned int &thumbH_word2)
 {
 	unsigned int part0, part1, part2, part3;
-	uint8 bit, a, b, c, d, bits;
+	uint8_t bit, a, b, c, d, bits;
 
 	// move parts
 	part0 = GETBITSHIGH( thumbH58_word1, 7, 57);
@@ -4001,8 +4001,8 @@ void stuff59bits(unsigned int thumbT59_word1, unsigned int thumbT59_word2, unsig
 	//     | R1' (5 bits) | dR2    | G1' (5 bits) | dG2    | B1' (5 bits) | dB2    | cw 1   | cw 2   |bt|bt|
 	//      ------------------------------------------------------------------------------------------------
 
-	uint8 R0a;
-	uint8 bit, a, b, c, d, bits;
+	uint8_t R0a;
+	uint8_t bit, a, b, c, d, bits;
 
 	R0a = GETBITSHIGH( thumbT59_word1, 2, 58);
 
@@ -4033,9 +4033,9 @@ void stuff59bits(unsigned int thumbT59_word1, unsigned int thumbT59_word2, unsig
 
 // Decompress the planar mode and calculate the error per component compared to original image.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void decompressBlockPlanar57errorPerComponent(unsigned int compressed57_1, unsigned int compressed57_2, uint8 *img,int width,int startx,int starty, uint8 *srcimg, unsigned int &error_red, unsigned int &error_green, unsigned int &error_blue)
+void decompressBlockPlanar57errorPerComponent(unsigned int compressed57_1, unsigned int compressed57_2, uint8_t *img,int width,int startx,int starty, uint8_t *srcimg, unsigned int &error_red, unsigned int &error_green, unsigned int &error_blue)
 {
-	uint8 colorO[3], colorH[3], colorV[3];
+	uint8_t colorO[3], colorH[3], colorV[3];
 
 	colorO[0] = GETBITSHIGH( compressed57_1, 6, 63);
 	colorO[1] = GETBITSHIGH( compressed57_1, 7, 57);
@@ -4089,11 +4089,11 @@ void decompressBlockPlanar57errorPerComponent(unsigned int compressed57_1, unsig
 // Compress using both individual and differential mode in ETC1/ETC2 using combined color 
 // quantization. Both flip modes are tried. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockDiffFlipCombined(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockDiffFlipCombined(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
-	uint8 avg_color_quant1[3], avg_color_quant2[3];
+	uint8_t avg_color_quant1[3], avg_color_quant2[3];
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3], diff[3];
@@ -4113,7 +4113,7 @@ void compressBlockDiffFlipCombined(uint8 *img,int width,int startx,int starty, u
 
 	float eps;
 
-	uint8 dummy[3];
+	uint8_t dummy[3];
 
 	quantize555ColorCombined(avg_color_float1, enc_color1, dummy);
 	quantize555ColorCombined(avg_color_float2, enc_color2, dummy);
@@ -4391,9 +4391,9 @@ void compressBlockDiffFlipCombined(uint8 *img,int width,int startx,int starty, u
 // Calculation of the two block colors using the LBG-algorithm
 // The following method scales down the intensity, since this can be compensated for anyway by both the H and T mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void computeColorLBGHalfIntensityFast(uint8 *img,int width,int startx,int starty, uint8 (LBG_colors)[2][3]) 
+void computeColorLBGHalfIntensityFast(uint8_t *img,int width,int startx,int starty, uint8_t (LBG_colors)[2][3]) 
 {
-	uint8 block_mask[4][4];
+	uint8_t block_mask[4][4];
 
 	// reset rand so that we get predictable output per block
 	srand(10000);
@@ -4461,9 +4461,9 @@ void computeColorLBGHalfIntensityFast(uint8 *img,int width,int startx,int starty
 		continue_seeding = false;
 
 		// calculate seeds
-		for (uint8 s = 0; s < 2; ++s) 
+		for (uint8_t s = 0; s < 2; ++s) 
 		{
-			for (uint8 c = 0; c < 3; ++c) 
+			for (uint8_t c = 0; c < 3; ++c) 
 			{ 
 				current_colors[s][c] = double((double(rand())/RAND_MAX)*(max_v[c]-min_v[c])) + min_v[c];
 			}
@@ -4517,9 +4517,9 @@ void computeColorLBGHalfIntensityFast(uint8 *img,int width,int startx,int starty
 			if (D < bestD) 
 			{
 				bestD = D;
-				for(uint8 s = 0; s < 2; ++s) 
+				for(uint8_t s = 0; s < 2; ++s) 
 				{
-					for(uint8 c = 0; c < 3; ++c) 
+					for(uint8_t c = 0; c < 3; ++c) 
 					{
 						best_colors[s][c] = current_colors[s][c];
 					}
@@ -4585,9 +4585,9 @@ void computeColorLBGHalfIntensityFast(uint8 *img,int width,int startx,int starty
 // The following method scales down the intensity, since this can be compensated for anyway by both the H and T mode.
 // Faster version
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void computeColorLBGNotIntensityFast(uint8 *img,int width,int startx,int starty, uint8 (LBG_colors)[2][3]) 
+void computeColorLBGNotIntensityFast(uint8_t *img,int width,int startx,int starty, uint8_t (LBG_colors)[2][3]) 
 {
-	uint8 block_mask[4][4];
+	uint8_t block_mask[4][4];
 
 	// reset rand so that we get predictable output per block
 	srand(10000);
@@ -4655,9 +4655,9 @@ void computeColorLBGNotIntensityFast(uint8 *img,int width,int startx,int starty,
 		continue_seeding = false;
 
 		// calculate seeds
-		for (uint8 s = 0; s < 2; ++s) 
+		for (uint8_t s = 0; s < 2; ++s) 
 		{
-			for (uint8 c = 0; c < 3; ++c) 
+			for (uint8_t c = 0; c < 3; ++c) 
 			{ 
 				current_colors[s][c] = double((double(rand())/RAND_MAX)*(max_v[c]-min_v[c])) + min_v[c];
 			}
@@ -4710,9 +4710,9 @@ void computeColorLBGNotIntensityFast(uint8 *img,int width,int startx,int starty,
 			if (D < bestD) 
 			{
 				bestD = D;
-				for(uint8 s = 0; s < 2; ++s) 
+				for(uint8_t s = 0; s < 2; ++s) 
 				{
-					for(uint8 c = 0; c < 3; ++c) 
+					for(uint8_t c = 0; c < 3; ++c) 
 					{
 						best_colors[s][c] = current_colors[s][c];
 					}
@@ -4777,9 +4777,9 @@ void computeColorLBGNotIntensityFast(uint8 *img,int width,int startx,int starty,
 // Calculation of the two block colors using the LBG-algorithm
 // The following method completely ignores the intensity, since this can be compensated for anyway by both the H and T mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void computeColorLBGNotIntensity(uint8 *img,int width,int startx,int starty, uint8 (LBG_colors)[2][3]) 
+void computeColorLBGNotIntensity(uint8_t *img,int width,int startx,int starty, uint8_t (LBG_colors)[2][3]) 
 {
-	uint8 block_mask[4][4];
+	uint8_t block_mask[4][4];
 
 	// reset rand so that we get predictable output per block
 	srand(10000);
@@ -4847,9 +4847,9 @@ void computeColorLBGNotIntensity(uint8 *img,int width,int startx,int starty, uin
 		continue_seeding = false;
 
 		// calculate seeds
-		for (uint8 s = 0; s < 2; ++s) 
+		for (uint8_t s = 0; s < 2; ++s) 
 		{
-			for (uint8 c = 0; c < 3; ++c) 
+			for (uint8_t c = 0; c < 3; ++c) 
 			{ 
 				current_colors[s][c] = double((double(rand())/RAND_MAX)*(max_v[c]-min_v[c])) + min_v[c];
 			}
@@ -4903,9 +4903,9 @@ void computeColorLBGNotIntensity(uint8 *img,int width,int startx,int starty, uin
 			if (D < bestD) 
 			{
 				bestD = D;
-				for(uint8 s = 0; s < 2; ++s) 
+				for(uint8_t s = 0; s < 2; ++s) 
 				{
-					for(uint8 c = 0; c < 3; ++c) 
+					for(uint8_t c = 0; c < 3; ++c) 
 					{
 						best_colors[s][c] = current_colors[s][c];
 					}
@@ -4969,9 +4969,9 @@ void computeColorLBGNotIntensity(uint8 *img,int width,int startx,int starty, uin
 
 // Calculation of the two block colors using the LBG-algorithm
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void computeColorLBG(uint8 *img,int width,int startx,int starty, uint8 (LBG_colors)[2][3]) 
+void computeColorLBG(uint8_t *img,int width,int startx,int starty, uint8_t (LBG_colors)[2][3]) 
 {
-	uint8 block_mask[4][4];
+	uint8_t block_mask[4][4];
 
 	// reset rand so that we get predictable output per block
 	srand(10000);
@@ -5031,9 +5031,9 @@ void computeColorLBG(uint8 *img,int width,int startx,int starty, uint8 (LBG_colo
 		continue_seeding = false;
 
 		// calculate seeds
-		for (uint8 s = 0; s < 2; ++s) 
+		for (uint8_t s = 0; s < 2; ++s) 
 		{
-			for (uint8 c = 0; c < 3; ++c) 
+			for (uint8_t c = 0; c < 3; ++c) 
 			{ 
 				current_colors[s][c] = double((double(rand())/RAND_MAX)*(max_v[c]-min_v[c])) + min_v[c];
 			}
@@ -5087,9 +5087,9 @@ void computeColorLBG(uint8 *img,int width,int startx,int starty, uint8 (LBG_colo
 			if (D < bestD) 
 			{
 				bestD = D;
-				for(uint8 s = 0; s < 2; ++s) 
+				for(uint8_t s = 0; s < 2; ++s) 
 				{
-					for(uint8 c = 0; c < 3; ++c) 
+					for(uint8_t c = 0; c < 3; ++c) 
 					{
 						best_colors[s][c] = current_colors[s][c];
 					}
@@ -5136,7 +5136,7 @@ void computeColorLBG(uint8 *img,int width,int startx,int starty, uint8 (LBG_colo
 	// Set the best colors as the final block colors
 	for(int s = 0; s < 2; ++s) 
 	{
-		for(uint8 c = 0; c < 3; ++c) 
+		for(uint8_t c = 0; c < 3; ++c) 
 		{
 			current_colors[s][c] = best_colors[s][c];
 		}
@@ -5149,9 +5149,9 @@ void computeColorLBG(uint8 *img,int width,int startx,int starty, uint8 (LBG_colo
 
 // Calculation of the two block colors using the LBG-algorithm
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void computeColorLBGfast(uint8 *img,int width,int startx,int starty, uint8 (LBG_colors)[2][3]) 
+void computeColorLBGfast(uint8_t *img,int width,int startx,int starty, uint8_t (LBG_colors)[2][3]) 
 {
-	uint8 block_mask[4][4];
+	uint8_t block_mask[4][4];
 
 	// reset rand so that we get predictable output per block
 	srand(10000);
@@ -5160,7 +5160,7 @@ void computeColorLBGfast(uint8 *img,int width,int startx,int starty, uint8 (LBG_
 	double error_a, error_b;
 	int number_of_iterations = 10;
 	double t_color[2][3];
-	uint8 original_colors[4][4][3];
+	uint8_t original_colors[4][4][3];
 	double current_colors[2][3];
 	double best_colors[2][3];
 	double max_v[3];
@@ -5206,9 +5206,9 @@ void computeColorLBGfast(uint8 *img,int width,int startx,int starty, uint8 (LBG_
 		continue_seeding = false;
 
 		// calculate seeds
-		for (uint8 s = 0; s < 2; ++s) 
+		for (uint8_t s = 0; s < 2; ++s) 
 		{
-			for (uint8 c = 0; c < 3; ++c) 
+			for (uint8_t c = 0; c < 3; ++c) 
 			{ 
 				current_colors[s][c] = double((double(rand())/RAND_MAX)*(max_v[c]-min_v[c])) + min_v[c];
 			}
@@ -5261,9 +5261,9 @@ void computeColorLBGfast(uint8 *img,int width,int startx,int starty, uint8 (LBG_
 			if (D < bestD) 
 			{
 				bestD = D;
-				for(uint8 s = 0; s < 2; ++s) 
+				for(uint8_t s = 0; s < 2; ++s) 
 				{
-					for(uint8 c = 0; c < 3; ++c) 
+					for(uint8_t c = 0; c < 3; ++c) 
 					{
 						best_colors[s][c] = current_colors[s][c];
 					}
@@ -5310,7 +5310,7 @@ void computeColorLBGfast(uint8 *img,int width,int startx,int starty, uint8 (LBG_
 	// Set the best colors as the final block colors
 	for(int s = 0; s < 2; ++s) 
 	{
-		for(uint8 c = 0; c < 3; ++c) 
+		for(uint8_t c = 0; c < 3; ++c) 
 		{
 			current_colors[s][c] = best_colors[s][c];
 		}
@@ -5323,7 +5323,7 @@ void computeColorLBGfast(uint8 *img,int width,int startx,int starty, uint8 (LBG_
 
 // Each color component is compressed to fit in its specified number of bits
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressColor(int R_B, int G_B, int B_B, uint8 (current_color)[2][3], uint8 (quantized_color)[2][3]) 
+void compressColor(int R_B, int G_B, int B_B, uint8_t (current_color)[2][3], uint8_t (quantized_color)[2][3]) 
 {
 	//
 	//	The color is calculated as:
@@ -5346,9 +5346,9 @@ void compressColor(int R_B, int G_B, int B_B, uint8 (current_color)[2][3], uint8
 
 // Swapping two RGB-colors
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void swapColors(uint8 (colors)[2][3]) 
+void swapColors(uint8_t (colors)[2][3]) 
 {
-	uint8 temp = colors[0][R];
+	uint8_t temp = colors[0][R];
 	colors[0][R] = colors[1][R];
 	colors[1][R] = temp;
 
@@ -5374,7 +5374,7 @@ void swapColors(uint8 (colors)[2][3])
 // In the 59T bit mode, we only have pattern T.
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calculateError59Tperceptual1000(uint8* srcimg, int width, int startx, int starty, uint8 (colorsRGB444)[2][3], uint8 &distance, unsigned int &pixel_indices) 
+unsigned int calculateError59Tperceptual1000(uint8_t* srcimg, int width, int startx, int starty, uint8_t (colorsRGB444)[2][3], uint8_t &distance, unsigned int &pixel_indices) 
 {
 
 	unsigned int block_error = 0, 
@@ -5382,13 +5382,13 @@ unsigned int calculateError59Tperceptual1000(uint8* srcimg, int width, int start
 		   pixel_error, 
 		   best_pixel_error;
 	int diff[3];
-	uint8 best_sw;
+	uint8_t best_sw;
 	unsigned int pixel_colors;
-	uint8 colors[2][3];
-	uint8 possible_colors[4][3];
+	uint8_t colors[2][3];
+	uint8_t possible_colors[4][3];
 
 	// First use the colors as they are, then swap them
-	for (uint8 sw = 0; sw <2; ++sw) 
+	for (uint8_t sw = 0; sw <2; ++sw) 
 	{ 
 		if (sw == 1) 
 		{
@@ -5397,7 +5397,7 @@ unsigned int calculateError59Tperceptual1000(uint8* srcimg, int width, int start
 		decompressColor(R_BITS59T, G_BITS59T, B_BITS59T, colorsRGB444, colors);
 
 		// Test all distances
-		for (uint8 d = 0; d < BINPOW(TABLE_BITS_59T); ++d) 
+		for (uint8_t d = 0; d < BINPOW(TABLE_BITS_59T); ++d) 
 		{
 			calculatePaintColors59T(d,PATTERN_T, colors, possible_colors);
 			
@@ -5413,7 +5413,7 @@ unsigned int calculateError59Tperceptual1000(uint8* srcimg, int width, int start
 					pixel_colors <<=2; // Make room for next value
 
 					// Loop possible block colors
-					for (uint8 c = 0; c < 4; ++c) 
+					for (uint8_t c = 0; c < 4; ++c) 
 					{
 					
 						diff[R] = srcimg[3*((starty+y)*width+startx+x)+R] - CLAMP(0,possible_colors[c][R],255);
@@ -5461,20 +5461,20 @@ unsigned int calculateError59Tperceptual1000(uint8* srcimg, int width, int start
 // In the 59T bit mode, we only have pattern T.
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calculateError59T(uint8* srcimg, int width, int startx, int starty, uint8 (colorsRGB444)[2][3], uint8 &distance, unsigned int &pixel_indices) 
+double calculateError59T(uint8_t* srcimg, int width, int startx, int starty, uint8_t (colorsRGB444)[2][3], uint8_t &distance, unsigned int &pixel_indices) 
 {
 	double block_error = 0, 
 		     best_block_error = MAXIMUM_ERROR, 
 				 pixel_error, 
 				 best_pixel_error;
 	int diff[3];
-	uint8 best_sw;
+	uint8_t best_sw;
 	unsigned int pixel_colors;
-	uint8 colors[2][3];
-	uint8 possible_colors[4][3];
+	uint8_t colors[2][3];
+	uint8_t possible_colors[4][3];
 
 	// First use the colors as they are, then swap them
-	for (uint8 sw = 0; sw <2; ++sw) 
+	for (uint8_t sw = 0; sw <2; ++sw) 
 	{ 
 		if (sw == 1) 
 		{
@@ -5483,7 +5483,7 @@ double calculateError59T(uint8* srcimg, int width, int startx, int starty, uint8
 		decompressColor(R_BITS59T, G_BITS59T, B_BITS59T, colorsRGB444, colors);
 
 		// Test all distances
-		for (uint8 d = 0; d < BINPOW(TABLE_BITS_59T); ++d) 
+		for (uint8_t d = 0; d < BINPOW(TABLE_BITS_59T); ++d) 
 		{
 			calculatePaintColors59T(d,PATTERN_T, colors, possible_colors);
 			
@@ -5499,7 +5499,7 @@ double calculateError59T(uint8* srcimg, int width, int startx, int starty, uint8
 					pixel_colors <<=2; // Make room for next value
 
 					// Loop possible block colors
-					for (uint8 c = 0; c < 4; ++c) 
+					for (uint8_t c = 0; c < 4; ++c) 
 					{
 					
 						diff[R] = srcimg[3*((starty+y)*width+startx+x)+R] - CLAMP(0,possible_colors[c][R],255);
@@ -5545,7 +5545,7 @@ double calculateError59T(uint8* srcimg, int width, int startx, int starty, uint8
 // In the 59T bit mode, we only have pattern T.
 // 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calculateError59TnoSwapPerceptual1000(uint8* srcimg, int width, int startx, int starty, uint8 (colorsRGB444)[2][3], uint8 &distance, unsigned int &pixel_indices) 
+unsigned int calculateError59TnoSwapPerceptual1000(uint8_t* srcimg, int width, int startx, int starty, uint8_t (colorsRGB444)[2][3], uint8_t &distance, unsigned int &pixel_indices) 
 {
 
 	unsigned int block_error = 0, 
@@ -5554,15 +5554,15 @@ unsigned int calculateError59TnoSwapPerceptual1000(uint8* srcimg, int width, int
 		   best_pixel_error;
 	int diff[3];
 	unsigned int pixel_colors;
-	uint8 colors[2][3];
-	uint8 possible_colors[4][3];
+	uint8_t colors[2][3];
+	uint8_t possible_colors[4][3];
 	int thebestintheworld;
 
 	// First use the colors as they are, then swap them
 		decompressColor(R_BITS59T, G_BITS59T, B_BITS59T, colorsRGB444, colors);
 
 		// Test all distances
-		for (uint8 d = 0; d < BINPOW(TABLE_BITS_59T); ++d) 
+		for (uint8_t d = 0; d < BINPOW(TABLE_BITS_59T); ++d) 
 		{
 			calculatePaintColors59T(d,PATTERN_T, colors, possible_colors);
 			
@@ -5578,7 +5578,7 @@ unsigned int calculateError59TnoSwapPerceptual1000(uint8* srcimg, int width, int
 					pixel_colors <<=2; // Make room for next value
 
 					// Loop possible block colors
-					for (uint8 c = 0; c < 4; ++c) 
+					for (uint8_t c = 0; c < 4; ++c) 
 					{
 					
 						diff[R] = srcimg[3*((starty+y)*width+startx+x)+R] - CLAMP(0,possible_colors[c][R],255);
@@ -5619,7 +5619,7 @@ unsigned int calculateError59TnoSwapPerceptual1000(uint8* srcimg, int width, int
 // In the 59T bit mode, we only have pattern T.
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calculateError59TnoSwap(uint8* srcimg, int width, int startx, int starty, uint8 (colorsRGB444)[2][3], uint8 &distance, unsigned int &pixel_indices) 
+double calculateError59TnoSwap(uint8_t* srcimg, int width, int startx, int starty, uint8_t (colorsRGB444)[2][3], uint8_t &distance, unsigned int &pixel_indices) 
 {
 	double block_error = 0, 
 		     best_block_error = MAXIMUM_ERROR, 
@@ -5627,15 +5627,15 @@ double calculateError59TnoSwap(uint8* srcimg, int width, int startx, int starty,
 				 best_pixel_error;
 	int diff[3];
 	unsigned int pixel_colors;
-	uint8 colors[2][3];
-	uint8 possible_colors[4][3];
+	uint8_t colors[2][3];
+	uint8_t possible_colors[4][3];
 	int thebestintheworld;
 
 	// First use the colors as they are, then swap them
 	decompressColor(R_BITS59T, G_BITS59T, B_BITS59T, colorsRGB444, colors);
 
 	// Test all distances
-	for (uint8 d = 0; d < BINPOW(TABLE_BITS_59T); ++d) 
+	for (uint8_t d = 0; d < BINPOW(TABLE_BITS_59T); ++d) 
 	{
 		calculatePaintColors59T(d,PATTERN_T, colors, possible_colors);
 			
@@ -5651,7 +5651,7 @@ double calculateError59TnoSwap(uint8* srcimg, int width, int startx, int starty,
 				pixel_colors <<=2; // Make room for next value
 
 				// Loop possible block colors
-				for (uint8 c = 0; c < 4; ++c) 
+				for (uint8_t c = 0; c < 4; ++c) 
 				{
 					diff[R] = srcimg[3*((starty+y)*width+startx+x)+R] - CLAMP(0,possible_colors[c][R],255);
 					diff[G] = srcimg[3*((starty+y)*width+startx+x)+G] - CLAMP(0,possible_colors[c][G],255);
@@ -5695,7 +5695,7 @@ double calculateError59TnoSwap(uint8* srcimg, int width, int startx, int starty,
 //|----------------------------------------index bits---------------------------------------------|
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void packBlock59T(uint8 (colors)[2][3], uint8 d, unsigned int pixel_indices, unsigned int &compressed1, unsigned int &compressed2) 
+void packBlock59T(uint8_t (colors)[2][3], uint8_t d, unsigned int pixel_indices, unsigned int &compressed1, unsigned int &compressed2) 
 { 
 	
 	compressed1 = 0;
@@ -5714,7 +5714,7 @@ void packBlock59T(uint8 (colors)[2][3], uint8 d, unsigned int pixel_indices, uns
 
 // Copy colors from source to dest
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void copyColors(uint8 (source)[2][3], uint8 (dest)[2][3])
+void copyColors(uint8_t (source)[2][3], uint8_t (dest)[2][3])
 {
 	int x,y;
 
@@ -5732,18 +5732,18 @@ void copyColors(uint8 (source)[2][3], uint8 (dest)[2][3])
 //|----------------------------------------index bits---------------------------------------------|
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockTHUMB59TFastestOnlyColorPerceptual1000(uint8 *img,int width,int startx,int starty, int (best_colorsRGB444_packed)[2])
+unsigned int compressBlockTHUMB59TFastestOnlyColorPerceptual1000(uint8_t *img,int width,int startx,int starty, int (best_colorsRGB444_packed)[2])
 {
 	unsigned int best_error = MAXERR1000;
 	unsigned int best_pixel_indices;
-	uint8 best_distance;
+	uint8_t best_distance;
 
 	unsigned int error_no_i;
-	uint8 colorsRGB444_no_i[2][3];
+	uint8_t colorsRGB444_no_i[2][3];
 	unsigned int pixel_indices_no_i;
-	uint8 distance_no_i;
+	uint8_t distance_no_i;
 
-	uint8 colors[2][3];
+	uint8_t colors[2][3];
 
 	// Calculate average color using the LBG-algorithm
 	computeColorLBGHalfIntensityFast(img,width,startx,starty, colors);
@@ -5773,18 +5773,18 @@ unsigned int compressBlockTHUMB59TFastestOnlyColorPerceptual1000(uint8 *img,int 
 //|----------------------------------------index bits---------------------------------------------|
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB59TFastestOnlyColor(uint8 *img,int width,int startx,int starty, int (best_colorsRGB444_packed)[2])
+double compressBlockTHUMB59TFastestOnlyColor(uint8_t *img,int width,int startx,int starty, int (best_colorsRGB444_packed)[2])
 {
 	double best_error = MAXIMUM_ERROR;
 	unsigned int best_pixel_indices;
-	uint8 best_distance;
+	uint8_t best_distance;
 
 	double error_no_i;
-	uint8 colorsRGB444_no_i[2][3];
+	uint8_t colorsRGB444_no_i[2][3];
 	unsigned int pixel_indices_no_i;
-	uint8 distance_no_i;
+	uint8_t distance_no_i;
 
-	uint8 colors[2][3];
+	uint8_t colors[2][3];
 
 	// Calculate average color using the LBG-algorithm
 	computeColorLBGHalfIntensityFast(img,width,startx,starty, colors);
@@ -5813,19 +5813,19 @@ double compressBlockTHUMB59TFastestOnlyColor(uint8 *img,int width,int startx,int
 //|----------------------------------------index bits---------------------------------------------|
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB59TFastestPerceptual1000(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+double compressBlockTHUMB59TFastestPerceptual1000(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	double best_error = MAXIMUM_ERROR;
-	uint8 best_colorsRGB444[2][3];
+	uint8_t best_colorsRGB444[2][3];
 	unsigned int best_pixel_indices;
-	uint8 best_distance;
+	uint8_t best_distance;
 
 	double error_no_i;
-	uint8 colorsRGB444_no_i[2][3];
+	uint8_t colorsRGB444_no_i[2][3];
 	unsigned int pixel_indices_no_i;
-	uint8 distance_no_i;
+	uint8_t distance_no_i;
 
-	uint8 colors[2][3];
+	uint8_t colors[2][3];
 
 	// Calculate average color using the LBG-algorithm
 	computeColorLBGHalfIntensityFast(img,width,startx,starty, colors);
@@ -5855,19 +5855,19 @@ double compressBlockTHUMB59TFastestPerceptual1000(uint8 *img,int width,int start
 //|----------------------------------------index bits---------------------------------------------|
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB59TFastest(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+double compressBlockTHUMB59TFastest(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	double best_error = MAXIMUM_ERROR;
-	uint8 best_colorsRGB444[2][3];
+	uint8_t best_colorsRGB444[2][3];
 	unsigned int best_pixel_indices;
-	uint8 best_distance;
+	uint8_t best_distance;
 
 	double error_no_i;
-	uint8 colorsRGB444_no_i[2][3];
+	uint8_t colorsRGB444_no_i[2][3];
 	unsigned int pixel_indices_no_i;
-	uint8 distance_no_i;
+	uint8_t distance_no_i;
 
-	uint8 colors[2][3];
+	uint8_t colors[2][3];
 
 	// Calculate average color using the LBG-algorithm
 	computeColorLBGHalfIntensityFast(img,width,startx,starty, colors);
@@ -5896,29 +5896,29 @@ double compressBlockTHUMB59TFastest(uint8 *img,int width,int startx,int starty, 
 //|31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00|
 //|----------------------------------------index bits---------------------------------------------|
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB59TFast(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+double compressBlockTHUMB59TFast(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	double best_error = MAXIMUM_ERROR;
-	uint8 best_colorsRGB444[2][3];
+	uint8_t best_colorsRGB444[2][3];
 	unsigned int best_pixel_indices;
-	uint8 best_distance;
+	uint8_t best_distance;
 
 	double error_no_i;
-	uint8 colorsRGB444_no_i[2][3];
+	uint8_t colorsRGB444_no_i[2][3];
 	unsigned int pixel_indices_no_i;
-	uint8 distance_no_i;
+	uint8_t distance_no_i;
 
 	double error_half_i;
-	uint8 colorsRGB444_half_i[2][3];
+	uint8_t colorsRGB444_half_i[2][3];
 	unsigned int pixel_indices_half_i;
-	uint8 distance_half_i;
+	uint8_t distance_half_i;
 	
 	double error;
-	uint8 colorsRGB444[2][3];
+	uint8_t colorsRGB444[2][3];
 	unsigned int pixel_indices;
-	uint8 distance;
+	uint8_t distance;
 
-	uint8 colors[2][3];
+	uint8_t colors[2][3];
 
 	// Calculate average color using the LBG-algorithm
 	computeColorLBGNotIntensityFast(img,width,startx,starty, colors);
@@ -5969,7 +5969,7 @@ double compressBlockTHUMB59TFast(uint8 *img,int width,int startx,int starty, uns
 // 
 // In the 58H bit mode, we only have pattern H.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int calculateErrorAndCompress58Hperceptual1000(uint8* srcimg, int width, int startx, int starty, uint8 (colorsRGB444)[2][3], uint8 &distance, unsigned int &pixel_indices) 
+unsigned int calculateErrorAndCompress58Hperceptual1000(uint8_t* srcimg, int width, int startx, int starty, uint8_t (colorsRGB444)[2][3], uint8_t &distance, unsigned int &pixel_indices) 
 {
 	unsigned int block_error = 0, 
 		           best_block_error = MAXERR1000, 
@@ -5977,13 +5977,13 @@ unsigned int calculateErrorAndCompress58Hperceptual1000(uint8* srcimg, int width
 							 best_pixel_error;
 	int diff[3];
 	unsigned int pixel_colors;
-	uint8 possible_colors[4][3];
-	uint8 colors[2][3];
+	uint8_t possible_colors[4][3];
+	uint8_t colors[2][3];
 
 	decompressColor(R_BITS58H, G_BITS58H, B_BITS58H, colorsRGB444, colors);
 
 	// Test all distances
-	for (uint8 d = 0; d < BINPOW(TABLE_BITS_58H); ++d) 
+	for (uint8_t d = 0; d < BINPOW(TABLE_BITS_58H); ++d) 
 	{
 		calculatePaintColors58H(d, PATTERN_H, colors, possible_colors);
 
@@ -5999,7 +5999,7 @@ unsigned int calculateErrorAndCompress58Hperceptual1000(uint8* srcimg, int width
 				pixel_colors <<=2; // Make room for next value
 
 				// Loop possible block colors
-				for (uint8 c = 0; c < 4; ++c) 
+				for (uint8_t c = 0; c < 4; ++c) 
 				{
 					diff[R] = srcimg[3*((starty+y)*width+startx+x)+R] - CLAMP(0,possible_colors[c][R],255);
 					diff[G] = srcimg[3*((starty+y)*width+startx+x)+G] - CLAMP(0,possible_colors[c][G],255);
@@ -6033,7 +6033,7 @@ unsigned int calculateErrorAndCompress58Hperceptual1000(uint8* srcimg, int width
 
 // The H-mode but with punchthrough alpha
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calculateErrorAndCompress58HAlpha(uint8* srcimg, uint8* alphaimg,int width, int startx, int starty, uint8 (colorsRGB444)[2][3], uint8 &distance, unsigned int &pixel_indices) 
+double calculateErrorAndCompress58HAlpha(uint8_t* srcimg, uint8_t* alphaimg,int width, int startx, int starty, uint8_t (colorsRGB444)[2][3], uint8_t &distance, unsigned int &pixel_indices) 
 {
 	double block_error = 0, 
 		   best_block_error = MAXIMUM_ERROR, 
@@ -6041,8 +6041,8 @@ double calculateErrorAndCompress58HAlpha(uint8* srcimg, uint8* alphaimg,int widt
 		   best_pixel_error;
 	int diff[3];
 	unsigned int pixel_colors;
-	uint8 possible_colors[4][3];
-	uint8 colors[2][3];
+	uint8_t possible_colors[4][3];
+	uint8_t colors[2][3];
 	int alphaindex;
 	int colorsRGB444_packed[2];
 	colorsRGB444_packed[0] = (colorsRGB444[0][R] << 8) + (colorsRGB444[0][G] << 4) + colorsRGB444[0][B];
@@ -6051,7 +6051,7 @@ double calculateErrorAndCompress58HAlpha(uint8* srcimg, uint8* alphaimg,int widt
 	decompressColor(R_BITS58H, G_BITS58H, B_BITS58H, colorsRGB444, colors);
 	
 	// Test all distances
-	for (uint8 d = 0; d < BINPOW(TABLE_BITS_58H); ++d) 
+	for (uint8_t d = 0; d < BINPOW(TABLE_BITS_58H); ++d) 
 	{
 		alphaindex=2;
 		if( (colorsRGB444_packed[0] >= colorsRGB444_packed[1]) ^ ((d & 1)==1) )
@@ -6080,7 +6080,7 @@ double calculateErrorAndCompress58HAlpha(uint8* srcimg, uint8* alphaimg,int widt
 				pixel_colors <<=2; // Make room for next value
 
 				// Loop possible block colors
-				for (uint8 c = 0; c < 4; ++c) 
+				for (uint8_t c = 0; c < 4; ++c) 
 				{
 					if(c==alphaindex&&alpha) 
 					{
@@ -6128,7 +6128,7 @@ double calculateErrorAndCompress58HAlpha(uint8* srcimg, uint8* alphaimg,int widt
 // In the 58H bit mode, we only have pattern H.
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calculateErrorAndCompress58H(uint8* srcimg, int width, int startx, int starty, uint8 (colorsRGB444)[2][3], uint8 &distance, unsigned int &pixel_indices) 
+double calculateErrorAndCompress58H(uint8_t* srcimg, int width, int startx, int starty, uint8_t (colorsRGB444)[2][3], uint8_t &distance, unsigned int &pixel_indices) 
 {
 	double block_error = 0, 
 	       best_block_error = MAXIMUM_ERROR, 
@@ -6136,14 +6136,14 @@ double calculateErrorAndCompress58H(uint8* srcimg, int width, int startx, int st
 				 best_pixel_error;
 	int diff[3];
 	unsigned int pixel_colors;
-	uint8 possible_colors[4][3];
-	uint8 colors[2][3];
+	uint8_t possible_colors[4][3];
+	uint8_t colors[2][3];
 
 	
 	decompressColor(R_BITS58H, G_BITS58H, B_BITS58H, colorsRGB444, colors);
 
 	// Test all distances
-	for (uint8 d = 0; d < BINPOW(TABLE_BITS_58H); ++d) 
+	for (uint8_t d = 0; d < BINPOW(TABLE_BITS_58H); ++d) 
 	{
 		calculatePaintColors58H(d, PATTERN_H, colors, possible_colors);
 
@@ -6159,7 +6159,7 @@ double calculateErrorAndCompress58H(uint8* srcimg, int width, int startx, int st
 				pixel_colors <<=2; // Make room for next value
 
 				// Loop possible block colors
-				for (uint8 c = 0; c < 4; ++c) 
+				for (uint8_t c = 0; c < 4; ++c) 
 				{
 					diff[R] = srcimg[3*((starty+y)*width+startx+x)+R] - CLAMP(0,possible_colors[c][R],255);
 					diff[G] = srcimg[3*((starty+y)*width+startx+x)+G] - CLAMP(0,possible_colors[c][G],255);
@@ -6194,7 +6194,7 @@ double calculateErrorAndCompress58H(uint8* srcimg, int width, int startx, int st
 
 // Makes sure that col0 < col1;
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void sortColorsRGB444(uint8 (colorsRGB444)[2][3])
+void sortColorsRGB444(uint8_t (colorsRGB444)[2][3])
 {
 	unsigned int col0, col1, tcol;
 
@@ -6244,18 +6244,18 @@ void sortColorsRGB444(uint8 (colorsRGB444)[2][3])
 // Else, it is assumed to be 1.
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockTHUMB58HFastestPerceptual1000(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+unsigned int compressBlockTHUMB58HFastestPerceptual1000(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	unsigned int best_error = MAXERR1000;
-	uint8 best_colorsRGB444[2][3];
+	uint8_t best_colorsRGB444[2][3];
 	unsigned int best_pixel_indices;
-	uint8 best_distance;
+	uint8_t best_distance;
 
 	unsigned int error_no_i;
-	uint8 colorsRGB444_no_i[2][3];
+	uint8_t colorsRGB444_no_i[2][3];
 	unsigned int pixel_indices_no_i;
-	uint8 distance_no_i;
-	uint8 colors[2][3];
+	uint8_t distance_no_i;
+	uint8_t colors[2][3];
 	
 	// Calculate average color using the LBG-algorithm but discarding the intensity in the error function
 	computeColorLBGHalfIntensityFast(img, width, startx, starty, colors);
@@ -6322,18 +6322,18 @@ unsigned int compressBlockTHUMB58HFastestPerceptual1000(uint8 *img,int width,int
 // Else, it is assumed to be 1.
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB58HFastest(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+double compressBlockTHUMB58HFastest(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	double best_error = MAXIMUM_ERROR;
-	uint8 best_colorsRGB444[2][3];
+	uint8_t best_colorsRGB444[2][3];
 	unsigned int best_pixel_indices;
-	uint8 best_distance;
+	uint8_t best_distance;
 
 	double error_no_i;
-	uint8 colorsRGB444_no_i[2][3];
+	uint8_t colorsRGB444_no_i[2][3];
 	unsigned int pixel_indices_no_i;
-	uint8 distance_no_i;
-	uint8 colors[2][3];
+	uint8_t distance_no_i;
+	uint8_t colors[2][3];
 	
 	// Calculate average color using the LBG-algorithm but discarding the intensity in the error function
 	computeColorLBGHalfIntensityFast(img, width, startx, starty, colors);
@@ -6386,18 +6386,18 @@ double compressBlockTHUMB58HFastest(uint8 *img,int width,int startx,int starty, 
 
 //same as above, but with 1-bit alpha
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB58HAlpha(uint8 *img, uint8* alphaimg, int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+double compressBlockTHUMB58HAlpha(uint8_t *img, uint8_t* alphaimg, int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	double best_error = MAXIMUM_ERROR;
-	uint8 best_colorsRGB444[2][3];
+	uint8_t best_colorsRGB444[2][3];
 	unsigned int best_pixel_indices;
-	uint8 best_distance;
+	uint8_t best_distance;
 
 	double error_no_i;
-	uint8 colorsRGB444_no_i[2][3];
+	uint8_t colorsRGB444_no_i[2][3];
 	unsigned int pixel_indices_no_i;
-	uint8 distance_no_i;
-	uint8 colors[2][3];
+	uint8_t distance_no_i;
+	uint8_t colors[2][3];
 	
 	// Calculate average color using the LBG-algorithm but discarding the intensity in the error function
 	computeColorLBGHalfIntensityFast(img, width, startx, starty, colors);
@@ -6463,29 +6463,29 @@ double compressBlockTHUMB58HAlpha(uint8 *img, uint8* alphaimg, int width,int sta
 // Else, it is assumed to be 1.
 //
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB58HFast(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+double compressBlockTHUMB58HFast(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	double best_error = MAXIMUM_ERROR;
-	uint8 best_colorsRGB444[2][3];
+	uint8_t best_colorsRGB444[2][3];
 	unsigned int best_pixel_indices;
-	uint8 best_distance;
+	uint8_t best_distance;
 
 	double error_no_i;
-	uint8 colorsRGB444_no_i[2][3];
+	uint8_t colorsRGB444_no_i[2][3];
 	unsigned int pixel_indices_no_i;
-	uint8 distance_no_i;
+	uint8_t distance_no_i;
 
 	double error_half_i;
-	uint8 colorsRGB444_half_i[2][3];
+	uint8_t colorsRGB444_half_i[2][3];
 	unsigned int pixel_indices_half_i;
-	uint8 distance_half_i;
+	uint8_t distance_half_i;
 
 	double error;
-	uint8 colorsRGB444[2][3];
+	uint8_t colorsRGB444[2][3];
 	unsigned int pixel_indices;
-	uint8 distance;
+	uint8_t distance;
 
-	uint8 colors[2][3];
+	uint8_t colors[2][3];
 	
 	// Calculate average color using the LBG-algorithm but discarding the intensity in the error function
 	computeColorLBGNotIntensity(img, width, startx, starty, colors);
@@ -6567,11 +6567,11 @@ double compressBlockTHUMB58HFast(uint8 *img,int width,int startx,int starty, uns
 // Combined quantization for colors.
 // Both flipped and unflipped tested.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockDiffFlipCombinedPerceptual(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockDiffFlipCombinedPerceptual(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
-	uint8 avg_color_quant1[3], avg_color_quant2[3];
+	uint8_t avg_color_quant1[3], avg_color_quant2[3];
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3], diff[3];
@@ -6591,7 +6591,7 @@ void compressBlockDiffFlipCombinedPerceptual(uint8 *img,int width,int startx,int
 
 	float eps;
 
-	uint8 dummy[3];
+	uint8_t dummy[3];
 
 	quantize555ColorCombinedPerceptual(avg_color_float1, enc_color1, dummy);
 	quantize555ColorCombinedPerceptual(avg_color_float2, enc_color2, dummy);
@@ -6860,7 +6860,7 @@ void compressBlockDiffFlipCombinedPerceptual(uint8 *img,int width,int startx,int
 
 // Calculate the error of a block
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calcBlockErrorRGB(uint8 *img, uint8 *imgdec, int width, int startx, int starty)
+double calcBlockErrorRGB(uint8_t *img, uint8_t *imgdec, int width, int startx, int starty)
 {
 	int xx,yy;
 	double err;
@@ -6882,7 +6882,7 @@ double calcBlockErrorRGB(uint8 *img, uint8 *imgdec, int width, int startx, int s
 
 // Calculate the perceptually weighted error of a block
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calcBlockPerceptualErrorRGB(uint8 *img, uint8 *imgdec, int width, int startx, int starty)
+double calcBlockPerceptualErrorRGB(uint8_t *img, uint8_t *imgdec, int width, int startx, int starty)
 {
 	int xx,yy;
 	double err;
@@ -6904,7 +6904,7 @@ double calcBlockPerceptualErrorRGB(uint8 *img, uint8 *imgdec, int width, int sta
 
 // Compress an ETC1 block (or the individual and differential modes of an ETC2 block)
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockDiffFlipFast(uint8 *img, uint8 *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+double compressBlockDiffFlipFast(uint8_t *img, uint8_t *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int average_block1;
 	unsigned int average_block2;
@@ -6944,7 +6944,7 @@ double compressBlockDiffFlipFast(uint8 *img, uint8 *imgdec,int width,int startx,
 // Compress an ETC1 block (or the individual and differential modes of an ETC2 block)
 // Uses perceptual error metric.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockDiffFlipFastPerceptual(uint8 *img, uint8 *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockDiffFlipFastPerceptual(uint8_t *img, uint8_t *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int average_block1;
 	unsigned int average_block2;
@@ -6978,12 +6978,12 @@ void compressBlockDiffFlipFastPerceptual(uint8 *img, uint8 *imgdec,int width,int
 
 // Compresses the differential mode of an ETC2 block with punchthrough alpha
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int compressBlockDifferentialWithAlpha(bool isTransparent, uint8* img, uint8* alphaimg, int width, int startx, int starty, unsigned int &etc1_word1, unsigned int &etc1_word2) 
+int compressBlockDifferentialWithAlpha(bool isTransparent, uint8_t* img, uint8_t* alphaimg, int width, int startx, int starty, unsigned int &etc1_word1, unsigned int &etc1_word2) 
 {
 	unsigned int compressed1_norm, compressed2_norm;
 	unsigned int compressed1_flip, compressed2_flip;
 	unsigned int compressed1_temp, compressed2_temp;
-	uint8 avg_color_quant1[3], avg_color_quant2[3];
+	uint8_t avg_color_quant1[3], avg_color_quant2[3];
 
 	float avg_color_float1[3],avg_color_float2[3];
 	int enc_color1[3], enc_color2[3], diff[3];
@@ -7026,7 +7026,7 @@ int compressBlockDifferentialWithAlpha(bool isTransparent, uint8* img, uint8* al
 			avg_color_float1[c]/=sum1;
 			avg_color_float2[c]/=sum2;
 		}
-		uint8 dummy[3];
+		uint8_t dummy[3];
 		quantize555ColorCombined(avg_color_float1, enc_color1, dummy);
 		quantize555ColorCombined(avg_color_float2, enc_color2, dummy);
 
@@ -7088,7 +7088,7 @@ int compressBlockDifferentialWithAlpha(bool isTransparent, uint8* img, uint8* al
 				for(int y=0; y<4; y++) 
 				{
 					int index = x+startx+(y+starty)*width;
-					uint8 basecol[3];
+					uint8_t basecol[3];
 					bool transparentPixel=alphaimg[index]<128;
 					//determine which half of the block this pixel is in, based on the flipbit.
 					int half=0;
@@ -7209,7 +7209,7 @@ int compressBlockDifferentialWithAlpha(bool isTransparent, uint8* img, uint8* al
 
 // Calculate RGBA error --- only count non-transparent pixels (alpha > 128)
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calcBlockErrorRGBA(uint8 *img, uint8 *imgdec, uint8* alpha, int width, int startx, int starty)
+double calcBlockErrorRGBA(uint8_t *img, uint8_t *imgdec, uint8_t* alpha, int width, int startx, int starty)
 {
 	int xx,yy;
 	double err;
@@ -7234,7 +7234,7 @@ double calcBlockErrorRGBA(uint8 *img, uint8 *imgdec, uint8* alpha, int width, in
 
 //calculates the error for a block using the given colors, and the paremeters required to obtain the error. This version uses 1-bit punch-through alpha.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calculateError59TAlpha(uint8* srcimg, uint8* alpha,int width, int startx, int starty, uint8 (colorsRGB444)[2][3], uint8 &distance, unsigned int &pixel_indices) 
+double calculateError59TAlpha(uint8_t* srcimg, uint8_t* alpha,int width, int startx, int starty, uint8_t (colorsRGB444)[2][3], uint8_t &distance, unsigned int &pixel_indices) 
 {
 
 	double block_error = 0, 
@@ -7242,13 +7242,13 @@ double calculateError59TAlpha(uint8* srcimg, uint8* alpha,int width, int startx,
 		   pixel_error, 
 		   best_pixel_error;
 	int diff[3];
-	uint8 best_sw;
+	uint8_t best_sw;
 	unsigned int pixel_colors;
-	uint8 colors[2][3];
-	uint8 possible_colors[4][3];
+	uint8_t colors[2][3];
+	uint8_t possible_colors[4][3];
 
 	// First use the colors as they are, then swap them
-	for (uint8 sw = 0; sw <2; ++sw) 
+	for (uint8_t sw = 0; sw <2; ++sw) 
 	{ 
 		if (sw == 1) 
 		{
@@ -7257,7 +7257,7 @@ double calculateError59TAlpha(uint8* srcimg, uint8* alpha,int width, int startx,
 		decompressColor(R_BITS59T, G_BITS59T, B_BITS59T, colorsRGB444, colors);
 
 		// Test all distances
-		for (uint8 d = 0; d < BINPOW(TABLE_BITS_59T); ++d) 
+		for (uint8_t d = 0; d < BINPOW(TABLE_BITS_59T); ++d) 
 		{
 			calculatePaintColors59T(d,PATTERN_T, colors, possible_colors);
 			
@@ -7281,7 +7281,7 @@ double calculateError59TAlpha(uint8* srcimg, uint8* alpha,int width, int startx,
 					}
 					else 
 					{
-						for (uint8 c = 0; c < 4; ++c) 
+						for (uint8_t c = 0; c < 4; ++c) 
 						{
 							
 							if(c==2) 
@@ -7327,19 +7327,19 @@ double calculateError59TAlpha(uint8* srcimg, uint8* alpha,int width, int startx,
 // same as fastest t-mode compressor above, but here one of the colors (the central one in the T) is used to also signal that the pixel is transparent.
 // the only difference is that calculateError has been swapped out to one that considers alpha.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double compressBlockTHUMB59TAlpha(uint8 *img, uint8* alpha, int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
+double compressBlockTHUMB59TAlpha(uint8_t *img, uint8_t* alpha, int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2) 
 {
 	double best_error = MAXIMUM_ERROR;
-	uint8 best_colorsRGB444[2][3];
+	uint8_t best_colorsRGB444[2][3];
 	unsigned int best_pixel_indices;
-	uint8 best_distance;
+	uint8_t best_distance;
 
 	double error_no_i;
-	uint8 colorsRGB444_no_i[2][3];
+	uint8_t colorsRGB444_no_i[2][3];
 	unsigned int pixel_indices_no_i;
-	uint8 distance_no_i;
+	uint8_t distance_no_i;
 
-	uint8 colors[2][3];
+	uint8_t colors[2][3];
 
 	// Calculate average color using the LBG-algorithm
   computeColorLBGHalfIntensityFast(img,width,startx,starty, colors);
@@ -7390,8 +7390,8 @@ void stuff59bitsDiffFalse(unsigned int thumbT59_word1, unsigned int thumbT59_wor
 	//     | R1' (5 bits) | dR2    | G1' (5 bits) | dG2    | B1' (5 bits) | dB2    | cw 1   | cw 2   |bt|bt|
 	//      ------------------------------------------------------------------------------------------------
 
-	uint8 R0a;
-	uint8 bit, a, b, c, d, bits;
+	uint8_t R0a;
+	uint8_t bit, a, b, c, d, bits;
 
 	R0a = GETBITSHIGH( thumbT59_word1, 2, 58);
 
@@ -7421,7 +7421,7 @@ void stuff59bitsDiffFalse(unsigned int thumbT59_word1, unsigned int thumbT59_wor
 
 // Tests if there is at least one pixel in the image which would get alpha = 0 in punchtrough mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-bool hasAlpha(uint8* alphaimg, int ix, int iy, int width) 
+bool hasAlpha(uint8_t* alphaimg, int ix, int iy, int width) 
 {
 	for(int x=ix; x<ix+4; x++) 
 	{
@@ -7439,7 +7439,7 @@ bool hasAlpha(uint8* alphaimg, int ix, int iy, int width)
 
 // Compress a block with ETC2 RGB
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockETC2Fast(uint8 *img, uint8* alphaimg, uint8 *imgdec,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, bool useRgba1)
+void compressBlockETC2Fast(uint8_t *img, uint8_t* alphaimg, uint8_t *imgdec,int width,int height,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, bool useRgba1)
 {
 	unsigned int etc1_word1;
 	unsigned int etc1_word2;
@@ -7489,7 +7489,7 @@ void compressBlockETC2Fast(uint8 *img, uint8* alphaimg, uint8 *imgdec,int width,
 
 		int testerr= compressBlockDifferentialWithAlpha(true,img,alphaimg, width,startx,starty,etc1_word1,etc1_word2);
 
-		uint8* alphadec = new uint8[width*height];
+		uint8_t* alphadec = new uint8_t[width*height];
 		decompressBlockDifferentialWithAlpha(etc1_word1, etc1_word2, imgdec, alphadec,width, startx, starty);
 		error_etc1 = calcBlockErrorRGBA(img, imgdec, alphaimg,width, startx, starty);
 		if(error_etc1!=testerr) 
@@ -7625,7 +7625,7 @@ void compressBlockETC2Fast(uint8 *img, uint8* alphaimg, uint8 *imgdec,int width,
 
 // Compress an ETC2 RGB block using perceptual error metric
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockETC2FastPerceptual(uint8 *img, uint8 *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockETC2FastPerceptual(uint8_t *img, uint8_t *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int etc1_word1;
 	unsigned int etc1_word2;
@@ -7760,7 +7760,7 @@ int* getValtab(int formatSigned) // setupAlphaTableAndValtab
 	setupAlphaTable();
 
 	valtab = new int[1024 * 512];
-	int16 val16;
+	int16_t val16;
 	int count=0;
 	for(int base=0; base<256; base++) 
 	{
@@ -7787,7 +7787,7 @@ int* getValtab(int formatSigned) // setupAlphaTableAndValtab
 
 // Compresses the alpha part of a GL_COMPRESSED_RGBA8_ETC2_EAC block.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockAlphaFast(uint8 * data, int ix, int iy, int width, uint8* returnData) 
+void compressBlockAlphaFast(uint8_t * data, int ix, int iy, int width, uint8_t* returnData) 
 {
 	setupAlphaTable();
 	int alphasum=0;
@@ -7967,7 +7967,7 @@ int getPremulIndex(int base, int tab, int mul, int index)
 
 // Calculates the error used in compressBlockAlpha16()
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calcError(uint8* data, int ix, int iy, int width, int base, int tab, int mul, double prevbest, int *valtab)
+double calcError(uint8_t* data, int ix, int iy, int width, int base, int tab, int mul, double prevbest, int *valtab)
 {
 	int offset = getPremulIndex(base,tab,mul,0);
 	double error=0;
@@ -7977,8 +7977,8 @@ double calcError(uint8* data, int ix, int iy, int width, int base, int tab, int 
 		{
 			double besthere = (1<<20);
 			besthere*=besthere;
-			uint8 byte1 = data[2*(x+ix+(y+iy)*width)];
-			uint8 byte2 = data[2*(x+ix+(y+iy)*width)+1];
+			uint8_t byte1 = data[2*(x+ix+(y+iy)*width)];
+			uint8_t byte2 = data[2*(x+ix+(y+iy)*width)+1];
 			int alpha = (byte1<<8)+byte2;
 			for(int index=0; index<8; index++) 
 			{
@@ -8018,7 +8018,7 @@ double calcError(uint8* data, int ix, int iy, int width, int base, int tab, int 
 // COMPRESSED_RG11_EAC is compressed by calling the function twice, dito for COMPRESSED_SIGNED_RG11_EAC.
 // 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockAlpha16(uint8* data, int ix, int iy, int width, uint8* returnData, int formatSigned)
+void compressBlockAlpha16(uint8_t* data, int ix, int iy, int width, uint8_t* returnData, int formatSigned)
 {
 	int *valtab = getValtab(formatSigned);
 	unsigned int bestbase=0, besttable=0, bestmul=0;
@@ -8048,7 +8048,7 @@ void compressBlockAlpha16(uint8* data, int ix, int iy, int width, uint8* returnD
 	{
 		//if we have a signed format, the base value should be given as a signed byte. 
 		signed char signedbase = bestbase-128;
-		returnData[0]=*((uint8*)(&signedbase));
+		returnData[0]=*((uint8_t*)(&signedbase));
 	}
 	
 	for(int i=2; i<8; i++) 
@@ -8065,15 +8065,15 @@ void compressBlockAlpha16(uint8* data, int ix, int iy, int width, uint8* returnD
 			double besterror=255*255;
 			besterror*=besterror;
 			int bestindex=99;
-			uint8 byte1 = data[2*(x+ix+(y+iy)*width)];
-			uint8 byte2 = data[2*(x+ix+(y+iy)*width)+1];
+			uint8_t byte1 = data[2*(x+ix+(y+iy)*width)];
+			uint8_t byte2 = data[2*(x+ix+(y+iy)*width)+1];
 			int alpha = (byte1<<8)+byte2;
 			for(unsigned int index=0; index<8; index++) 
 			{
 				double indexError;
 				if(formatSigned)
 				{
-					int16 val16;
+					int16_t val16;
 					int val;
                     val16 = get16bits11signed(bestbase,besttable,bestmul,index);
                     val = val16 + 256*128;
@@ -8106,7 +8106,7 @@ void compressBlockAlpha16(uint8* data, int ix, int iy, int width, uint8* returnD
 
 // Exhaustive compression of alpha compression in a GL_COMPRESSED_RGB8_ETC2 block
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockAlphaSlow(uint8* data, int ix, int iy, int width, uint8* returnData) 
+void compressBlockAlphaSlow(uint8_t* data, int ix, int iy, int width, uint8_t* returnData) 
 {
 	setupAlphaTable();
 	//determine the best table and base alpha value for this block using MSE
@@ -8256,7 +8256,7 @@ void compressBlockAlphaSlow(uint8* data, int ix, int iy, int width, uint8* retur
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precomutes a table that is used when compressing a block exhaustively
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-inline unsigned int precompute_3bittable_all_subblocksRG_withtest_perceptual1000(uint8 *block,uint8 *avg_color, unsigned int *precalc_err_UL_R, unsigned int *precalc_err_UR_R, unsigned int *precalc_err_LL_R, unsigned int *precalc_err_LR_R,unsigned int *precalc_err_UL_RG, unsigned int *precalc_err_UR_RG, unsigned int *precalc_err_LL_RG, unsigned int *precalc_err_LR_RG, unsigned int best_err)
+inline unsigned int precompute_3bittable_all_subblocksRG_withtest_perceptual1000(uint8_t *block,uint8_t *avg_color, unsigned int *precalc_err_UL_R, unsigned int *precalc_err_UR_R, unsigned int *precalc_err_LL_R, unsigned int *precalc_err_LR_R,unsigned int *precalc_err_UL_RG, unsigned int *precalc_err_UR_RG, unsigned int *precalc_err_LL_RG, unsigned int *precalc_err_LR_RG, unsigned int best_err)
 {
 	int table;
 	int index;
@@ -8393,7 +8393,7 @@ inline unsigned int precompute_3bittable_all_subblocksRG_withtest_perceptual1000
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precomutes a table that is used when compressing a block exhaustively
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-inline int precompute_3bittable_all_subblocksRG_withtest(uint8 *block,uint8 *avg_color, unsigned int *precalc_err_UL_R, unsigned int *precalc_err_UR_R, unsigned int *precalc_err_LL_R, unsigned int *precalc_err_LR_R,unsigned int *precalc_err_UL_RG, unsigned int *precalc_err_UR_RG, unsigned int *precalc_err_LL_RG, unsigned int *precalc_err_LR_RG, unsigned int best_err)
+inline int precompute_3bittable_all_subblocksRG_withtest(uint8_t *block,uint8_t *avg_color, unsigned int *precalc_err_UL_R, unsigned int *precalc_err_UR_R, unsigned int *precalc_err_LL_R, unsigned int *precalc_err_LR_R,unsigned int *precalc_err_UL_RG, unsigned int *precalc_err_UR_RG, unsigned int *precalc_err_LL_RG, unsigned int *precalc_err_LR_RG, unsigned int best_err)
 {
 	int table;
 	int index;
@@ -8526,7 +8526,7 @@ inline int precompute_3bittable_all_subblocksRG_withtest(uint8 *block,uint8 *avg
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precomutes a table that is used when compressing a block exhaustively
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-inline unsigned int precompute_3bittable_all_subblocksR_with_test_perceptual1000(uint8 *block,uint8 *avg_color, unsigned int *precalc_err_UL_R, unsigned int *precalc_err_UR_R, unsigned int *precalc_err_LL_R, unsigned int *precalc_err_LR_R, unsigned int best_err)
+inline unsigned int precompute_3bittable_all_subblocksR_with_test_perceptual1000(uint8_t *block,uint8_t *avg_color, unsigned int *precalc_err_UL_R, unsigned int *precalc_err_UR_R, unsigned int *precalc_err_LL_R, unsigned int *precalc_err_LR_R, unsigned int best_err)
 {
 	int table;
 	int index;
@@ -8658,7 +8658,7 @@ inline unsigned int precompute_3bittable_all_subblocksR_with_test_perceptual1000
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precomutes a table that is used when compressing a block exhaustively
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-inline int precompute_3bittable_all_subblocksR_with_test(uint8 *block,uint8 *avg_color, unsigned int *precalc_err_UL_R, unsigned int *precalc_err_UR_R, unsigned int *precalc_err_LL_R, unsigned int *precalc_err_LR_R, unsigned int best_err)
+inline int precompute_3bittable_all_subblocksR_with_test(uint8_t *block,uint8_t *avg_color, unsigned int *precalc_err_UL_R, unsigned int *precalc_err_UR_R, unsigned int *precalc_err_LL_R, unsigned int *precalc_err_LR_R, unsigned int best_err)
 {
 	int table;
 	int index;
@@ -8790,7 +8790,7 @@ inline int precompute_3bittable_all_subblocksR_with_test(uint8 *block,uint8 *avg
 #if EXHAUSTIVE_CODE_ACTIVE
 // Tries all index-tables, used when compressing a block exhaustively
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-inline void tryalltables_3bittable_all_subblocks_using_precalc(uint8 *block_2x2,uint8 *color_quant1, unsigned int *precalc_err_UL_RG, unsigned int *precalc_err_UR_RG, unsigned int *precalc_err_LL_RG, unsigned int *precalc_err_LR_RG, unsigned int &err_upper, unsigned int &err_lower, unsigned int &err_left, unsigned int &err_right, unsigned int best_err)
+inline void tryalltables_3bittable_all_subblocks_using_precalc(uint8_t *block_2x2,uint8_t *color_quant1, unsigned int *precalc_err_UL_RG, unsigned int *precalc_err_UR_RG, unsigned int *precalc_err_LL_RG, unsigned int *precalc_err_LR_RG, unsigned int &err_upper, unsigned int &err_lower, unsigned int &err_left, unsigned int &err_right, unsigned int best_err)
 {
 	unsigned int err_this_table_upper;
 	unsigned int err_this_table_lower;
@@ -8944,7 +8944,7 @@ inline void tryalltables_3bittable_all_subblocks_using_precalc(uint8 *block_2x2,
 #if EXHAUSTIVE_CODE_ACTIVE
 // Tries all index-tables, used when compressing a block exhaustively using perceptual error measure
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-inline void tryalltables_3bittable_all_subblocks_using_precalc_perceptual1000(uint8 *block_2x2,uint8 *color_quant1, unsigned int *precalc_err_UL_RG, unsigned int *precalc_err_UR_RG, unsigned int *precalc_err_LL_RG, unsigned int *precalc_err_LR_RG, unsigned int &err_upper, unsigned int &err_lower, unsigned int &err_left, unsigned int &err_right, unsigned int best_err)
+inline void tryalltables_3bittable_all_subblocks_using_precalc_perceptual1000(uint8_t *block_2x2,uint8_t *color_quant1, unsigned int *precalc_err_UL_RG, unsigned int *precalc_err_UR_RG, unsigned int *precalc_err_LL_RG, unsigned int *precalc_err_LR_RG, unsigned int &err_upper, unsigned int &err_lower, unsigned int &err_left, unsigned int &err_right, unsigned int best_err)
 {
 	unsigned int err_this_table_upper;
 	unsigned int err_this_table_lower;
@@ -9098,9 +9098,9 @@ inline void tryalltables_3bittable_all_subblocks_using_precalc_perceptual1000(ui
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compresses the individual mode exhaustively (perecptual error metric).
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockIndividualExhaustivePerceptual(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int total_best_err)
+unsigned int compressBlockIndividualExhaustivePerceptual(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int total_best_err)
 {
-	uint8 color_quant1[3], color_quant2[3];
+	uint8_t color_quant1[3], color_quant2[3];
 
 	int enc_color1[3];
 	int best_enc_color1[3], best_enc_color2[3];
@@ -9137,7 +9137,7 @@ unsigned int compressBlockIndividualExhaustivePerceptual(uint8 *img,int width,in
 	unsigned int precalc_err_LR_RG[8*4*4];
 
 	int diffbit;
-	uint8 block_2x2[4*4*4];
+	uint8_t block_2x2[4*4*4];
 
 	unsigned int best_err;
 	int best_flip;
@@ -9370,9 +9370,9 @@ unsigned int compressBlockIndividualExhaustivePerceptual(uint8 *img,int width,in
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compresses the individual mode exhaustively.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockIndividualExhaustive(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int total_best_err)
+unsigned int compressBlockIndividualExhaustive(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int total_best_err)
 {
-	uint8 color_quant1[3], color_quant2[3];
+	uint8_t color_quant1[3], color_quant2[3];
 
 	int enc_color1[3];
 	int best_enc_color1[3], best_enc_color2[3];
@@ -9409,7 +9409,7 @@ unsigned int compressBlockIndividualExhaustive(uint8 *img,int width,int startx,i
 	unsigned int precalc_err_LR_RG[8*4*4];
 
 	int diffbit;
-	uint8 block_2x2[4*4*4];
+	uint8_t block_2x2[4*4*4];
 
 	unsigned int best_err;
 	int best_flip;
@@ -9640,9 +9640,9 @@ unsigned int compressBlockIndividualExhaustive(uint8 *img,int width,int startx,i
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compresses the differential mode exhaustively (perecptual error metric).
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockDifferentialExhaustivePerceptual(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far)
+unsigned int compressBlockDifferentialExhaustivePerceptual(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far)
 {
-	uint8 color_quant1[3], color_quant2[3];
+	uint8_t color_quant1[3], color_quant2[3];
 
 	int enc_color1[3], enc_color2[3], diff[3];
 	int best_enc_color1[3], best_enc_color2[3];
@@ -9671,7 +9671,7 @@ unsigned int compressBlockDifferentialExhaustivePerceptual(uint8 *img,int width,
 	unsigned int best_error_using_diff_mode;
 
 	int diffbit;
-	uint8 block_2x2[4*4*4];
+	uint8_t block_2x2[4*4*4];
 
 	unsigned int error, error_lying, error_standing;
 	unsigned int *err_lower_adr;
@@ -10028,9 +10028,9 @@ unsigned int compressBlockDifferentialExhaustivePerceptual(uint8 *img,int width,
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compresses the differential mode exhaustively.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockDifferentialExhaustive(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int previous_best_err)
+unsigned int compressBlockDifferentialExhaustive(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int previous_best_err)
 {
-	uint8 color_quant1[3], color_quant2[3];
+	uint8_t color_quant1[3], color_quant2[3];
 
 	int enc_color1[3], enc_color2[3], diff[3];
 	int best_enc_color1[3], best_enc_color2[3];
@@ -10056,7 +10056,7 @@ unsigned int compressBlockDifferentialExhaustive(uint8 *img,int width,int startx
 	unsigned int precalc_err_LR_RG[8*4*4];
 
 	int diffbit;
-	uint8 block_2x2[4*4*4];
+	uint8_t block_2x2[4*4*4];
 
 	unsigned int error, error_lying, error_standing, best_err, total_best_err;
 	unsigned int *err_lower_adr;
@@ -10401,7 +10401,7 @@ unsigned int compressBlockDifferentialExhaustive(uint8 *img,int width,int startx
 #if EXHAUSTIVE_CODE_ACTIVE
 // This function uses real exhaustive search for the planar mode. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockPlanar57ExhaustivePerceptual(uint8 *img, int width,int startx,int starty, unsigned int &compressed57_1, unsigned int &compressed57_2, unsigned int best_error_sofar, unsigned int best_error_planar_red, unsigned int best_error_planar_green, unsigned int best_error_planar_blue)
+void compressBlockPlanar57ExhaustivePerceptual(uint8_t *img, int width,int startx,int starty, unsigned int &compressed57_1, unsigned int &compressed57_2, unsigned int best_error_sofar, unsigned int best_error_planar_red, unsigned int best_error_planar_green, unsigned int best_error_planar_blue)
 {
 	int colorO_enc[3], colorH_enc[3], colorV_enc[3];
 	int best_colorO_enc[3], best_colorH_enc[3], best_colorV_enc[3];
@@ -10415,7 +10415,7 @@ void compressBlockPlanar57ExhaustivePerceptual(uint8 *img, int width,int startx,
 	unsigned int BBBtable[128*128];
 	unsigned int CCCtable[128*128];
 
-	uint8 block[4*4*4];
+	uint8_t block[4*4*4];
 
 	// Use 4 bytes per pixel to make it 32-word aligned.
 	int count = 0;
@@ -10658,7 +10658,7 @@ void compressBlockPlanar57ExhaustivePerceptual(uint8 *img, int width,int startx,
 #if EXHAUSTIVE_CODE_ACTIVE
 // This function uses real exhaustive search for the planar mode. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockPlanar57Exhaustive(uint8 *img, int width,int startx,int starty, unsigned int &compressed57_1, unsigned int &compressed57_2, unsigned int best_error_sofar, unsigned int best_error_red, unsigned int best_error_green, unsigned int best_error_blue)
+void compressBlockPlanar57Exhaustive(uint8_t *img, int width,int startx,int starty, unsigned int &compressed57_1, unsigned int &compressed57_2, unsigned int best_error_sofar, unsigned int best_error_red, unsigned int best_error_green, unsigned int best_error_blue)
 {
 	int colorO_enc[3], colorH_enc[3], colorV_enc[3];
 	int best_colorO_enc[3], best_colorH_enc[3], best_colorV_enc[3];
@@ -10672,7 +10672,7 @@ void compressBlockPlanar57Exhaustive(uint8 *img, int width,int startx,int starty
 	unsigned int BBBtable[128*128];
 	unsigned int CCCtable[128*128];
 
-	uint8 block[4*4*4];
+	uint8_t block[4*4*4];
 
 	// Use 4 bytes per pixel to make it 32-word aligned.
 	int count = 0;
@@ -10884,18 +10884,18 @@ void compressBlockPlanar57Exhaustive(uint8 *img, int width,int startx,int starty
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates a table used in exhaustive compression of the T-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcError59T_col0_Rpercep1000(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col0_R)
+void precalcError59T_col0_Rpercep1000(uint8_t* block, int colorRGB444_packed, unsigned int *precalc_err_col0_R)
 {
 	unsigned int pixel_error, 
 		         best_pixel_error;
 	int diff;
-	uint8 color;
-	uint8 possible_colors[3];
+	uint8_t color;
+	uint8_t possible_colors[3];
 
 	color = ((colorRGB444_packed >> 8) & 0xf)*17;
 
 	// Test all distances
-	for (uint8 d = 0; d < 8; d++)
+	for (uint8_t d = 0; d < 8; d++)
 	{
 
 		possible_colors[0] = CLAMP(0,color - table59T[d],255);
@@ -10908,7 +10908,7 @@ void precalcError59T_col0_Rpercep1000(uint8* block, int colorRGB444_packed, unsi
 			best_pixel_error = MAXERR1000;
 
 			// Loop possible block colors
-			for (uint8 c = 0; c < 3; c++) 
+			for (uint8_t c = 0; c < 3; c++) 
 			{
 			
 				diff = block[4*x + R] - CLAMP(0,possible_colors[c],255);
@@ -10931,18 +10931,18 @@ void precalcError59T_col0_Rpercep1000(uint8* block, int colorRGB444_packed, unsi
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates a table used in exhaustive compression of the T-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcError59T_col0_R(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col0_R)
+void precalcError59T_col0_R(uint8_t* block, int colorRGB444_packed, unsigned int *precalc_err_col0_R)
 {
 	unsigned int pixel_error, 
 							 best_pixel_error;
 	int diff;
-	uint8 color;
-	uint8 possible_colors[3];
+	uint8_t color;
+	uint8_t possible_colors[3];
 
 	color = ((colorRGB444_packed >> 8) & 0xf)*17;
 
 	// Test all distances
-	for (uint8 d = 0; d < 8; d++)
+	for (uint8_t d = 0; d < 8; d++)
 	{
 
 		possible_colors[0] = CLAMP(0,color - table59T[d],255);
@@ -10955,7 +10955,7 @@ void precalcError59T_col0_R(uint8* block, int colorRGB444_packed, unsigned int *
 			best_pixel_error = MAXIMUM_ERROR;
 
 			// Loop possible block colors
-			for (uint8 c = 0; c < 3; c++) 
+			for (uint8_t c = 0; c < 3; c++) 
 			{
 			
 				diff = block[4*x + R] - CLAMP(0,possible_colors[c],255);
@@ -10975,19 +10975,19 @@ void precalcError59T_col0_R(uint8* block, int colorRGB444_packed, unsigned int *
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates a table used in exhaustive compression of the T-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcError59T_col0_RGpercep1000(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col0_RG)
+void precalcError59T_col0_RGpercep1000(uint8_t* block, int colorRGB444_packed, unsigned int *precalc_err_col0_RG)
 {
 	unsigned int pixel_error, 
 		         best_pixel_error;
 	int diff[3];
-	uint8 color[3];
-	uint8 possible_colors[3][2];
+	uint8_t color[3];
+	uint8_t possible_colors[3][2];
 
 	color[R] = ((colorRGB444_packed >> 8) & 0xf)*17;
 	color[G] = ((colorRGB444_packed >> 4) & 0xf)*17;
 
 	// Test all distances
-	for (uint8 d = 0; d < 8; d++)
+	for (uint8_t d = 0; d < 8; d++)
 	{
 
 		possible_colors[0][R] = CLAMP(0,color[R] - table59T[d],255);
@@ -11007,7 +11007,7 @@ void precalcError59T_col0_RGpercep1000(uint8* block, int colorRGB444_packed, uns
 			best_pixel_error = MAXERR1000;
 
 			// Loop possible block colors
-			for (uint8 c = 0; c < 3; c++) 
+			for (uint8_t c = 0; c < 3; c++) 
 			{
 			
 				diff[R] = block[4*x + R] - CLAMP(0,possible_colors[c][R],255);
@@ -11028,19 +11028,19 @@ void precalcError59T_col0_RGpercep1000(uint8* block, int colorRGB444_packed, uns
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates a table used in exhaustive compression of the T-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcError59T_col0_RG(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col0_RG)
+void precalcError59T_col0_RG(uint8_t* block, int colorRGB444_packed, unsigned int *precalc_err_col0_RG)
 {
 	unsigned int pixel_error, 
 		         best_pixel_error;
 	int diff[3];
-	uint8 color[3];
-	uint8 possible_colors[3][2];
+	uint8_t color[3];
+	uint8_t possible_colors[3][2];
 
 	color[R] = ((colorRGB444_packed >> 8) & 0xf)*17;
 	color[G] = ((colorRGB444_packed >> 4) & 0xf)*17;
 
 	// Test all distances
-	for (uint8 d = 0; d < 8; d++)
+	for (uint8_t d = 0; d < 8; d++)
 	{
 
 		possible_colors[0][R] = CLAMP(0,color[R] - table59T[d],255);
@@ -11058,7 +11058,7 @@ void precalcError59T_col0_RG(uint8* block, int colorRGB444_packed, unsigned int 
 			best_pixel_error = MAXIMUM_ERROR;
 
 			// Loop possible block colors
-			for (uint8 c = 0; c < 3; c++) 
+			for (uint8_t c = 0; c < 3; c++) 
 			{
 				diff[R] = block[4*x + R] - CLAMP(0,possible_colors[c][R],255);
 				diff[G] = block[4*x + G] - CLAMP(0,possible_colors[c][G],255);
@@ -11078,11 +11078,11 @@ void precalcError59T_col0_RG(uint8* block, int colorRGB444_packed, unsigned int 
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates a table used in exhaustive compression of the T-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcError59T_col1_Rpercep1000(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col1_R)
+void precalcError59T_col1_Rpercep1000(uint8_t* block, int colorRGB444_packed, unsigned int *precalc_err_col1_R)
 {
 	unsigned int pixel_error; 
 	int diff;
-	uint8 color;
+	uint8_t color;
 
 	color = ((colorRGB444_packed >> 8) & 0xf)*17;
 
@@ -11103,11 +11103,11 @@ void precalcError59T_col1_Rpercep1000(uint8* block, int colorRGB444_packed, unsi
  *
  * In the 59T bit mode, we only have pattern T.
  */
-void precalcError59T_col1_R(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col1_R)
+void precalcError59T_col1_R(uint8_t* block, int colorRGB444_packed, unsigned int *precalc_err_col1_R)
 {
 	unsigned int pixel_error; 
 	int diff;
-	uint8 color;
+	uint8_t color;
 
 	color = ((colorRGB444_packed >> 8) & 0xf)*17;
 
@@ -11124,11 +11124,11 @@ void precalcError59T_col1_R(uint8* block, int colorRGB444_packed, unsigned int *
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates a table used in exhaustive compression of the T-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcError59T_col1_RGpercep1000(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col1_RG)
+void precalcError59T_col1_RGpercep1000(uint8_t* block, int colorRGB444_packed, unsigned int *precalc_err_col1_RG)
 {
 	unsigned int pixel_error; 
 	int diff[3];
-	uint8 color[2];
+	uint8_t color[2];
 
 	color[R] = ((colorRGB444_packed >> 8) & 0xf)*17;
 	color[G] = ((colorRGB444_packed >> 4) & 0xf)*17;
@@ -11147,11 +11147,11 @@ void precalcError59T_col1_RGpercep1000(uint8* block, int colorRGB444_packed, uns
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates a table used in exhaustive compression of the T-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcError59T_col1_RG(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col1_RG)
+void precalcError59T_col1_RG(uint8_t* block, int colorRGB444_packed, unsigned int *precalc_err_col1_RG)
 {
 	unsigned int pixel_error; 
 	int diff[3];
-	uint8 color[2];
+	uint8_t color[2];
 
 	color[R] = ((colorRGB444_packed >> 8) & 0xf)*17;
 	color[G] = ((colorRGB444_packed >> 4) & 0xf)*17;
@@ -11170,17 +11170,17 @@ void precalcError59T_col1_RG(uint8* block, int colorRGB444_packed, unsigned int 
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates a table used in exhaustive compression of the T-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcError59T_col0_RGBpercep1000(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col0_RGB)
+void precalcError59T_col0_RGBpercep1000(uint8_t* block, int colorRGB444_packed, unsigned int *precalc_err_col0_RGB)
 {
 	unsigned int pixel_error, 
 		         best_pixel_error;
-	uint8 color[3];
+	uint8_t color[3];
 	int possible_colors[3][3];
 	unsigned int *precalc_err_col0_RGB_adr;
 
 #define ONEPOINT59RGB_PERCEP(xval) \
 			/* Loop possible block colors */\
-			/* unroll loop for (uint8 c = 0; c < 3; c++) */\
+			/* unroll loop for (uint8_t c = 0; c < 3; c++) */\
 			{\
 				best_pixel_error = PERCEPTUAL_WEIGHT_R_SQUARED_TIMES1000*square_table[block[4*xval + R] - possible_colors[0][R]]\
                             + PERCEPTUAL_WEIGHT_G_SQUARED_TIMES1000*square_table[block[4*xval + G] - possible_colors[0][G]] \
@@ -11235,7 +11235,7 @@ void precalcError59T_col0_RGBpercep1000(uint8* block, int colorRGB444_packed, un
 	color[B] = (((colorRGB444_packed) & 0xf) << 4) | ((colorRGB444_packed) & 0xf) ;
 	
 	/* Test all distances */
-	/* unroll loop for (uint8 d = 0; d < 8; ++d) */
+	/* unroll loop for (uint8_t d = 0; d < 8; ++d) */
 	{
 		ONETABLE59RGB_PERCEP(0)
 		ONETABLE59RGB_PERCEP(1)
@@ -11252,17 +11252,17 @@ void precalcError59T_col0_RGBpercep1000(uint8* block, int colorRGB444_packed, un
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates a table used in exhaustive compression of the T-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcError59T_col0_RGB(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col0_RGB)
+void precalcError59T_col0_RGB(uint8_t* block, int colorRGB444_packed, unsigned int *precalc_err_col0_RGB)
 {
 	unsigned int pixel_error, 
 		         best_pixel_error;
-	uint8 color[3];
+	uint8_t color[3];
 	int possible_colors[3][3];
 	unsigned int *precalc_err_col0_RGB_adr;
 
 #define ONEPOINT59RGB(xval) \
 			/* Loop possible block colors */\
-			/* unroll loop for (uint8 c = 0; c < 3; c++) */\
+			/* unroll loop for (uint8_t c = 0; c < 3; c++) */\
 			{\
 				best_pixel_error = square_table[block[4*xval + R] - possible_colors[0][R]]\
                             + square_table[block[4*xval + G] - possible_colors[0][G]] \
@@ -11317,7 +11317,7 @@ void precalcError59T_col0_RGB(uint8* block, int colorRGB444_packed, unsigned int
 	color[B] = (((colorRGB444_packed) & 0xf) << 4) | ((colorRGB444_packed) & 0xf) ;
 
 	/* Test all distances */
-	/* unroll loop for (uint8 d = 0; d < 8; ++d) */
+	/* unroll loop for (uint8_t d = 0; d < 8; ++d) */
 	{
 		ONETABLE59RGB(0)
 		ONETABLE59RGB(1)
@@ -11334,11 +11334,11 @@ void precalcError59T_col0_RGB(uint8* block, int colorRGB444_packed, unsigned int
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates a table used in exhaustive compression of the T-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcError59T_col1_RGBpercep1000(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col1_RGB)
+void precalcError59T_col1_RGBpercep1000(uint8_t* block, int colorRGB444_packed, unsigned int *precalc_err_col1_RGB)
 {
 	unsigned int pixel_error;
 	int diff[3];
-	uint8 colorRGB[3];
+	uint8_t colorRGB[3];
 
 	colorRGB[0] = ((colorRGB444_packed >> 8) & 0xf)*17;
 	colorRGB[1] = ((colorRGB444_packed >> 4) & 0xf)*17;
@@ -11361,11 +11361,11 @@ void precalcError59T_col1_RGBpercep1000(uint8* block, int colorRGB444_packed, un
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates a table used in exhaustive compression of the T-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcError59T_col1_RGB(uint8* block, int colorRGB444_packed, unsigned int *precalc_err_col1_RGB)
+void precalcError59T_col1_RGB(uint8_t* block, int colorRGB444_packed, unsigned int *precalc_err_col1_RGB)
 {
 	unsigned int pixel_error;
 	int diff[3];
-	uint8 colorRGB[3];
+	uint8_t colorRGB[3];
 
 	colorRGB[0] = ((colorRGB444_packed >> 8) & 0xf)*17;
 	colorRGB[1] = ((colorRGB444_packed >> 4) & 0xf)*17;
@@ -11459,7 +11459,7 @@ unsigned int calculateError59TusingPrecalcRperceptual1000(int *colorsRGB444_pack
 	pixel_error_col1_adr = &precalc_err_col1_R[((colorsRGB444_packed[1]>>8))*16];
 
 	// Test all distances
-	/* unroll loop for (uint8 d = 0; d < 8; d++) */
+	/* unroll loop for (uint8_t d = 0; d < 8; d++) */
 	{
 		ONETABLE59R_PERCEP(0)
 		ONETABLE59R_PERCEP(1)
@@ -11550,7 +11550,7 @@ unsigned int calculateError59TusingPrecalcR(int *colorsRGB444_packed, unsigned i
 
 
 	// Test all distances
-	/* unroll loop for (uint8 d = 0; d < 8; d++) */
+	/* unroll loop for (uint8_t d = 0; d < 8; d++) */
 	{
 		ONETABLE59R(0)
 		ONETABLE59R(1)
@@ -11643,7 +11643,7 @@ unsigned int calculateError59TusingPrecalcRGperceptual1000(int *colorsRGB444_pac
 	pixel_error_col1_adr = &precalc_err_col1_RG[((colorsRGB444_packed[1]>>4))*16];
 
 	// Test all distances
-	/* unroll loop for (uint8 d = 0; d < 8; d++) */
+	/* unroll loop for (uint8_t d = 0; d < 8; d++) */
 	{
 
 		ONETABLE59RG_PERCEP(0)
@@ -11734,7 +11734,7 @@ unsigned int calculateError59TusingPrecalcRG(int *colorsRGB444_packed, unsigned 
 	pixel_error_col1_adr = &precalc_err_col1_RG[((colorsRGB444_packed[1]>>4))*16];
 
 	// Test all distances
-	/* unroll loop for (uint8 d = 0; d < 8; d++) */
+	/* unroll loop for (uint8_t d = 0; d < 8; d++) */
 	{
 		ONETABLE59RG(0)
 		ONETABLE59RG(1)
@@ -11823,7 +11823,7 @@ unsigned int calculateError59TusingPrecalcRGBperceptual1000(int *colorsRGB444_pa
 	pixel_error_col0_base_adr = &precalc_err_col0_RGB[(colorsRGB444_packed[0]*8)*16];
 
 	// Test all distances
-	/* unroll loop for (uint8 d = 0; d < 8; d++)*/
+	/* unroll loop for (uint8_t d = 0; d < 8; d++)*/
 	{
 		ONETABLE59T_PERCEP(0)
 		ONETABLE59T_PERCEP(1)
@@ -11912,7 +11912,7 @@ unsigned int calculateError59TusingPrecalcRGB(int *colorsRGB444_packed, unsigned
 	pixel_error_col0_base_adr = &precalc_err_col0_RGB[(colorsRGB444_packed[0]*8)*16];
 
 	// Test all distances
-	/* unroll loop for (uint8 d = 0; d < 8; d++)*/
+	/* unroll loop for (uint8_t d = 0; d < 8; d++)*/
 	{
 		ONETABLE59T(0)
 		ONETABLE59T(1)
@@ -11941,13 +11941,13 @@ unsigned int calculateError59TusingPrecalcRGB(int *colorsRGB444_packed, unsigned
 // is less than best_error_so_far. To guarantee that the best possible T-representation is found, the function should be called using
 // best_error_so_far = 255*255*3*16, which is the maximum error for a block. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockTHUMB59TExhaustivePerceptual(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
+unsigned int compressBlockTHUMB59TExhaustivePerceptual(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
 {
-	uint8 colorsRGB444[2][3];
+	uint8_t colorsRGB444[2][3];
 	unsigned int pixel_indices;
-	uint8 distance;
+	uint8_t distance;
 
-	uint8 block[4*4*4];
+	uint8_t block[4*4*4];
 
 	unsigned int *precalc_err_col0_RGB;
 	unsigned int *precalc_err_col1_RGB;
@@ -12126,13 +12126,13 @@ unsigned int compressBlockTHUMB59TExhaustivePerceptual(uint8 *img,int width,int 
 // is less than best_error_so_far. To guarantee that the best possible T-representation is found, the function should be called using
 // best_error_so_far = 255*255*3*16, which is the maximum error for a block. 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockTHUMB59TExhaustive(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
+unsigned int compressBlockTHUMB59TExhaustive(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
 {
-	uint8 colorsRGB444[2][3];
+	uint8_t colorsRGB444[2][3];
 	unsigned int pixel_indices;
-	uint8 distance;
+	uint8_t distance;
 
-	uint8 block[4*4*4];
+	uint8_t block[4*4*4];
 
 	unsigned int *precalc_err_col0_RGB;
 	unsigned int *precalc_err_col1_RGB;
@@ -12301,20 +12301,20 @@ unsigned int compressBlockTHUMB59TExhaustive(uint8 *img,int width,int startx,int
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates tables used in the exhaustive compression of the H-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcErrorR_58Hperceptual1000(uint8* srcimg, int width, int startx, int starty, uint8 (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_errR) 
+void precalcErrorR_58Hperceptual1000(uint8_t* srcimg, int width, int startx, int starty, uint8_t (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_errR) 
 {
 	unsigned int block_error = 0, 
 		   pixel_error, 
 		   best_pixel_error;
 	int diff[3];
 	unsigned int pixel_colors;
-	uint8 possible_colors[2][3];
-	uint8 colors[2][3];
+	uint8_t possible_colors[2][3];
+	uint8_t colors[2][3];
 	
 	decompressColor(R_BITS58H, G_BITS58H, B_BITS58H, colorsRGB444, colors);
 
 	// Test all distances
-	for (uint8 d = 0; d < BINPOW(TABLE_BITS_58H); ++d) 
+	for (uint8_t d = 0; d < BINPOW(TABLE_BITS_58H); ++d) 
 	{
 		possible_colors[0][R] = CLAMP(0,colors[0][R] - table58H[d],255);
 		possible_colors[1][R] = CLAMP(0,colors[0][R] + table58H[d],255);
@@ -12330,7 +12330,7 @@ void precalcErrorR_58Hperceptual1000(uint8* srcimg, int width, int startx, int s
 				best_pixel_error = MAXERR1000;
 
 				// Loop possible block colors
-				for (uint8 c = 0; c < 2; ++c) 
+				for (uint8_t c = 0; c < 2; ++c) 
 				{
 					diff[R] = srcimg[3*((starty+y)*width+startx+x)+R] - CLAMP(0,possible_colors[c][R],255);
 
@@ -12352,20 +12352,20 @@ void precalcErrorR_58Hperceptual1000(uint8* srcimg, int width, int startx, int s
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates tables used in the exhaustive compression of the H-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcErrorR_58H(uint8* srcimg, int width, int startx, int starty, uint8 (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_errR) 
+void precalcErrorR_58H(uint8_t* srcimg, int width, int startx, int starty, uint8_t (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_errR) 
 {
 	double block_error = 0, 
 		   pixel_error, 
 		   best_pixel_error;
 	int diff[3];
 	unsigned int pixel_colors;
-	uint8 possible_colors[2][3];
-	uint8 colors[2][3];
+	uint8_t possible_colors[2][3];
+	uint8_t colors[2][3];
 	
 	decompressColor(R_BITS58H, G_BITS58H, B_BITS58H, colorsRGB444, colors);
 
 	// Test all distances
-	for (uint8 d = 0; d < BINPOW(TABLE_BITS_58H); ++d) 
+	for (uint8_t d = 0; d < BINPOW(TABLE_BITS_58H); ++d) 
 	{
 		possible_colors[0][R] = CLAMP(0,colors[0][R] - table58H[d],255);
 		possible_colors[1][R] = CLAMP(0,colors[0][R] + table58H[d],255);
@@ -12381,7 +12381,7 @@ void precalcErrorR_58H(uint8* srcimg, int width, int startx, int starty, uint8 (
 				best_pixel_error = MAXIMUM_ERROR;
 
 				// Loop possible block colors
-				for (uint8 c = 0; c < 2; ++c) 
+				for (uint8_t c = 0; c < 2; ++c) 
 				{
 					diff[R] = srcimg[3*((starty+y)*width+startx+x)+R] - CLAMP(0,possible_colors[c][R],255);
 
@@ -12403,20 +12403,20 @@ void precalcErrorR_58H(uint8* srcimg, int width, int startx, int starty, uint8 (
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates tables used in the exhaustive compression of the H-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcErrorRG_58Hperceptual1000(uint8* srcimg, int width, int startx, int starty, uint8 (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_errRG) 
+void precalcErrorRG_58Hperceptual1000(uint8_t* srcimg, int width, int startx, int starty, uint8_t (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_errRG) 
 {
 	unsigned int block_error = 0, 
 		   pixel_error, 
 		   best_pixel_error;
 	int diff[3];
 	unsigned int pixel_colors;
-	uint8 possible_colors[2][3];
-	uint8 colors[2][3];
+	uint8_t possible_colors[2][3];
+	uint8_t colors[2][3];
 	
 	decompressColor(R_BITS58H, G_BITS58H, B_BITS58H, colorsRGB444, colors);
 
 	// Test all distances
-	for (uint8 d = 0; d < BINPOW(TABLE_BITS_58H); ++d) 
+	for (uint8_t d = 0; d < BINPOW(TABLE_BITS_58H); ++d) 
 	{
 		possible_colors[0][R] = CLAMP(0,colors[0][R] - table58H[d],255);
 		possible_colors[0][G] = CLAMP(0,colors[0][G] - table58H[d],255);
@@ -12434,7 +12434,7 @@ void precalcErrorRG_58Hperceptual1000(uint8* srcimg, int width, int startx, int 
 				best_pixel_error = MAXERR1000;
 
 				// Loop possible block colors
-				for (uint8 c = 0; c < 2; ++c) 
+				for (uint8_t c = 0; c < 2; ++c) 
 				{
 					diff[R] = srcimg[3*((starty+y)*width+startx+x)+R] - CLAMP(0,possible_colors[c][R],255);
 					diff[G] = srcimg[3*((starty+y)*width+startx+x)+G] - CLAMP(0,possible_colors[c][G],255);
@@ -12458,20 +12458,20 @@ void precalcErrorRG_58Hperceptual1000(uint8* srcimg, int width, int startx, int 
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates tables used in the exhaustive compression of the H-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcErrorRG_58H(uint8* srcimg, int width, int startx, int starty, uint8 (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_errRG) 
+void precalcErrorRG_58H(uint8_t* srcimg, int width, int startx, int starty, uint8_t (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_errRG) 
 {
 	double block_error = 0, 
 		   pixel_error, 
 		   best_pixel_error;
 	int diff[3];
 	unsigned int pixel_colors;
-	uint8 possible_colors[2][3];
-	uint8 colors[2][3];
+	uint8_t possible_colors[2][3];
+	uint8_t colors[2][3];
 	
 	decompressColor(R_BITS58H, G_BITS58H, B_BITS58H, colorsRGB444, colors);
 
 	// Test all distances
-	for (uint8 d = 0; d < BINPOW(TABLE_BITS_58H); ++d) 
+	for (uint8_t d = 0; d < BINPOW(TABLE_BITS_58H); ++d) 
 	{
 		possible_colors[0][R] = CLAMP(0,colors[0][R] - table58H[d],255);
 		possible_colors[0][G] = CLAMP(0,colors[0][G] - table58H[d],255);
@@ -12489,7 +12489,7 @@ void precalcErrorRG_58H(uint8* srcimg, int width, int startx, int starty, uint8 
 				best_pixel_error = MAXIMUM_ERROR;
 
 				// Loop possible block colors
-				for (uint8 c = 0; c < 2; ++c) 
+				for (uint8_t c = 0; c < 2; ++c) 
 				{
 					diff[R] = srcimg[3*((starty+y)*width+startx+x)+R] - CLAMP(0,possible_colors[c][R],255);
 					diff[G] = srcimg[3*((starty+y)*width+startx+x)+G] - CLAMP(0,possible_colors[c][G],255);
@@ -12513,12 +12513,12 @@ void precalcErrorRG_58H(uint8* srcimg, int width, int startx, int starty, uint8 
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates a table used in the exhaustive compression of the H-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcError58Hperceptual1000(uint8* block, uint8 (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_err) 
+void precalcError58Hperceptual1000(uint8_t* block, uint8_t (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_err) 
 {
 	unsigned int pixel_error, 
 		   best_pixel_error;
 	int possible_colors[2][3];
-	uint8 colors[2][3];
+	uint8_t colors[2][3];
 	unsigned int *precalc_err_tab;
  	int red_original;
  	int green_original;
@@ -12572,7 +12572,7 @@ void precalcError58Hperceptual1000(uint8* block, uint8 (colorsRGB444)[2][3],int 
  	colors[0][B] = (colorsRGB444[0][B] << 4) | colorsRGB444[0][B];
 
 	// Test all distances
-	/* unroll loop for (uint8 d = 0; d < 8; ++d) */
+	/* unroll loop for (uint8_t d = 0; d < 8; ++d) */
 
 		PRECALC_ONE_TABLE_58H_PERCEP(0)
 		PRECALC_ONE_TABLE_58H_PERCEP(1)
@@ -12590,12 +12590,12 @@ void precalcError58Hperceptual1000(uint8* block, uint8 (colorsRGB444)[2][3],int 
 #if EXHAUSTIVE_CODE_ACTIVE
 // Precalculates a table used in the exhaustive compression of the H-mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void precalcError58H(uint8* block, uint8 (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_err) 
+void precalcError58H(uint8_t* block, uint8_t (colorsRGB444)[2][3],int colorRGB444_packed, unsigned int *precalc_err) 
 {
 	unsigned int pixel_error, 
 		   best_pixel_error;
 	int possible_colors[2][3];
-	uint8 colors[2][3];
+	uint8_t colors[2][3];
 	unsigned int *precalc_err_tab;
  	int red_original;
  	int green_original;
@@ -12645,7 +12645,7 @@ void precalcError58H(uint8* block, uint8 (colorsRGB444)[2][3],int colorRGB444_pa
  	colors[0][B] = (colorsRGB444[0][B] << 4) | colorsRGB444[0][B];
 
 	// Test all distances
-	/* unroll loop for (uint8 d = 0; d < 8; ++d) */
+	/* unroll loop for (uint8_t d = 0; d < 8; ++d) */
 
 		PRECALC_ONE_TABLE_58H(0)
 		PRECALC_ONE_TABLE_58H(1)
@@ -12680,7 +12680,7 @@ unsigned int calculateErrorFromPrecalcR58Hperceptual1000(int *colorsRGB444_packe
 		block_error += precalc_col2tab[value];\
 
 	// Test all distances
-	for (uint8 d = 0; d < 8; ++d) 
+	for (uint8_t d = 0; d < 8; ++d) 
 	{
 		block_error = 0;	
 		precalc_col1tab = &precalc_col1[d*16];
@@ -12778,7 +12778,7 @@ unsigned int calculateErrorFromPrecalcR58H(int *colorsRGB444_packed, unsigned in
 		block_error += precalc_col2tab[value];\
 
 	// Test all distances
-	for (uint8 d = 0; d < 8; ++d) 
+	for (uint8_t d = 0; d < 8; ++d) 
 	{
 		block_error = 0;	
 		precalc_col1tab = &precalc_col1[d*16];
@@ -12877,7 +12877,7 @@ unsigned int calculateErrorFromPrecalcRG58Hperceptual1000(int *colorsRGB444_pack
 		block_error += precalc_col2tab[value];\
 
 	// Test all distances
-	for (uint8 d = 0; d < 8; ++d) 
+	for (uint8_t d = 0; d < 8; ++d) 
 	{
 		block_error = 0;	
 		precalc_col1tab = &precalc_col1[d*16];
@@ -12975,7 +12975,7 @@ unsigned int calculateErrorFromPrecalcRG58H(int *colorsRGB444_packed, unsigned i
 		block_error += precalc_col2tab[value];\
 
 	// Test all distances
-	for (uint8 d = 0; d < 8; ++d) 
+	for (uint8_t d = 0; d < 8; ++d) 
 	{
 		block_error = 0;	
 		precalc_col1tab = &precalc_col1[d*16];
@@ -13129,7 +13129,7 @@ unsigned int calculateErrorFromPrecalc58Hperceptual1000(int *colorsRGB444_packed
 	precalc_col1 = &precalc_err[colorsRGB444_packed[0]*8*16];\
 	precalc_col2 = &precalc_err[colorsRGB444_packed[1]*8*16];\
 	/* Test all distances*/\
-	/* unroll loop for (uint8 d = 0; d < 8; ++d) */\
+	/* unroll loop for (uint8_t d = 0; d < 8; ++d) */\
 		ONETABLE_RGB58H_PERCEP(0)\
 		ONETABLE_RGB58H_PERCEP(1)\
 		ONETABLE_RGB58H_PERCEP(2)\
@@ -13221,7 +13221,7 @@ unsigned int calculateErrorFromPrecalc58H(int *colorsRGB444_packed, unsigned int
 	precalc_col1 = &precalc_err[colorsRGB444_packed[0]*8*16];\
 	precalc_col2 = &precalc_err[colorsRGB444_packed[1]*8*16];\
 	/* Test all distances*/\
-	/* unroll loop for (uint8 d = 0; d < 8; ++d) */\
+	/* unroll loop for (uint8_t d = 0; d < 8; ++d) */\
 		ONETABLE_RGB58H(0)\
 		ONETABLE_RGB58H(1)\
 		ONETABLE_RGB58H(2)\
@@ -13266,24 +13266,24 @@ unsigned int calculateErrorFromPrecalc58H(int *colorsRGB444_packed, unsigned int
 // Instead if the 12-bit word red0,green0,blue0 < red1,green1,blue1, d0 is assumed to be 0.
 // Else, it is assumed to be 1.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockTHUMB58HExhaustivePerceptual(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
+unsigned int compressBlockTHUMB58HExhaustivePerceptual(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
 {
 	unsigned int best_error_using_Hmode;
-	uint8 best_colorsRGB444[2][3];
+	uint8_t best_colorsRGB444[2][3];
 	unsigned int best_pixel_indices;
-	uint8 best_distance;
+	uint8_t best_distance;
 
 	unsigned int error;
-	uint8 colorsRGB444[2][3];
+	uint8_t colorsRGB444[2][3];
 	int colorsRGB444_packed[2];
 	int best_colorsRGB444_packed[2];
 	int colorRGB444_packed;
 	unsigned int pixel_indices;
-	uint8 distance;
+	uint8_t distance;
 	unsigned int *precalc_err;		    // smallest error per color, table and pixel
 	unsigned int *precalc_err_RG;		// smallest pixel error for an entire table
 	unsigned int *precalc_err_R;		// smallest pixel error for an entire table
-	uint8 block[4*4*4];
+	uint8_t block[4*4*4];
 
 	best_error_using_Hmode = MAXERR1000;	
 
@@ -13475,24 +13475,24 @@ unsigned int compressBlockTHUMB58HExhaustivePerceptual(uint8 *img,int width,int 
 // Instead if the 12-bit word red0,green0,blue0 < red1,green1,blue1, d0 is assumed to be 0.
 // Else, it is assumed to be 1.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-unsigned int compressBlockTHUMB58HExhaustive(uint8 *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
+unsigned int compressBlockTHUMB58HExhaustive(uint8_t *img,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2, unsigned int best_error_so_far) 
 {
 	unsigned int best_error_using_Hmode;
-	uint8 best_colorsRGB444[2][3];
+	uint8_t best_colorsRGB444[2][3];
 	unsigned int best_pixel_indices;
-	uint8 best_distance;
+	uint8_t best_distance;
 
 	unsigned int error;
-	uint8 colorsRGB444[2][3];
+	uint8_t colorsRGB444[2][3];
 	int colorsRGB444_packed[2];
 	int best_colorsRGB444_packed[2];
 	int colorRGB444_packed;
 	unsigned int pixel_indices;
-	uint8 distance;
+	uint8_t distance;
 	unsigned int *precalc_err;		    // smallest error per color, table and pixel
 	unsigned int *precalc_err_RG;		// smallest pixel error for an entire table
 	unsigned int *precalc_err_R;		// smallest pixel error for an entire table
-	uint8 block[4*4*4];
+	uint8_t block[4*4*4];
 
 	best_error_using_Hmode = MAXIMUM_ERROR;	
 
@@ -13657,7 +13657,7 @@ unsigned int compressBlockTHUMB58HExhaustive(uint8 *img,int width,int startx,int
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compress a block exhaustively for the ETC1 codec.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockETC1Exhaustive(uint8 *img, uint8 *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockETC1Exhaustive(uint8_t *img, uint8_t *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int error_currently_best;
 
@@ -13722,7 +13722,7 @@ void compressBlockETC1Exhaustive(uint8 *img, uint8 *imgdec,int width,int startx,
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compress a block exhaustively for the ETC1 codec using perceptual error measure.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockETC1ExhaustivePerceptual(uint8 *img, uint8 *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockETC1ExhaustivePerceptual(uint8_t *img, uint8_t *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int error_currently_best;
 	
@@ -13793,7 +13793,7 @@ void compressBlockETC1ExhaustivePerceptual(uint8 *img, uint8 *imgdec,int width,i
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compress a block exhaustively for the ETC2 RGB codec using perceptual error measure.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockETC2ExhaustivePerceptual(uint8 *img, uint8 *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockETC2ExhaustivePerceptual(uint8_t *img, uint8_t *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int error_currently_best;
 	
@@ -13946,7 +13946,7 @@ void compressBlockETC2ExhaustivePerceptual(uint8 *img, uint8 *imgdec,int width,i
 #if EXHAUSTIVE_CODE_ACTIVE
 // Compress a block exhaustively for the ETC2 RGB codec.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressBlockETC2Exhaustive(uint8 *img, uint8 *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
+void compressBlockETC2Exhaustive(uint8_t *img, uint8_t *imgdec,int width,int startx,int starty, unsigned int &compressed1, unsigned int &compressed2)
 {
 	unsigned int error_currently_best;
 

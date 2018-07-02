@@ -55,9 +55,9 @@
 #include "../etcpack.h"
 
 // Typedefs
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef short int16;
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef short int16_t;
 
 #define EXHAUSTIVE_CODE_ACTIVE 1 // must be the same value as in etcpack.cxx
 
@@ -176,18 +176,18 @@ bool fileExist(const char *filename)
 
 // Expand source image so that it is divisible by a factor of four in the x-dimension.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-bool expandToWidthDivByFour(uint8 *&img, int width, int height, int &expandedwidth, int &expandedheight, int bitrate)
+bool expandToWidthDivByFour(uint8_t *&img, int width, int height, int &expandedwidth, int &expandedheight, int bitrate)
 {
 	int wdiv4;
 	int xx, yy;
-	uint8 *newimg;
+	uint8_t *newimg;
 
 	wdiv4 = width /4;
 	if( !(wdiv4 *4 == width) )
 	{
      	expandedwidth = (wdiv4 + 1)*4;
 		expandedheight = height;
-	    newimg=(uint8*) malloc(3*expandedwidth*expandedheight*bitrate/8);
+	    newimg=(uint8_t*) malloc(3*expandedwidth*expandedheight*bitrate/8);
 		if(!newimg)
 		{
 			printf("Could not allocate memory to expand width\n");
@@ -240,12 +240,12 @@ bool expandToWidthDivByFour(uint8 *&img, int width, int height, int &expandedwid
 
 // Expand source image so that it is divisible by a factor of four in the y-dimension.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-bool expandToHeightDivByFour(uint8 *&img, int width, int height, int &expandedwidth, int &expandedheight, int bitrate)
+bool expandToHeightDivByFour(uint8_t *&img, int width, int height, int &expandedwidth, int &expandedheight, int bitrate)
 {
 	int hdiv4;
 	int xx, yy;
 	int numlinesmissing;
-	uint8 *newimg;
+	uint8_t *newimg;
 
 	hdiv4 = height/4;
 
@@ -254,7 +254,7 @@ bool expandToHeightDivByFour(uint8 *&img, int width, int height, int &expandedwi
 		expandedwidth = width;
 		expandedheight = (hdiv4 + 1) * 4;
 		numlinesmissing = expandedheight - height;
-		newimg=(uint8*)malloc(3*expandedwidth*expandedheight*bitrate/8);
+		newimg=(uint8_t*)malloc(3*expandedwidth*expandedheight*bitrate/8);
 		if(!newimg)
 		{
 			printf("Could not allocate memory to expand height\n");
@@ -316,7 +316,7 @@ int find_pos_of_extension(char *src)
 // Read source file. Does conversion if file format is not .ppm.
 // Will expand file to be divisible by four in the x- and y- dimension.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-bool readSrcFile(char *filename,uint8 *&img,int &width,int &height, int &expandedwidth, int &expandedheight)
+bool readSrcFile(char *filename,uint8_t *&img,int &width,int &height, int &expandedwidth, int &expandedheight)
 {
 	int w1,h1;
 	int wdiv4, hdiv4;
@@ -410,7 +410,7 @@ bool readSrcFile(char *filename,uint8 *&img,int &width,int &height, int &expande
 // Reads a file without expanding it to be divisible by 4.
 // Is used when doing PSNR calculation between two files.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-bool readSrcFileNoExpand(char *filename,uint8 *&img,int &width,int &height)
+bool readSrcFileNoExpand(char *filename,uint8_t *&img,int &width,int &height)
 {
 	int w1,h1;
 	char str[255];
@@ -673,7 +673,7 @@ void readArguments(int argc,char *argv[],char* src,char *dst)
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 void read_big_endian_2byte_word(unsigned short *blockadr, FILE *f)
 {
-	uint8 bytes[2];
+	uint8_t bytes[2];
 	unsigned short block;
 
 	fread(&bytes[0], 1, 1, f);
@@ -691,7 +691,7 @@ void read_big_endian_2byte_word(unsigned short *blockadr, FILE *f)
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 void read_big_endian_4byte_word(unsigned int *blockadr, FILE *f)
 {
-	uint8 bytes[4];
+	uint8_t bytes[4];
 	unsigned int block;
 
 	fread(&bytes[0], 1, 1, f);
@@ -715,7 +715,7 @@ void read_big_endian_4byte_word(unsigned int *blockadr, FILE *f)
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 void write_big_endian_2byte_word(unsigned short *blockadr, FILE *f)
 {
-	uint8 bytes[2];
+	uint8_t bytes[2];
 	unsigned short block;
 
 	block = blockadr[0];
@@ -732,7 +732,7 @@ void write_big_endian_2byte_word(unsigned short *blockadr, FILE *f)
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 void write_big_endian_4byte_word(unsigned int *blockadr, FILE *f)
 {
-	uint8 bytes[4];
+	uint8_t bytes[4];
 	unsigned int block;
 
 	block = blockadr[0];
@@ -750,10 +750,10 @@ void write_big_endian_4byte_word(unsigned int *blockadr, FILE *f)
 
 // Reads alpha data
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void readAlpha(uint8* &data, int &width, int &height, int &extendedwidth, int &extendedheight) 
+void readAlpha(uint8_t* &data, int &width, int &height, int &extendedwidth, int &extendedheight) 
 {
 	//width and height are already known..?
-	uint8* tempdata;
+	uint8_t* tempdata;
 	int wantedBitDepth;
 	if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_RGBA1_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA1_NO_MIPMAPS) 
 	{
@@ -778,9 +778,9 @@ void readAlpha(uint8* &data, int &width, int &height, int &extendedwidth, int &e
 	}
 	else 
 	{
-		data = (uint8*)malloc(extendedwidth*extendedheight*wantedBitDepth/8);
-		uint8 last=0;
-		uint8 lastlast=0;
+		data = (uint8_t*)malloc(extendedwidth*extendedheight*wantedBitDepth/8);
+		uint8_t last=0;
+		uint8_t lastlast=0;
 		for(int x=0; x<extendedwidth; x++) 
 		{
 			for(int y=0; y<extendedheight; y++) 
@@ -823,7 +823,7 @@ void readAlpha(uint8* &data, int &width, int &height, int &extendedwidth, int &e
 
 // Calculate weighted PSNR
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calculateWeightedPSNR(uint8 *lossyimg, uint8 *origimg, int width, int height, double w1, double w2, double w3)
+double calculateWeightedPSNR(uint8_t *lossyimg, uint8_t *origimg, int width, int height, double w1, double w2, double w3)
 {
 	// Note: This calculation of PSNR uses the formula
 	//
@@ -867,7 +867,7 @@ double calculateWeightedPSNR(uint8 *lossyimg, uint8 *origimg, int width, int hei
 
 // Calculate unweighted PSNR (weights are (1,1,1))
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calculatePSNR(uint8 *lossyimg, uint8 *origimg, int width, int height)
+double calculatePSNR(uint8_t *lossyimg, uint8_t *origimg, int width, int height)
 {
 	// Note: This calculation of PSNR uses the formula
 	//
@@ -891,12 +891,12 @@ double calculatePSNR(uint8 *lossyimg, uint8 *origimg, int width, int height)
 
 // Decompresses a file
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void uncompressFile(char *srcfile, uint8* &img, uint8 *&alphaimg, int& active_width, int& active_height)
+void uncompressFile(char *srcfile, uint8_t* &img, uint8_t *&alphaimg, int& active_width, int& active_height)
 {
 	FILE *f;
 	int width,height;
 	unsigned int block_part1, block_part2;
-	uint8 *newimg, *newalphaimg, *alphaimg2;
+	uint8_t *newimg, *newalphaimg, *alphaimg2;
 	unsigned short w, h;
 	int xx, yy;
 	unsigned char magic[4];
@@ -1080,9 +1080,9 @@ void uncompressFile(char *srcfile, uint8* &img, uint8 *&alphaimg, int& active_wi
 	printf("active pixel area: top left %d x %d area.\n",active_width, active_height);
 
 	if(format==ETC2PACKAGE_RG_NO_MIPMAPS)
-		img=(uint8*)malloc(3*width*height*2);
+		img=(uint8_t*)malloc(3*width*height*2);
 	else
-		img=(uint8*)malloc(3*width*height);
+		img=(uint8_t*)malloc(3*width*height);
 	if(!img)
 	{
 		printf("Error: could not allocate memory\n");
@@ -1091,7 +1091,7 @@ void uncompressFile(char *srcfile, uint8* &img, uint8 *&alphaimg, int& active_wi
 	if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_R_NO_MIPMAPS||format==ETC2PACKAGE_RG_NO_MIPMAPS||format==ETC2PACKAGE_RGBA1_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA1_NO_MIPMAPS)
 	{
 		//printf("alpha channel decompression\n");
-		alphaimg=(uint8*)malloc(width*height*2);
+		alphaimg=(uint8_t*)malloc(width*height*2);
 		if(!alphaimg)
 		{
 			printf("Error: could not allocate memory for alpha\n");
@@ -1100,7 +1100,7 @@ void uncompressFile(char *srcfile, uint8* &img, uint8 *&alphaimg, int& active_wi
 	}
 	if(format==ETC2PACKAGE_RG_NO_MIPMAPS) 
 	{
-		alphaimg2=(uint8*)malloc(width*height*2);
+		alphaimg2=(uint8_t*)malloc(width*height*2);
 		if(!alphaimg2)
 		{
 			printf("Error: could not allocate memory\n");
@@ -1115,7 +1115,7 @@ void uncompressFile(char *srcfile, uint8* &img, uint8 *&alphaimg, int& active_wi
 			//decode alpha channel for RGBA
 			if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS) 
 			{
-				uint8 alphablock[8];
+				uint8_t alphablock[8];
 				fread(alphablock,1,8,f);
 				decompressBlockAlpha(alphablock,alphaimg,width,4*x,4*y);
 			}
@@ -1133,13 +1133,13 @@ void uncompressFile(char *srcfile, uint8* &img, uint8 *&alphaimg, int& active_wi
 			//one or two 11-bit alpha channels for R or RG.
 			if(format==ETC2PACKAGE_R_NO_MIPMAPS||format==ETC2PACKAGE_RG_NO_MIPMAPS) 
 			{
-				uint8 alphablock[8];
+				uint8_t alphablock[8];
 				fread(alphablock,1,8,f);
 				decompressBlockAlpha16bit(alphablock,alphaimg,width,4*x,4*y,formatSigned);
 			}
 			if(format==ETC2PACKAGE_RG_NO_MIPMAPS) 
 			{
-				uint8 alphablock[8];
+				uint8_t alphablock[8];
 				fread(alphablock,1,8,f);
 				decompressBlockAlpha16bit(alphablock,alphaimg2,width,4*x,4*y,formatSigned);
 			}
@@ -1167,13 +1167,13 @@ void uncompressFile(char *srcfile, uint8* &img, uint8 *&alphaimg, int& active_wi
 	if( !(height == active_height && width == active_width) )
 	{
 		if(format==ETC2PACKAGE_RG_NO_MIPMAPS)
-			newimg=(uint8*)malloc(3*active_width*active_height*2);
+			newimg=(uint8_t*)malloc(3*active_width*active_height*2);
 		else
-			newimg=(uint8*)malloc(3*active_width*active_height);
+			newimg=(uint8_t*)malloc(3*active_width*active_height);
 		
 		if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_RGBA1_NO_MIPMAPS||format==ETC2PACKAGE_R_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA1_NO_MIPMAPS)
 		{
-			newalphaimg = (uint8*)malloc(active_width*active_height*2);
+			newalphaimg = (uint8_t*)malloc(active_width*active_height*2);
 		}
 
 		if(!newimg)
@@ -1237,7 +1237,7 @@ void uncompressFile(char *srcfile, uint8* &img, uint8 *&alphaimg, int& active_wi
 
 // Writes output file 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void writeOutputFile(char *dstfile, uint8* img, uint8* alphaimg, int width, int height) 
+void writeOutputFile(char *dstfile, uint8_t* img, uint8_t* alphaimg, int width, int height) 
 {
 	char str[300];
 
@@ -1317,9 +1317,9 @@ void writeOutputFile(char *dstfile, uint8* img, uint8* alphaimg, int width, int 
 
 // Calculates the PSNR between two files
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-double calculatePSNRfile(char *srcfile, uint8 *origimg, uint8* origalpha)
+double calculatePSNRfile(char *srcfile, uint8_t *origimg, uint8_t* origalpha)
 {
-	uint8 *alphaimg, *img;
+	uint8_t *alphaimg, *img;
 	int active_width, active_height;
 	uncompressFile(srcfile,img,alphaimg,active_width,active_height);
 
@@ -1422,7 +1422,7 @@ double calculatePSNRfile(char *srcfile, uint8 *origimg, uint8* origalpha)
 
 // Compress an image file.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void compressImageFile(uint8 *img, uint8 *alphaimg,int width,int height,char *dstfile, int expandedwidth, int expandedheight)
+void compressImageFile(uint8_t *img, uint8_t *alphaimg,int width,int height,char *dstfile, int expandedwidth, int expandedheight)
 {
 	FILE *f;
 	int x,y,w,h;
@@ -1431,8 +1431,8 @@ void compressImageFile(uint8 *img, uint8 *alphaimg,int width,int height,char *ds
 	unsigned char magic[4];
 	unsigned char version[2];
 	unsigned short texture_type=format;
-	uint8 *imgdec;
-	uint8* alphaimg2;
+	uint8_t *imgdec;
+	uint8_t* alphaimg2;
 	imgdec = (unsigned char*) malloc(expandedwidth*expandedheight*3);
 	if(!imgdec)
 	{
@@ -1706,7 +1706,7 @@ void compressImageFile(uint8 *img, uint8 *alphaimg,int width,int height,char *ds
 				//compression of alpha channel in case of 4-bit alpha. Uses 8-bit alpha channel as input, and has 8-bit precision.
 				if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS) 
 				{
-					uint8 alphadata[8];
+					uint8_t alphadata[8];
 					if(speed==SPEED_SLOW)
 						compressBlockAlphaSlow(alphaimg,4*x,4*y,expandedwidth,alphadata);
 					else
@@ -1725,14 +1725,14 @@ void compressImageFile(uint8 *img, uint8 *alphaimg,int width,int height,char *ds
 				//1-channel or 2-channel alpha compression: uses 16-bit data as input, and has 11-bit precision
 				if(format==ETC2PACKAGE_R_NO_MIPMAPS||format==ETC2PACKAGE_RG_NO_MIPMAPS) 
 				{ 
-					uint8 alphadata[8];
+					uint8_t alphadata[8];
 					compressBlockAlpha16(alphaimg,4*x,4*y,expandedwidth,alphadata,formatSigned);
 					fwrite(alphadata,1,8,f);
 				}
 				//compression of second alpha channel in RG-compression
 				if(format==ETC2PACKAGE_RG_NO_MIPMAPS) 
 				{
-					uint8 alphadata[8];
+					uint8_t alphadata[8];
 					compressBlockAlpha16(alphaimg2,4*x,4*y,expandedwidth,alphadata,formatSigned);
 					fwrite(alphadata,1,8,f);
 				}
@@ -1760,7 +1760,7 @@ void compressImageFile(uint8 *img, uint8 *alphaimg,int width,int height,char *ds
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 void compressFile(char *srcfile,char *dstfile)
 {
-	uint8 *srcimg = NULL;
+	uint8_t *srcimg = NULL;
 	int width,height;
 	int extendedwidth, extendedheight;
 	struct _timeb tstruct;
@@ -1816,7 +1816,7 @@ void compressFile(char *srcfile,char *dstfile)
 	if(format==ETC2PACKAGE_R_NO_MIPMAPS||readSrcFile(srcfile,srcimg,width,height,extendedwidth, extendedheight))
 	{
 		//make sure that alphasrcimg contains the alpha channel or is null here, and pass it to compressimagefile
-		uint8* alphaimg=NULL;
+		uint8_t* alphaimg=NULL;
 		if(format==ETC2PACKAGE_RGBA_NO_MIPMAPS||format==ETC2PACKAGE_RGBA1_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA_NO_MIPMAPS||format==ETC2PACKAGE_sRGBA1_NO_MIPMAPS) 
 		{
 			char str[300];
@@ -1852,8 +1852,8 @@ void compressFile(char *srcfile,char *dstfile)
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
 double calculatePSNRTwoFiles(char *srcfile1,char *srcfile2)
 {
-	uint8 *srcimg1;
-	uint8 *srcimg2;
+	uint8_t *srcimg1;
+	uint8_t *srcimg2;
 	int width1, height1;
 	int width2, height2;
 	double PSNR = 0;
@@ -1907,7 +1907,7 @@ int main(int argc,char *argv[])
 		if(mode==MODE_UNCOMPRESS)
 		{
 			printf("Decompressing .pkm/.ktx file ...\n");
-			uint8* alphaimg=NULL, *img;
+			uint8_t* alphaimg=NULL, *img;
 			int w, h;
 			uncompressFile(srcfile,img,alphaimg,w,h);
 			writeOutputFile(dstfile,img,alphaimg,w,h);

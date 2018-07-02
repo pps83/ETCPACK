@@ -169,9 +169,9 @@ submitted to the exclusive jurisdiction of the Swedish Courts.
 #include <stdlib.h>
 
 // Typedefs
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef short int16;
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef short int16_t;
 
 // Macros to help with bit extraction/insertion
 #define SHIFT(size,startpos) ((startpos)-(size)+1)
@@ -213,8 +213,8 @@ typedef short int16;
 
 
 // Global tables
-static const uint8 table59T[8] = {3,6,11,16,23,32,41,64};  // 3-bit table for the 59 bit T-mode
-static const uint8 table58H[8] = {3,6,11,16,23,32,41,64};  // 3-bit table for the 58 bit H-mode
+static const uint8_t table59T[8] = {3,6,11,16,23,32,41,64};  // 3-bit table for the 59 bit T-mode
+static const uint8_t table58H[8] = {3,6,11,16,23,32,41,64};  // 3-bit table for the 58 bit H-mode
 static int compressParams[16][4] = {{-8, -2,  2, 8}, {-8, -2,  2, 8}, {-17, -5, 5, 17}, {-17, -5, 5, 17}, {-29, -9, 9, 29}, {-29, -9, 9, 29}, {-42, -13, 13, 42}, {-42, -13, 13, 42}, {-60, -18, 18, 60}, {-60, -18, 18, 60}, {-80, -24, 24, 80}, {-80, -24, 24, 80}, {-106, -33, 33, 106}, {-106, -33, 33, 106}, {-183, -47, 47, 183}, {-183, -47, 47, 183}};
 static int unscramble[4] = {2, 3, 1, 0};
 static int alphaTableInitialized = 0;
@@ -317,7 +317,7 @@ void unstuff57bits(unsigned int planar_word1, unsigned int planar_word2, unsigne
 	//     | R1' (5 bits) | dR2    | G1' (5 bits) | dG2    | B1' (5 bits) | dB2    | cw 1   | cw 2   |bit |bit |
 	//      ---------------------------------------------------------------------------------------------------
 
-	uint8 RO, GO1, GO2, BO1, BO2, BO3, RH1, RH2, GH, BH, RV, GV, BV;
+	uint8_t RO, GO1, GO2, BO1, BO2, BO3, RH1, RH2, GH, BH, RV, GV, BV;
 
 	RO  = GETBITSHIGH( planar_word1, 6, 62);
 	GO1 = GETBITSHIGH( planar_word1, 1, 56);
@@ -416,7 +416,7 @@ void unstuff59bits(unsigned int thumbT_word1, unsigned int thumbT_word2, unsigne
 	//     | R1' (5 bits) | dR2    | G1' (5 bits) | dG2    | B1' (5 bits) | dB2    | cw 1   | cw 2   |bt|bt|
 	//      ------------------------------------------------------------------------------------------------
 
-	uint8 R0a;
+	uint8_t R0a;
 
 	// Fix middle part
 	thumbT59_word1 = thumbT_word1 >> 1;
@@ -434,7 +434,7 @@ void unstuff59bits(unsigned int thumbT_word1, unsigned int thumbT_word2, unsigne
 
 // The color bits are expanded to the full color
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void decompressColor(int R_B, int G_B, int B_B, uint8 (colors_RGB444)[2][3], uint8 (colors)[2][3]) 
+void decompressColor(int R_B, int G_B, int B_B, uint8_t (colors_RGB444)[2][3], uint8_t (colors)[2][3]) 
 {
 	// The color should be retrieved as:
 	//
@@ -453,7 +453,7 @@ void decompressColor(int R_B, int G_B, int B_B, uint8 (colors_RGB444)[2][3], uin
  	colors[1][B] = (colors_RGB444[1][B] << (8 - B_B)) | (colors_RGB444[1][B] >> (B_B - (8-B_B)) );
 }
 
-void calculatePaintColors59T(uint8 d, uint8 p, uint8 (colors)[2][3], uint8 (possible_colors)[4][3]) 
+void calculatePaintColors59T(uint8_t d, uint8_t p, uint8_t (colors)[2][3], uint8_t (possible_colors)[4][3]) 
 {
 	//////////////////////////////////////////////
 	//
@@ -502,13 +502,13 @@ void calculatePaintColors59T(uint8 d, uint8 p, uint8 (colors)[2][3], uint8 (poss
 //|31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00|
 //|----------------------------------------index bits---------------------------------------------|
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void decompressBlockTHUMB59Tc(unsigned int block_part1, unsigned int block_part2, uint8 *img,int width,int startx,int starty, int channels)
+void decompressBlockTHUMB59Tc(unsigned int block_part1, unsigned int block_part2, uint8_t *img,int width,int startx,int starty, int channels)
 {
-	uint8 colorsRGB444[2][3];
-	uint8 colors[2][3];
-	uint8 paint_colors[4][3];
-	uint8 distance;
-	uint8 block_mask[4][4];
+	uint8_t colorsRGB444[2][3];
+	uint8_t colors[2][3];
+	uint8_t paint_colors[4][3];
+	uint8_t distance;
+	uint8_t block_mask[4][4];
 
 	// First decode left part of block.
 	colorsRGB444[0][R]= GETBITSHIGH(block_part1, 4, 58);
@@ -526,9 +526,9 @@ void decompressBlockTHUMB59Tc(unsigned int block_part1, unsigned int block_part2
 	calculatePaintColors59T(distance, PATTERN_T, colors, paint_colors);
 	
 	// Choose one of the four paint colors for each texel
-	for (uint8 x = 0; x < BLOCKWIDTH; ++x) 
+	for (uint8_t x = 0; x < BLOCKWIDTH; ++x) 
 	{
-		for (uint8 y = 0; y < BLOCKHEIGHT; ++y) 
+		for (uint8_t y = 0; y < BLOCKHEIGHT; ++y) 
 		{
 			//block_mask[x][y] = GETBITS(block_part2,2,31-(y*4+x)*2);
 			block_mask[x][y] = GETBITS(block_part2,1,(y+x*4)+16)<<1;
@@ -543,7 +543,7 @@ void decompressBlockTHUMB59Tc(unsigned int block_part1, unsigned int block_part2
 	}
 }
 
-void decompressBlockTHUMB59T(unsigned int block_part1, unsigned int block_part2, uint8 *img, int width, int startx, int starty)
+void decompressBlockTHUMB59T(unsigned int block_part1, unsigned int block_part2, uint8_t *img, int width, int startx, int starty)
 {
  decompressBlockTHUMB59Tc(block_part1, block_part2, img, width, startx, starty, 3);
 }
@@ -551,7 +551,7 @@ void decompressBlockTHUMB59T(unsigned int block_part1, unsigned int block_part2,
 // Calculate the paint colors from the block colors 
 // using a distance d and one of the H- or T-patterns.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void calculatePaintColors58H(uint8 d, uint8 p, uint8 (colors)[2][3], uint8 (possible_colors)[4][3]) 
+void calculatePaintColors58H(uint8_t d, uint8_t p, uint8_t (colors)[2][3], uint8_t (possible_colors)[4][3]) 
 {
 	
 	//////////////////////////////////////////////
@@ -595,14 +595,14 @@ void calculatePaintColors58H(uint8 d, uint8 p, uint8 (colors)[2][3], uint8 (poss
 
 // Decompress an H-mode block 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void decompressBlockTHUMB58Hc(unsigned int block_part1, unsigned int block_part2, uint8 *img, int width, int startx, int starty, int channels)
+void decompressBlockTHUMB58Hc(unsigned int block_part1, unsigned int block_part2, uint8_t *img, int width, int startx, int starty, int channels)
 {
 	unsigned int col0, col1;
-	uint8 colors[2][3];
-	uint8 colorsRGB444[2][3];
-	uint8 paint_colors[4][3];
-	uint8 distance;
-	uint8 block_mask[4][4];
+	uint8_t colors[2][3];
+	uint8_t colorsRGB444[2][3];
+	uint8_t paint_colors[4][3];
+	uint8_t distance;
+	uint8_t block_mask[4][4];
 	
 	// First decode left part of block.
 	colorsRGB444[0][R]= GETBITSHIGH(block_part1, 4, 57);
@@ -630,9 +630,9 @@ void decompressBlockTHUMB58Hc(unsigned int block_part1, unsigned int block_part2
 	calculatePaintColors58H(distance, PATTERN_H, colors, paint_colors);
 	
 	// Choose one of the four paint colors for each texel
-	for (uint8 x = 0; x < BLOCKWIDTH; ++x) 
+	for (uint8_t x = 0; x < BLOCKWIDTH; ++x) 
 	{
-		for (uint8 y = 0; y < BLOCKHEIGHT; ++y) 
+		for (uint8_t y = 0; y < BLOCKHEIGHT; ++y) 
 		{
 			//block_mask[x][y] = GETBITS(block_part2,2,31-(y*4+x)*2);
 			block_mask[x][y] = GETBITS(block_part2,1,(y+x*4)+16)<<1;
@@ -646,16 +646,16 @@ void decompressBlockTHUMB58Hc(unsigned int block_part1, unsigned int block_part2
 		}
 	}
 }
-void decompressBlockTHUMB58H(unsigned int block_part1, unsigned int block_part2, uint8 *img, int width, int startx, int starty)
+void decompressBlockTHUMB58H(unsigned int block_part1, unsigned int block_part2, uint8_t *img, int width, int startx, int starty)
 {
   decompressBlockTHUMB58Hc(block_part1, block_part2, img, width, startx, starty, 3);
 }
 
 // Decompress the planar mode.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void decompressBlockPlanar57c(unsigned int compressed57_1, unsigned int compressed57_2, uint8 *img, int width, int startx, int starty, int channels)
+void decompressBlockPlanar57c(unsigned int compressed57_1, unsigned int compressed57_2, uint8_t *img, int width, int startx, int starty, int channels)
 {
-	uint8 colorO[3], colorH[3], colorV[3];
+	uint8_t colorO[3], colorH[3], colorV[3];
 
 	colorO[0] = GETBITSHIGH( compressed57_1, 6, 63);
 	colorO[1] = GETBITSHIGH( compressed57_1, 7, 57);
@@ -697,15 +697,15 @@ void decompressBlockPlanar57c(unsigned int compressed57_1, unsigned int compress
 		}
 	}
 }
-void decompressBlockPlanar57(unsigned int compressed57_1, unsigned int compressed57_2, uint8 *img, int width, int startx, int starty)
+void decompressBlockPlanar57(unsigned int compressed57_1, unsigned int compressed57_2, uint8_t *img, int width, int startx, int starty)
 {
   decompressBlockPlanar57c(compressed57_1, compressed57_2, img, width, startx, starty, 3);
 }
 // Decompress an ETC1 block (or ETC2 using individual or differential mode).
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void decompressBlockDiffFlipC(unsigned int block_part1, unsigned int block_part2, uint8 *img, int width, int startx, int starty, int channels)
+void decompressBlockDiffFlipC(unsigned int block_part1, unsigned int block_part2, uint8_t *img, int width, int startx, int starty, int channels)
 {
-	uint8 avg_color[3], enc_color1[3], enc_color2[3];
+	uint8_t avg_color[3], enc_color1[3], enc_color2[3];
 	signed char diff[3];
 	int table;
 	int index,shift;
@@ -979,14 +979,14 @@ void decompressBlockDiffFlipC(unsigned int block_part1, unsigned int block_part2
 		}
 	}
 }
-void decompressBlockDiffFlip(unsigned int block_part1, unsigned int block_part2, uint8 *img, int width, int startx, int starty)
+void decompressBlockDiffFlip(unsigned int block_part1, unsigned int block_part2, uint8_t *img, int width, int startx, int starty)
 {
   decompressBlockDiffFlipC(block_part1, block_part2, img, width, startx, starty, 3);
 }
 
 // Decompress an ETC2 RGB block
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void decompressBlockETC2c(unsigned int block_part1, unsigned int block_part2, uint8 *img, int width, int startx, int starty, int channels)
+void decompressBlockETC2c(unsigned int block_part1, unsigned int block_part2, uint8_t *img, int width, int startx, int starty, int channels)
 {
 	int diffbit;
 	signed char color1[3];
@@ -1051,16 +1051,16 @@ void decompressBlockETC2c(unsigned int block_part1, unsigned int block_part2, ui
 		decompressBlockDiffFlipC(block_part1, block_part2, img, width, startx, starty, channels);
 	}
 }
-void decompressBlockETC2(unsigned int block_part1, unsigned int block_part2, uint8 *img, int width, int startx, int starty)
+void decompressBlockETC2(unsigned int block_part1, unsigned int block_part2, uint8_t *img, int width, int startx, int starty)
 {
   decompressBlockETC2c(block_part1, block_part2, img, width, startx, starty, 3);
 }
 // Decompress an ETC2 block with punchthrough alpha
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void decompressBlockDifferentialWithAlphaC(unsigned int block_part1, unsigned int block_part2, uint8* img, uint8* alpha, int width, int startx, int starty, int channelsRGB)
+void decompressBlockDifferentialWithAlphaC(unsigned int block_part1, unsigned int block_part2, uint8_t* img, uint8_t* alpha, int width, int startx, int starty, int channelsRGB)
 {
 	
-	uint8 avg_color[3], enc_color1[3], enc_color2[3];
+	uint8_t avg_color[3], enc_color1[3], enc_color2[3];
 	signed char diff[3];
 	int table;
 	int index,shift;
@@ -1274,7 +1274,7 @@ void decompressBlockDifferentialWithAlphaC(unsigned int block_part1, unsigned in
 		}
 	}
 }
-void decompressBlockDifferentialWithAlpha(unsigned int block_part1, unsigned int block_part2, uint8* img, uint8* alpha, int width, int startx, int starty)
+void decompressBlockDifferentialWithAlpha(unsigned int block_part1, unsigned int block_part2, uint8_t* img, uint8_t* alpha, int width, int startx, int starty)
 {
   decompressBlockDifferentialWithAlphaC(block_part1, block_part2, img, alpha, width, startx, starty, 3);
 }
@@ -1282,14 +1282,14 @@ void decompressBlockDifferentialWithAlpha(unsigned int block_part1, unsigned int
 
 // similar to regular decompression, but alpha channel is set to 0 if pixel index is 2, otherwise 255.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void decompressBlockTHUMB59TAlphaC(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alpha, int width, int startx, int starty, int channelsRGB)
+void decompressBlockTHUMB59TAlphaC(unsigned int block_part1, unsigned int block_part2, uint8_t *img, uint8_t* alpha, int width, int startx, int starty, int channelsRGB)
 {
 
-	uint8 colorsRGB444[2][3];
-	uint8 colors[2][3];
-	uint8 paint_colors[4][3];
-	uint8 distance;
-	uint8 block_mask[4][4];
+	uint8_t colorsRGB444[2][3];
+	uint8_t colors[2][3];
+	uint8_t paint_colors[4][3];
+	uint8_t distance;
+	uint8_t block_mask[4][4];
   int channelsA;
 
   if(channelsRGB == 3)
@@ -1321,9 +1321,9 @@ void decompressBlockTHUMB59TAlphaC(unsigned int block_part1, unsigned int block_
 	calculatePaintColors59T(distance, PATTERN_T, colors, paint_colors);
 	
 	// Choose one of the four paint colors for each texel
-	for (uint8 x = 0; x < BLOCKWIDTH; ++x) 
+	for (uint8_t x = 0; x < BLOCKWIDTH; ++x) 
 	{
-		for (uint8 y = 0; y < BLOCKHEIGHT; ++y) 
+		for (uint8_t y = 0; y < BLOCKHEIGHT; ++y) 
 		{
 			//block_mask[x][y] = GETBITS(block_part2,2,31-(y*4+x)*2);
 			block_mask[x][y] = GETBITS(block_part2,1,(y+x*4)+16)<<1;
@@ -1346,7 +1346,7 @@ void decompressBlockTHUMB59TAlphaC(unsigned int block_part1, unsigned int block_
 		}
 	}
 }
-void decompressBlockTHUMB59TAlpha(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alpha, int width, int startx, int starty)
+void decompressBlockTHUMB59TAlpha(unsigned int block_part1, unsigned int block_part2, uint8_t *img, uint8_t* alpha, int width, int startx, int starty)
 {
   decompressBlockTHUMB59TAlphaC(block_part1, block_part2, img, alpha, width, startx, starty, 3);
 }
@@ -1354,14 +1354,14 @@ void decompressBlockTHUMB59TAlpha(unsigned int block_part1, unsigned int block_p
 
 // Decompress an H-mode block with alpha
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void decompressBlockTHUMB58HAlphaC(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alpha, int width, int startx, int starty, int channelsRGB)
+void decompressBlockTHUMB58HAlphaC(unsigned int block_part1, unsigned int block_part2, uint8_t *img, uint8_t* alpha, int width, int startx, int starty, int channelsRGB)
 {
 	unsigned int col0, col1;
-	uint8 colors[2][3];
-	uint8 colorsRGB444[2][3];
-	uint8 paint_colors[4][3];
-	uint8 distance;
-	uint8 block_mask[4][4];
+	uint8_t colors[2][3];
+	uint8_t colorsRGB444[2][3];
+	uint8_t paint_colors[4][3];
+	uint8_t distance;
+	uint8_t block_mask[4][4];
   int channelsA;	
 
   if(channelsRGB == 3)
@@ -1403,9 +1403,9 @@ void decompressBlockTHUMB58HAlphaC(unsigned int block_part1, unsigned int block_
 	calculatePaintColors58H(distance, PATTERN_H, colors, paint_colors);
 	
 	// Choose one of the four paint colors for each texel
-	for (uint8 x = 0; x < BLOCKWIDTH; ++x) 
+	for (uint8_t x = 0; x < BLOCKWIDTH; ++x) 
 	{
-		for (uint8 y = 0; y < BLOCKHEIGHT; ++y) 
+		for (uint8_t y = 0; y < BLOCKHEIGHT; ++y) 
 		{
 			//block_mask[x][y] = GETBITS(block_part2,2,31-(y*4+x)*2);
 			block_mask[x][y] = GETBITS(block_part2,1,(y+x*4)+16)<<1;
@@ -1429,13 +1429,13 @@ void decompressBlockTHUMB58HAlphaC(unsigned int block_part1, unsigned int block_
 		}
 	}
 }
-void decompressBlockTHUMB58HAlpha(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alpha, int width, int startx, int starty)
+void decompressBlockTHUMB58HAlpha(unsigned int block_part1, unsigned int block_part2, uint8_t *img, uint8_t* alpha, int width, int startx, int starty)
 {
   decompressBlockTHUMB58HAlphaC(block_part1, block_part2, img, alpha, width, startx, starty, 3);
 }
 // Decompression function for ETC2_RGBA1 format.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void decompressBlockETC21BitAlphaC(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alphaimg, int width, int startx, int starty, int channelsRGB)
+void decompressBlockETC21BitAlphaC(unsigned int block_part1, unsigned int block_part2, uint8_t *img, uint8_t* alphaimg, int width, int startx, int starty, int channelsRGB)
 {
 	setupAlphaTable();
 	int diffbit;
@@ -1571,7 +1571,7 @@ void decompressBlockETC21BitAlphaC(unsigned int block_part1, unsigned int block_
 			decompressBlockDifferentialWithAlphaC(block_part1, block_part2, img,alphaimg, width, startx, starty, channelsRGB);
 	}
 }
-void decompressBlockETC21BitAlpha(unsigned int block_part1, unsigned int block_part2, uint8 *img, uint8* alphaimg, int width, int startx, int starty)
+void decompressBlockETC21BitAlpha(unsigned int block_part1, unsigned int block_part2, uint8_t *img, uint8_t* alphaimg, int width, int startx, int starty)
 {
   decompressBlockETC21BitAlphaC(block_part1, block_part2, img, alphaimg, width, startx, starty, 3);
 }
@@ -1581,7 +1581,7 @@ void decompressBlockETC21BitAlpha(unsigned int block_part1, unsigned int block_p
 
 // bit number frompos is extracted from input, and moved to bit number topos in the return value.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-uint8 getbit(uint8 input, int frompos, int topos) 
+uint8_t getbit(uint8_t input, int frompos, int topos) 
 {
 	if(frompos>topos)
 		return ((1<<frompos)&input)>>(frompos-topos);
@@ -1604,7 +1604,7 @@ int clamp(int val)
 // However, a hardware decoder can share gates between the two formats as explained
 // in the specification under GL_COMPRESSED_R11_EAC.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void decompressBlockAlphaC(uint8* data, uint8* img, int width, int ix, int iy, int channels) 
+void decompressBlockAlphaC(uint8_t* data, uint8_t* img, int width, int ix, int iy, int channels) 
 {
 	setupAlphaTable();
 	int alpha = data[0];
@@ -1633,7 +1633,7 @@ void decompressBlockAlphaC(uint8* data, uint8* img, int width, int ix, int iy, i
 		}
 	}
 }
-void decompressBlockAlpha(uint8* data, uint8* img, int width, int ix, int iy) 
+void decompressBlockAlpha(uint8_t* data, uint8_t* img, int width, int ix, int iy) 
 {
   decompressBlockAlphaC(data, img, width, ix, iy, 1);
 }
@@ -1641,7 +1641,7 @@ void decompressBlockAlpha(uint8* data, uint8* img, int width, int ix, int iy)
 // Does decompression and then immediately converts from 11 bit signed to a 16-bit format.
 // 
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-int16 get16bits11signed(int base, int table, int mul, int index) 
+int16_t get16bits11signed(int base, int table, int mul, int index) 
 {
 	int elevenbase = base-128;
 	if(elevenbase==-128)
@@ -1677,8 +1677,8 @@ int16 get16bits11signed(int base, int table, int mul, int index)
 	//so we extend to 15 bits signed.
 	sign = elevenbits<0;
 	elevenbits=abs(elevenbits);
-	int16 fifteenbits = (elevenbits<<5)+(elevenbits>>5);
-	int16 sixteenbits=fifteenbits;
+	int16_t fifteenbits = (elevenbits<<5)+(elevenbits>>5);
+	int16_t sixteenbits=fifteenbits;
 
 	if(sign)
 		sixteenbits=-sixteenbits;
@@ -1689,7 +1689,7 @@ int16 get16bits11signed(int base, int table, int mul, int index)
 // Does decompression and then immediately converts from 11 bit signed to a 16-bit format 
 // Calculates the 11 bit value represented by base, table, mul and index, and extends it to 16 bits.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-uint16 get16bits11bits(int base, int table, int mul, int index) 
+uint16_t get16bits11bits(int base, int table, int mul, int index) 
 {
 	int elevenbase = base*8+4;
 
@@ -1721,14 +1721,14 @@ uint16 get16bits11bits(int base, int table, int mul, int index)
 	//elevenbits now contains the 11 bit alpha value as defined in the spec.
 
 	//extend to 16 bits before returning, since we don't have any good 11-bit file formats.
-	uint16 sixteenbits = (elevenbits<<5)+(elevenbits>>6);
+	uint16_t sixteenbits = (elevenbits<<5)+(elevenbits>>6);
 
 	return sixteenbits;
 }
 
 // Decompresses a block using one of the GL_COMPRESSED_R11_EAC or GL_COMPRESSED_SIGNED_R11_EAC-formats
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-void decompressBlockAlpha16bitC(uint8* data, uint8* img, int width, int ix, int iy, int channels, int formatSigned)
+void decompressBlockAlpha16bitC(uint8_t* data, uint8_t* img, int width, int ix, int iy, int channels, int formatSigned)
 {
 	setupAlphaTable();
 	int alpha = data[0];
@@ -1765,15 +1765,15 @@ void decompressBlockAlpha16bitC(uint8* data, uint8* img, int width, int ix, int 
 #if !PGMOUT
 			if(formatSigned)
 			{
-				*(int16 *)&img[windex] = get16bits11signed(alpha,(table%16),(table/16),index);
+				*(int16_t *)&img[windex] = get16bits11signed(alpha,(table%16),(table/16),index);
 			}
 			else
 			{
-				*(uint16 *)&img[windex] = get16bits11bits(alpha,(table%16),(table/16),index);
+				*(uint16_t *)&img[windex] = get16bits11bits(alpha,(table%16),(table/16),index);
 			}
 #else
 			//make data compatible with the .pgm format. See the comment in compressBlockAlpha16() for details.
-			uint16 uSixteen;
+			uint16_t uSixteen;
 			if (formatSigned)
 			{
 				//the pgm-format only allows unsigned images,
@@ -1793,7 +1793,7 @@ void decompressBlockAlpha16bitC(uint8* data, uint8* img, int width, int ix, int 
 	}			
 }
 
-void decompressBlockAlpha16bit(uint8* data, uint8* img, int width, int ix, int iy, int formatSigned)
+void decompressBlockAlpha16bit(uint8_t* data, uint8_t* img, int width, int ix, int iy, int formatSigned)
 {
   decompressBlockAlpha16bitC(data, img, width, ix, iy, 1, formatSigned);
 }
